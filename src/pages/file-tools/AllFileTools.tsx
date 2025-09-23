@@ -51,7 +51,7 @@ const FileToolCard = ({ title, description, icon: Icon, path, badge }: FileToolC
 };
 
 const AllFileTools = () => {
-  const tools = [
+  const fileTools = [
     {
       title: "Bild komprimieren",
       description: "Reduzieren Sie die Dateigröße Ihrer Bilder ohne sichtbaren Qualitätsverlust",
@@ -83,36 +83,72 @@ const AllFileTools = () => {
       icon: Trash2,
       path: "/file-tools/remove-background",
       badge: "KI-basiert"
+    }
+  ];
+
+  const converterTools = [
+    {
+      title: "PNG → JPG",
+      description: "Konvertieren Sie PNG Bilder in JPG Format mit anpassbarer Qualität",
+      icon: FileImage,
+      path: "/bild/png-zu-jpg",
+      badge: undefined
     },
     {
-      title: "PNG ↔ JPG",
-      description: "Konvertieren Sie zwischen PNG und JPG Formaten mit anpassbarer Qualität",
+      title: "JPG → PNG",
+      description: "Wandeln Sie JPG Bilder in verlustfreies PNG Format um",
       icon: FileImage,
-      path: "/file-tools/convert"
+      path: "/bild/jpg-zu-png",
+      badge: undefined
     },
     {
-      title: "WEBP ↔ JPG/PNG",
-      description: "Konvertieren Sie moderne WEBP Bilder zu JPG/PNG oder umgekehrt",
+      title: "WEBP → JPG",
+      description: "Konvertieren Sie moderne WEBP Bilder in JPG Format",
       icon: FileImage,
-      path: "/file-tools/convert"
+      path: "/bild/webp-zu-jpg",
+      badge: undefined
     },
     {
-      title: "HEIC ↔ JPG/PNG",
-      description: "Wandeln Sie iPhone HEIC Bilder in JPG/PNG Formate um",
+      title: "WEBP → PNG",
+      description: "Wandeln Sie WEBP Bilder in PNG Format um",
       icon: FileImage,
-      path: "/file-tools/convert"
+      path: "/bild/webp-zu-png",
+      badge: undefined
     },
     {
-      title: "AVIF ↔ JPG/PNG",
-      description: "Konvertieren Sie moderne AVIF Bilder zu JPG/PNG oder umgekehrt",
+      title: "HEIC → JPG",
+      description: "Konvertieren Sie iPhone HEIC Bilder in JPG Format",
       icon: FileImage,
-      path: "/file-tools/convert"
+      path: "/bild/heic-zu-jpg",
+      badge: undefined
+    },
+    {
+      title: "HEIC → PNG",
+      description: "Wandeln Sie iPhone HEIC Bilder in PNG Format um",
+      icon: FileImage,
+      path: "/bild/heic-zu-jpg", // Using same converter as it supports both formats
+      badge: undefined
+    },
+    {
+      title: "AVIF → JPG",
+      description: "Konvertieren Sie moderne AVIF Bilder in JPG Format",
+      icon: FileImage,
+      path: "/bild/avif-zu-jpg",
+      badge: undefined
+    },
+    {
+      title: "AVIF → PNG",
+      description: "Wandeln Sie AVIF Bilder in PNG Format um",
+      icon: FileImage,
+      path: "/bild/avif-zu-jpg", // Using same converter as it supports both formats
+      badge: undefined
     },
     {
       title: "GIF → MP4",
       description: "Konvertieren Sie animierte GIFs in kleinere, effizientere MP4 Videos",
       icon: Video,
-      path: "/file-tools/convert"
+      path: "/gif-zu-mp4",
+      badge: undefined
     }
   ];
 
@@ -129,17 +165,38 @@ const AllFileTools = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {tools.map((tool) => (
-            <FileToolCard
-              key={tool.path}
-              title={tool.title}
-              description={tool.description}
-              icon={tool.icon}
-              path={tool.path}
-              badge={tool.badge}
-            />
-          ))}
+        {/* Block 1: Normale Datei-Tools */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Datei-Tools</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {fileTools.map((tool) => (
+              <FileToolCard
+                key={tool.path}
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                path={tool.path}
+                badge={tool.badge}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Block 2: Converter-Tools */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-foreground mb-6">Converter-Tools</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {converterTools.map((tool) => (
+              <FileToolCard
+                key={tool.path}
+                title={tool.title}
+                description={tool.description}
+                icon={tool.icon}
+                path={tool.path}
+                badge={tool.badge}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="bg-muted/50 rounded-lg p-6 text-center">
