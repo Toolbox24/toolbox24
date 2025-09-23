@@ -33,7 +33,7 @@ const Header = () => {
               className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
               onClick={() => navigate("/")}
             >
-              VorlagenHub
+              Toolbox24
             </h1>
             
             {/* Navigation Menu */}

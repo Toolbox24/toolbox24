@@ -65,9 +65,9 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-4">
             <p className="text-base text-muted-foreground leading-relaxed">
-              Willkommen bei VorlagenHub – Ihrer kostenlosen Quelle für professionelle <strong>Vorlagen und Muster</strong>. 
+              Willkommen bei Toolbox24 – Ihrer kostenlosen Plattform für professionelle <strong>Tools und Vorlagen</strong>. 
               Ob Sie eine <strong>Kündigung</strong> für Fitnessstudio oder Mietvertrag schreiben, eine perfekte <strong>Bewerbung</strong> 
-              erstellen oder wichtige <strong>Verträge</strong> aufsetzen möchten – bei uns finden Sie rechtlich geprüfte Vorlagen für jeden Anlass.
+              erstellen oder wichtige <strong>PDFs bearbeiten</strong> möchten – bei uns finden Sie alle Tools und rechtlich geprüfte Vorlagen für jeden Anlass.
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
               Alle <strong>Muster</strong> stehen als Word- und PDF-Download zur Verfügung und können sofort ohne Anmeldung heruntergeladen werden. 

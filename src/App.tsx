@@ -13,6 +13,9 @@ import TemplateDetail from "./pages/TemplateDetail";
 import SearchResults from "./pages/SearchResults";
 import AllTemplates from "./pages/AllTemplates";
 import NotFound from "./pages/NotFound";
+import Rechtliches from "./pages/Rechtliches";
+import Impressum from "./pages/Impressum";
+import Kontakt from "./pages/Kontakt";
 
 // PDF Tools
 import AllPDFTools from "./pages/pdf-tools/AllPDFTools";
@@ -99,6 +102,11 @@ const App = () => (
               <Route path="/bild/heic-zu-jpg" element={<HeicToJpg />} />
               <Route path="/bild/avif-zu-jpg" element={<AvifToJpg />} />
               <Route path="/gif-zu-mp4" element={<GifToMp4Landing />} />
+              
+              {/* Legal Pages */}
+              <Route path="/rechtliches" element={<Rechtliches />} />
+              <Route path="/impressum" element={<Impressum />} />
+              <Route path="/kontakt" element={<Kontakt />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
