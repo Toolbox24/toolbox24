@@ -48,7 +48,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/alle-vorlagen"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Alle Vorlagen
                         </Link>
@@ -56,7 +56,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Kategorien
                         </Link>
@@ -74,7 +74,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/pdf-tools/merge"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF zusammenfügen
                         </Link>
@@ -82,7 +82,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/pdf-tools/compress"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF komprimieren
                         </Link>
@@ -90,7 +90,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/pdf-tools/split"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF teilen
                         </Link>
@@ -98,7 +98,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/pdf-tools/to-word"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF zu Word
                         </Link>
@@ -116,7 +116,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/file-tools/compress-image"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bild komprimieren
                         </Link>
@@ -124,7 +124,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/file-tools/remove-background"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Hintergrund entfernen
                         </Link>
@@ -132,7 +132,7 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/file-tools/heic-to-jpg"
-                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           HEIC zu JPG
                         </Link>
