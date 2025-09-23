@@ -13,6 +13,17 @@ import SearchResults from "./pages/SearchResults";
 import AllTemplates from "./pages/AllTemplates";
 import NotFound from "./pages/NotFound";
 
+// PDF Tools
+import PDFMerge from "./pages/pdf-tools/PDFMerge";
+import PDFCompress from "./pages/pdf-tools/PDFCompress";
+import PDFSplit from "./pages/pdf-tools/PDFSplit";
+import PDFToWord from "./pages/pdf-tools/PDFToWord";
+
+// File Tools
+import ImageCompress from "./pages/file-tools/ImageCompress";
+import RemoveBackground from "./pages/file-tools/RemoveBackground";
+import HEICToJPG from "./pages/file-tools/HEICToJPG";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -31,6 +42,18 @@ const App = () => (
               <Route path="/vorlage/:slug" element={<TemplateDetail />} />
               <Route path="/suche" element={<SearchResults />} />
               <Route path="/alle-vorlagen" element={<AllTemplates />} />
+              
+              {/* PDF Tools */}
+              <Route path="/pdf-tools/merge" element={<PDFMerge />} />
+              <Route path="/pdf-tools/compress" element={<PDFCompress />} />
+              <Route path="/pdf-tools/split" element={<PDFSplit />} />
+              <Route path="/pdf-tools/to-word" element={<PDFToWord />} />
+              
+              {/* File Tools */}
+              <Route path="/file-tools/compress-image" element={<ImageCompress />} />
+              <Route path="/file-tools/remove-background" element={<RemoveBackground />} />
+              <Route path="/file-tools/heic-to-jpg" element={<HEICToJPG />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

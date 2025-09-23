@@ -1,8 +1,17 @@
-import { Search } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,13 +28,120 @@ const Header = () => {
     <header className="bg-card border-b sticky top-0 z-50 backdrop-blur-sm bg-card/95">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-8">
             <h1 
               className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
               onClick={() => navigate("/")}
             >
               VorlagenHub
             </h1>
+            
+            {/* Navigation Menu */}
+            <NavigationMenu className="hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    Vorlagen
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-64 p-4 space-y-2">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/alle-vorlagen"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Alle Vorlagen
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Kategorien
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    PDF Tools
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-64 p-4 space-y-2">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/pdf-tools/merge"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          PDF zusammenfügen
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/pdf-tools/compress"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          PDF komprimieren
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/pdf-tools/split"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          PDF teilen
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/pdf-tools/to-word"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          PDF zu Word
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    Datei-Tools
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-64 p-4 space-y-2">
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/file-tools/compress-image"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Bild komprimieren
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/file-tools/remove-background"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          Hintergrund entfernen
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/file-tools/heic-to-jpg"
+                          className="block p-2 rounded hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          HEIC zu JPG
+                        </Link>
+                      </NavigationMenuLink>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
           </div>
           
           <form onSubmit={handleSearch} className="flex-1 max-w-md">
