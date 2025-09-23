@@ -131,10 +131,26 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
+                          to="/file-tools/resize-image"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          Bildgröße ändern (Resize)
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
                           to="/file-tools/heic-to-jpg"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           HEIC zu JPG
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/file-tools/all"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors border-t mt-2 pt-2"
+                        >
+                          Alle Datei-Tools
                         </Link>
                       </NavigationMenuLink>
                     </div>

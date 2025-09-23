@@ -20,9 +20,16 @@ import PDFSplit from "./pages/pdf-tools/PDFSplit";
 import PDFToWord from "./pages/pdf-tools/PDFToWord";
 
 // File Tools
+import AllFileTools from "./pages/file-tools/AllFileTools";
 import ImageCompress from "./pages/file-tools/ImageCompress";
+import ImageResize from "./pages/file-tools/ImageResize";
+import ImageCrop from "./pages/file-tools/ImageCrop";
+import ImageRotate from "./pages/file-tools/ImageRotate";
 import RemoveBackground from "./pages/file-tools/RemoveBackground";
+import ImageConverter from "./pages/file-tools/ImageConverter";
+import WebPConverter from "./pages/file-tools/WebPConverter";
 import HEICToJPG from "./pages/file-tools/HEICToJPG";
+import GifToMp4 from "./pages/file-tools/GifToMp4";
 
 const queryClient = new QueryClient();
 
@@ -50,9 +57,16 @@ const App = () => (
               <Route path="/pdf-tools/to-word" element={<PDFToWord />} />
               
               {/* File Tools */}
+              <Route path="/file-tools/all" element={<AllFileTools />} />
               <Route path="/file-tools/compress-image" element={<ImageCompress />} />
+              <Route path="/file-tools/resize-image" element={<ImageResize />} />
+              <Route path="/file-tools/crop-image" element={<ImageCrop />} />
+              <Route path="/file-tools/rotate-image" element={<ImageRotate />} />
               <Route path="/file-tools/remove-background" element={<RemoveBackground />} />
+              <Route path="/file-tools/convert-png-jpg" element={<ImageConverter />} />
+              <Route path="/file-tools/convert-webp" element={<WebPConverter />} />
               <Route path="/file-tools/heic-to-jpg" element={<HEICToJPG />} />
+              <Route path="/file-tools/gif-to-mp4" element={<GifToMp4 />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
