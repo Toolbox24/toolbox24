@@ -12,6 +12,7 @@ import CategoryPage from "./pages/CategoryPage";
 import TemplateDetail from "./pages/TemplateDetail";
 import SearchResults from "./pages/SearchResults";
 import AllTemplates from "./pages/AllTemplates";
+import AlleTools from "./pages/AlleTools";
 import NotFound from "./pages/NotFound";
 import Rechtliches from "./pages/Rechtliches";
 import Impressum from "./pages/Impressum";
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/vorlage/:slug" element={<TemplateDetail />} />
               <Route path="/suche" element={<SearchResults />} />
               <Route path="/alle-vorlagen" element={<AllTemplates />} />
+              <Route path="/alle-tools" element={<AlleTools />} />
               
               {/* PDF Tools */}
               <Route path="/pdf-tools/all" element={<AllPDFTools />} />

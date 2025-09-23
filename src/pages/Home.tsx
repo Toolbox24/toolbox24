@@ -30,19 +30,22 @@ const Home = () => {
   const categories = [
     {
       title: "Vorlagen",
-      description: "Rechtssichere Muster für Kündigungen, Bewerbungen, Verträge und mehr. Professionell erstellt, sofort einsatzbereit.",
+      emoji: "📄",
+      description: "Rechtssichere Muster für Kündigungen, Bewerbungen und Verträge",
       buttonText: "Alle Vorlagen anzeigen",
       path: "/alle-vorlagen"
     },
     {
       title: "PDF Tools",
-      description: "Umfassende PDF-Bearbeitung: Zusammenfügen, Teilen, Komprimieren, Konvertieren. Alles direkt im Browser ohne Upload.",
+      emoji: "📋",
+      description: "PDF bearbeiten: Zusammenfügen, Teilen, Komprimieren",
       buttonText: "Alle PDF Tools anzeigen",
       path: "/pdf-tools/all"
     },
     {
       title: "Datei Tools",
-      description: "Professionelle Bildbearbeitung: Komprimieren, Konvertieren, Zuschneiden, Größe ändern. Schnell und einfach.",
+      emoji: "🖼️",
+      description: "Bilder bearbeiten: Komprimieren, Konvertieren, Zuschneiden",
       buttonText: "Alle Datei Tools anzeigen",
       path: "/file-tools/all"
     }
@@ -51,82 +54,71 @@ const Home = () => {
   const advantages = [
     {
       icon: CheckCircle,
-      title: "Kostenlos & ohne Anmeldung",
-      description: "Alle Tools sind vollständig kostenlos nutzbar"
+      title: "Kostenlos nutzbar",
+      description: "Alle Tools ohne Gebühren"
     },
     {
       icon: Shield,
-      title: "Läuft im Browser",
-      description: "Kein Upload auf Server - Ihre Daten bleiben bei Ihnen"
+      title: "Datenschutz garantiert",
+      description: "Lokale Verarbeitung im Browser"
     },
     {
       icon: Zap,
-      title: "Einfach & schnell nutzbar",
-      description: "Intuitive Bedienung, sofortige Ergebnisse"
+      title: "Sofort einsatzbereit",
+      description: "Keine Installation erforderlich"
     },
     {
       icon: Smartphone,
       title: "Mobilfreundlich",
-      description: "Funktioniert perfekt auf allen Geräten"
+      description: "Funktioniert auf allen Geräten"
     }
   ];
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 bg-gradient-to-b from-background to-muted/30">
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
+          <div className="max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Toolbox24
             </h1>
-            <p className="text-xl md:text-2xl text-primary mb-4 font-medium">
-              Kostenlose Online-Tools & Vorlagen
-            </p>
-            <p className="text-lg text-muted-foreground mb-8">
-              Einfach nutzen. Direkt im Browser. Ohne Anmeldung.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8">
+              Kostenlose Online-Tools für PDFs, Bilder und Vorlagen
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="text-lg px-8 py-6"
-                onClick={() => navigate("/file-tools/all")}
-              >
-                Alle Tools entdecken
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="text-lg px-8 py-6"
-                onClick={() => navigate("/alle-vorlagen")}
-              >
-                Beliebte Vorlagen
-              </Button>
-            </div>
+            <Button 
+              size="lg" 
+              className="text-lg px-8 py-6"
+              onClick={() => navigate("/alle-tools")}
+            >
+              Alle Tools entdecken
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Popular Tools Section */}
-      <section className="py-16 bg-background">
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Beliebte Tools</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Beliebte Tools</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {popularTools.map((tool) => (
-              <Card key={tool.title} className="text-center hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <tool.icon className="h-8 w-8 text-primary" />
+              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <tool.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="text-xl">{tool.title}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-lg">{tool.title}</CardTitle>
+                  <CardDescription className="text-sm">
                     {tool.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-0">
                   <Button 
+                    variant="outline"
+                    size="sm"
                     className="w-full"
                     onClick={() => navigate(tool.path)}
                   >
@@ -140,20 +132,20 @@ const Home = () => {
       </section>
 
       {/* Categories Overview */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Kategorien-Überblick</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Alle Services</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {categories.map((category) => (
-              <div key={category.title} className="text-center">
-                <h3 className="text-2xl font-semibold mb-4">{category.title}</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
+              <div key={category.title} className="text-center p-6 bg-card border rounded-lg hover:shadow-sm transition-shadow h-full flex flex-col">
+                <div className="text-4xl mb-4">{category.emoji}</div>
+                <h3 className="text-xl font-semibold mb-3">{category.title}</h3>
+                <p className="text-muted-foreground mb-6 flex-1">
                   {category.description}
                 </p>
                 <Button 
-                  variant="outline" 
-                  size="lg"
+                  variant="outline"
                   onClick={() => navigate(category.path)}
                 >
                   {category.buttonText}
@@ -164,57 +156,54 @@ const Home = () => {
         </div>
       </section>
 
-      {/* SEO Content Section */}
-      <section className="py-16 bg-background">
+      {/* About Toolbox24 */}
+      <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8">Warum Toolbox24?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Warum Toolbox24?</h2>
             
-            <div className="prose prose-lg max-w-none text-muted-foreground">
-              <p className="text-center mb-8 text-lg leading-relaxed">
-                Toolbox24 ist Ihre zentrale Anlaufstelle für professionelle Online-Tools und Vorlagen, 
-                die Ihren Alltag und Beruf erleichtern. Unsere Plattform bietet eine umfassende Sammlung 
-                von über 100 kostenlosen Tools für PDF-Bearbeitung, Bildkonvertierung und rechtssichere 
-                Dokumentvorlagen.
-              </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Alles an einem Ort</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Von PDF-Bearbeitung über Bildkonvertierung bis hin zu rechtssicheren Vorlagen - 
+                  Toolbox24 vereint alle wichtigen Online-Tools an einem Ort.
+                </p>
+              </div>
               
-              <p className="text-center mb-8 leading-relaxed">
-                Alle unsere Tools funktionieren vollständig in Ihrem Browser - ohne Softwareinstallation, 
-                ohne Anmeldung und ohne versteckte Kosten. Ihre Dateien werden niemals auf unsere Server 
-                hochgeladen, sondern lokal auf Ihrem Gerät verarbeitet. Das garantiert maximale Sicherheit 
-                und Datenschutz für Ihre sensiblen Dokumente.
-              </p>
-              
-              <p className="text-center mb-8 leading-relaxed">
-                Von der schnellen PDF-Bearbeitung über professionelle Bildkonvertierung bis hin zu 
-                rechtssicheren Vorlagen für Kündigungen und Bewerbungen - Toolbox24 deckt alle wichtigen 
-                Bereiche ab. Unsere intuitive Benutzeroberfläche macht auch komplexe Aufgaben kinderleicht 
-                und spart Ihnen Zeit und Geld.
-              </p>
-              
-              <p className="text-center leading-relaxed">
-                Entdecken Sie die Vielfalt unserer Tools und erleben Sie, wie einfach digitale 
-                Dokumentenbearbeitung sein kann. Ob privat oder geschäftlich - Toolbox24 ist Ihr 
-                zuverlässiger Partner für alle digitalen Herausforderungen.
+              <div>
+                <h3 className="text-xl font-semibold mb-4">Sicher und privat</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  Alle Verarbeitungen erfolgen lokal in Ihrem Browser. Ihre Dateien werden 
+                  niemals hochgeladen oder gespeichert - maximaler Datenschutz garantiert.
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xl font-semibold mb-4 text-center">Für jeden Bedarf</h3>
+              <p className="text-muted-foreground leading-relaxed text-center">
+                Ob private Kündigung, professionelle Bewerbung oder geschäftliche Präsentation - 
+                unsere Tools unterstützen Sie bei allen digitalen Aufgaben schnell und unkompliziert.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Advantages Section */}
-      <section className="py-16 bg-muted/30">
+      {/* Advantages */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Ihre Vorteile</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Ihre Vorteile</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {advantages.map((advantage) => (
               <div key={advantage.title} className="text-center">
-                <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <advantage.icon className="h-8 w-8 text-primary" />
+                <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                  <advantage.icon className="h-6 w-6 text-primary" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{advantage.title}</h3>
-                <p className="text-muted-foreground text-sm">
+                <h3 className="font-semibold mb-2">{advantage.title}</h3>
+                <p className="text-sm text-muted-foreground">
                   {advantage.description}
                 </p>
               </div>
