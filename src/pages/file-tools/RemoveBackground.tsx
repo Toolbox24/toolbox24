@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Download, ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
@@ -17,6 +19,7 @@ const RemoveBackground = () => {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
+  const [invertMask, setInvertMask] = useState(false);
   const { toast } = useToast();
 
   const handleFileSelect = (selectedFiles: File[]) => {
@@ -123,15 +126,16 @@ const RemoveBackground = () => {
       const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const data = outputImageData.data;
       
-      // Find the person/object mask (usually the first result)
-      const personMask = result.find(r => 
-        r.label && (r.label.includes('person') || r.label.includes('object'))
-      ) || result[0];
+      // Use the first segmentation result
+      const mask = result[0];
 
-      if (personMask && personMask.mask) {
-        for (let i = 0; i < personMask.mask.data.length; i++) {
-          // If mask value is low (background), make transparent
-          if (personMask.mask.data[i] < 0.5) {
+      if (mask && mask.mask) {
+        for (let i = 0; i < mask.mask.data.length; i++) {
+          const maskValue = mask.mask.data[i];
+          // Apply mask based on invert setting
+          const shouldBeTransparent = invertMask ? maskValue > 0.5 : maskValue < 0.5;
+          
+          if (shouldBeTransparent) {
             data[i * 4 + 3] = 0; // Set alpha to 0 (transparent)
           }
         }
@@ -205,15 +209,27 @@ const RemoveBackground = () => {
           />
 
           {file && (
-            <div className="text-center">
-              <Button
-                onClick={removeBackground}
-                disabled={isProcessing}
-                size="lg"
-                className="w-full max-w-md"
-              >
-                {isProcessing ? 'Verarbeitung...' : 'Hintergrund entfernen'}
-              </Button>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2 justify-center">
+                <Switch
+                  id="invert-mask"
+                  checked={invertMask}
+                  onCheckedChange={setInvertMask}
+                />
+                <Label htmlFor="invert-mask">
+                  Maske invertieren (für schwierige Hintergründe)
+                </Label>
+              </div>
+              <div className="text-center">
+                <Button
+                  onClick={removeBackground}
+                  disabled={isProcessing}
+                  size="lg"
+                  className="w-full max-w-md"
+                >
+                  {isProcessing ? 'Verarbeitung...' : 'Hintergrund entfernen'}
+                </Button>
+              </div>
             </div>
           )}
 
