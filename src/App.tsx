@@ -15,10 +15,15 @@ import AllTemplates from "./pages/AllTemplates";
 import NotFound from "./pages/NotFound";
 
 // PDF Tools
+import AllPDFTools from "./pages/pdf-tools/AllPDFTools";
 import PDFMerge from "./pages/pdf-tools/PDFMerge";
 import PDFCompress from "./pages/pdf-tools/PDFCompress";
 import PDFSplit from "./pages/pdf-tools/PDFSplit";
 import PDFToWord from "./pages/pdf-tools/PDFToWord";
+import WordToPDF from "./pages/pdf-tools/WordToPDF";
+import PDFToImages from "./pages/pdf-tools/PDFToImages";
+import ImagesToPDF from "./pages/pdf-tools/ImagesToPDF";
+import PDFDeletePages from "./pages/pdf-tools/PDFDeletePages";
 
 // File Tools
 import AllFileTools from "./pages/file-tools/AllFileTools";
@@ -63,10 +68,15 @@ const App = () => (
               <Route path="/alle-vorlagen" element={<AllTemplates />} />
               
               {/* PDF Tools */}
+              <Route path="/pdf-tools/all" element={<AllPDFTools />} />
               <Route path="/pdf-tools/merge" element={<PDFMerge />} />
               <Route path="/pdf-tools/compress" element={<PDFCompress />} />
               <Route path="/pdf-tools/split" element={<PDFSplit />} />
               <Route path="/pdf-tools/to-word" element={<PDFToWord />} />
+              <Route path="/pdf-tools/from-word" element={<WordToPDF />} />
+              <Route path="/pdf-tools/to-images" element={<PDFToImages />} />
+              <Route path="/pdf-tools/from-images" element={<ImagesToPDF />} />
+              <Route path="/pdf-tools/delete-pages" element={<PDFDeletePages />} />
               
               {/* File Tools */}
               <Route path="/file-tools/all" element={<AllFileTools />} />

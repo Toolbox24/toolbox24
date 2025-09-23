@@ -100,7 +100,16 @@ const Header = () => {
                           to="/pdf-tools/to-word"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
-                          PDF zu Word
+                          PDF in Word umwandeln
+                        </Link>
+                      </NavigationMenuLink>
+                      <div className="border-t my-2"></div>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/pdf-tools/all"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          Alle PDF-Tools
                         </Link>
                       </NavigationMenuLink>
                     </div>
