@@ -119,7 +119,7 @@ const HeicToJpg = () => {
                   onFileSelect={handleFileSelect}
                   accept={{"image/heic": [], ".heic": []}}
                   maxSize={20 * 1024 * 1024}
-                  className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8"
+                  className="p-8"
                 >
                   <div className="text-center">
                     <ImageIcon className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
