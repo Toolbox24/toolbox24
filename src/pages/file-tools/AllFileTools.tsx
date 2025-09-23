@@ -85,28 +85,34 @@ const AllFileTools = () => {
       badge: "KI-basiert"
     },
     {
-      title: "PNG ↔ JPG Umwandeln",
+      title: "PNG ↔ JPG",
       description: "Konvertieren Sie zwischen PNG und JPG Formaten mit anpassbarer Qualität",
       icon: FileImage,
-      path: "/file-tools/convert-png-jpg"
+      path: "/file-tools/convert"
     },
     {
-      title: "WEBP ↔ JPG/PNG Umwandeln",
+      title: "WEBP ↔ JPG/PNG",
       description: "Konvertieren Sie moderne WEBP Bilder zu JPG/PNG oder umgekehrt",
       icon: FileImage,
-      path: "/file-tools/convert-webp"
+      path: "/file-tools/convert"
     },
     {
-      title: "HEIC zu JPG",
-      description: "Wandeln Sie iPhone HEIC Bilder in das universelle JPG Format um",
+      title: "HEIC ↔ JPG/PNG",
+      description: "Wandeln Sie iPhone HEIC Bilder in JPG/PNG Formate um",
       icon: FileImage,
-      path: "/file-tools/heic-to-jpg"
+      path: "/file-tools/convert"
     },
     {
-      title: "GIF → MP4 Umwandeln",
+      title: "AVIF ↔ JPG/PNG",
+      description: "Konvertieren Sie moderne AVIF Bilder zu JPG/PNG oder umgekehrt",
+      icon: FileImage,
+      path: "/file-tools/convert"
+    },
+    {
+      title: "GIF → MP4",
       description: "Konvertieren Sie animierte GIFs in kleinere, effizientere MP4 Videos",
       icon: Video,
-      path: "/file-tools/gif-to-mp4"
+      path: "/file-tools/convert"
     }
   ];
 
