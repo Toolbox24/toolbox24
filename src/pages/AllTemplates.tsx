@@ -1,6 +1,5 @@
-import { templates } from "@/data/templates";
-import TemplateCard from "@/components/ui/template-card";
-import { Badge } from "@/components/ui/badge";
+import { categories } from "@/data/templates";
+import CategoryCard from "@/components/ui/category-card";
 
 const AllTemplates = () => {
   return (
@@ -9,18 +8,15 @@ const AllTemplates = () => {
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">Alle Vorlagen</h1>
-          <p className="page-description mb-6">
-            Durchstöbern Sie unser komplettes Angebot an kostenlosen Vorlagen
+          <p className="page-description">
+            Wählen Sie aus unseren Kategorien und finden Sie die passende Vorlage für Ihren Bedarf
           </p>
-          <Badge variant="secondary" className="text-sm">
-            {templates.length} Vorlagen verfügbar
-          </Badge>
         </div>
 
-        {/* Templates Grid */}
+        {/* Categories Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((template) => (
-            <TemplateCard key={template.id} template={template} />
+          {categories.map((category) => (
+            <CategoryCard key={category.id} category={category} />
           ))}
         </div>
 

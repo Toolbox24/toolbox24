@@ -47,18 +47,43 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/alle-vorlagen"
+                          to="/kategorie/kuendigung"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
-                          Alle Vorlagen
+                          Kündigungen
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/"
+                          to="/kategorie/bewerbung"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
-                          Kategorien
+                          Bewerbungen
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/kategorie/vertraege"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          Verträge & Arbeit
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/kategorie/finanzen"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          Finanzen
+                        </Link>
+                      </NavigationMenuLink>
+                      <div className="border-t my-2"></div>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/alle-vorlagen"
+                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          Alle Vorlagen
                         </Link>
                       </NavigationMenuLink>
                     </div>
