@@ -9,39 +9,39 @@ const ImageConverterHub = () => {
       title: "JPG ↔ PNG",
       description: "Konvertieren zwischen JPG und PNG Formaten",
       conversions: [
-        { label: "PNG zu JPG", path: "/bild/png-zu-jpg" },
-        { label: "JPG zu PNG", path: "/bild/jpg-zu-png" }
+        { label: "PNG zu JPG", path: "/bild/png-zu-jpg", key: "png-to-jpg" },
+        { label: "JPG zu PNG", path: "/bild/jpg-zu-png", key: "jpg-to-png" }
       ]
     },
     {
       title: "WEBP ↔ JPG/PNG", 
       description: "Moderne WEBP Bilder konvertieren",
       conversions: [
-        { label: "WEBP zu JPG", path: "/bild/webp-zu-jpg" },
-        { label: "WEBP zu PNG", path: "/bild/webp-zu-png" }
+        { label: "WEBP zu JPG", path: "/bild/webp-zu-jpg", key: "webp-to-jpg" },
+        { label: "WEBP zu PNG", path: "/bild/webp-zu-png", key: "webp-to-png" }
       ]
     },
     {
       title: "HEIC ↔ JPG/PNG",
       description: "iPhone HEIC Fotos konvertieren", 
       conversions: [
-        { label: "HEIC zu JPG", path: "/bild/heic-zu-jpg" },
-        { label: "HEIC zu PNG", path: "/bild/heic-zu-jpg" } // Note: currently only JPG available
+        { label: "HEIC zu JPG", path: "/bild/heic-zu-jpg", key: "heic-to-jpg" },
+        { label: "HEIC zu PNG", path: "/bild/heic-zu-jpg", key: "heic-to-png" } // Note: currently only JPG available
       ]
     },
     {
       title: "AVIF ↔ JPG/PNG",
       description: "Moderne AVIF Bilder konvertieren",
       conversions: [
-        { label: "AVIF zu JPG", path: "/bild/avif-zu-jpg" },
-        { label: "AVIF zu PNG", path: "/bild/avif-zu-jpg" } // Note: currently only JPG available
+        { label: "AVIF zu JPG", path: "/bild/avif-zu-jpg", key: "avif-to-jpg" },
+        { label: "AVIF zu PNG", path: "/bild/avif-zu-jpg", key: "avif-to-png" } // Note: currently only JPG available
       ]
     },
     {
       title: "GIF → MP4",
       description: "Animierte GIFs zu Videos konvertieren",
       conversions: [
-        { label: "GIF zu MP4", path: "/gif-zu-mp4" }
+        { label: "GIF zu MP4", path: "/gif-zu-mp4", key: "gif-to-mp4" }
       ]
     }
   ];
@@ -72,7 +72,7 @@ const ImageConverterHub = () => {
               <CardContent>
                 <div className="flex flex-wrap gap-3">
                   {converter.conversions.map((conversion) => (
-                    <Button key={conversion.path} asChild variant="outline" className="h-auto p-4">
+                    <Button key={conversion.key} asChild variant="outline" className="h-auto p-4">
                       <Link to={conversion.path} className="flex items-center gap-2">
                         <span>{conversion.label}</span>
                         <ArrowRight className="h-4 w-4" />
