@@ -97,7 +97,7 @@ const GifToMp4 = () => {
                   Unterstützte Formate: GIF (max. 50MB)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-orange-600" />
                   <div className="text-sm text-orange-800">

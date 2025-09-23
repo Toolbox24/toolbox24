@@ -129,7 +129,7 @@ const PngToJpg = () => {
                   Unterstützte Formate: PNG (max. 20MB)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <FileUpload
                   onFileSelect={handleFileSelect}
                   accept={{"image/png": []}}

@@ -135,7 +135,7 @@ const AvifToJpg = () => {
                   Unterstützte Formate: AVIF (max. 20MB)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-yellow-600" />
                   <div className="text-sm text-yellow-800">

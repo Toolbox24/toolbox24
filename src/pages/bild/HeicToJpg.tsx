@@ -106,7 +106,7 @@ const HeicToJpg = () => {
                   Unterstützte Formate: HEIC (iPhone-Fotos, max. 20MB)
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-blue-600" />
                   <div className="text-sm text-blue-800">
