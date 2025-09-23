@@ -95,12 +95,12 @@ const HEICToJPG = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
             <ImageIcon className="h-8 w-8 text-primary" />
             HEIC zu JPG konvertieren
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="page-description">
             Konvertieren Sie Apple HEIC/HEIF Bilder zu universell kompatiblen JPG-Dateien
           </p>
         </div>

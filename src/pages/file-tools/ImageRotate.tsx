@@ -167,12 +167,12 @@ const ImageRotate = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-            <RotateCwSquare className="h-10 w-10 text-primary" />
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
+            <RotateCwSquare className="h-8 w-8 text-primary" />
             Bild drehen & spiegeln
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="page-description">
             Drehen Sie Bilder um 90°, 180°, 270° oder spiegeln Sie sie horizontal/vertikal
           </p>
         </div>

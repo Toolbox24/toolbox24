@@ -7,9 +7,9 @@ const AllTemplates = () => {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold mb-4">Alle Vorlagen</h1>
-          <p className="text-xl text-muted-foreground mb-6">
+        <div className="page-header">
+          <h1 className="page-title">Alle Vorlagen</h1>
+          <p className="page-description mb-6">
             Durchstöbern Sie unser komplettes Angebot an kostenlosen Vorlagen
           </p>
           <Badge variant="secondary" className="text-sm">

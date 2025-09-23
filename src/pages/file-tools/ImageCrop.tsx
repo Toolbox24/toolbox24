@@ -217,12 +217,12 @@ const ImageCrop = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-            <Crop className="h-10 w-10 text-primary" />
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
+            <Crop className="h-8 w-8 text-primary" />
             Bild zuschneiden
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="page-description">
             Wählen Sie einen Bereich durch Ziehen aus und schneiden Sie Ihr Bild zurecht
           </p>
         </div>

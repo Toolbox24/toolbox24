@@ -155,11 +155,11 @@ const AllFileTools = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
+        <div className="page-header">
+          <h1 className="page-title">
             Alle Datei-Tools
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="page-description">
             Professionelle Bildbearbeitung direkt im Browser. Alle Tools funktionieren client-side 
             ohne Upload auf externe Server - Ihre Daten bleiben sicher bei Ihnen.
           </p>

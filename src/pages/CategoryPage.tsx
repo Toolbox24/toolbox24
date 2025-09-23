@@ -24,12 +24,12 @@ const CategoryPage = () => {
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4">
         {/* Category Header */}
-        <div className="mb-12 text-center">
+        <div className="page-header">
           <div className="bg-primary/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
             <IconComponent className="h-10 w-10 text-primary" />
           </div>
-          <h1 className="text-4xl font-bold mb-4">{category.name}</h1>
-          <p className="text-xl text-muted-foreground mb-6">{category.description}</p>
+          <h1 className="page-title">{category.name}</h1>
+          <p className="page-description mb-6">{category.description}</p>
           <Badge variant="secondary" className="text-sm">
             {templates.length} Vorlagen verfügbar
           </Badge>
