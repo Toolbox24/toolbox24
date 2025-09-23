@@ -18,6 +18,17 @@ const ImageRotate = () => {
   const [appliedTransform, setAppliedTransform] = useState<string>("");
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setAppliedTransform("");
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file) {
       setSelectedFile(file);
@@ -25,6 +36,8 @@ const ImageRotate = () => {
       setPreviewUrl(url);
       setDownloadUrl("");
       setAppliedTransform("");
+      setProgress(0);
+      setIsProcessing(false);
     }
   };
 

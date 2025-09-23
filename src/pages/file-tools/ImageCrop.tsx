@@ -27,12 +27,26 @@ const ImageCrop = () => {
   const imageRef = useRef<HTMLImageElement>(null);
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setCropArea(null);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file) {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      setDownloadUrl("");
       setCropArea(null);
+      setProgress(0);
+      setIsProcessing(false);
       setDownloadUrl("");
     }
   };

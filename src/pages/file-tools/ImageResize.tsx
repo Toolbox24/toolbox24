@@ -22,11 +22,27 @@ const ImageResize = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setOriginalDimensions(null);
+      setNewWidth(0);
+      setNewHeight(0);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file) {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+      setDownloadUrl("");
+      setProgress(0);
+      setIsProcessing(false);
       
       // Get original dimensions
       const img = new Image();

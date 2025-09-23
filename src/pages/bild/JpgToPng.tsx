@@ -15,12 +15,24 @@ const JpgToPng = () => {
   const [previewUrl, setPreviewUrl] = useState<string>("");
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file && (file.type === 'image/jpeg' || file.type === 'image/jpg')) {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
       setDownloadUrl("");
+      setProgress(0);
+      setIsProcessing(false);
     } else {
       toast.error("Bitte wählen Sie eine JPG-Datei aus");
     }

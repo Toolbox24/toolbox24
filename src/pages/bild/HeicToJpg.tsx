@@ -20,11 +20,23 @@ const HeicToJpg = () => {
   const [quality, setQuality] = useState(90);
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file && (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic'))) {
       setSelectedFile(file);
       setDownloadUrl("");
       setPreviewUrl(""); // HEIC preview not supported
+      setProgress(0);
+      setIsProcessing(false);
     } else {
       toast.error("Bitte wählen Sie eine HEIC-Datei aus");
     }

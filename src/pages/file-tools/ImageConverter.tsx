@@ -23,6 +23,18 @@ const ImageConverter = () => {
   const [convertedSize, setConvertedSize] = useState<number>(0);
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setSelectedFile(null);
+      setPreviewUrl("");
+      setDownloadUrl("");
+      setOriginalSize(0);
+      setConvertedSize(0);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     const file = selectedFiles[0];
     if (file) {
       setSelectedFile(file);
@@ -31,6 +43,8 @@ const ImageConverter = () => {
       setPreviewUrl(url);
       setDownloadUrl("");
       setConvertedSize(0);
+      setProgress(0);
+      setIsProcessing(false);
       
       // Auto-detect conversion type based on file
       if (file.type === 'image/png') {
