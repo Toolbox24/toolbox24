@@ -30,6 +30,16 @@ import ImageConverter from "./pages/file-tools/ImageConverter";
 import WebPConverter from "./pages/file-tools/WebPConverter";
 import HEICToJPG from "./pages/file-tools/HEICToJPG";
 import GifToMp4 from "./pages/file-tools/GifToMp4";
+import ImageConverterHub from "./pages/file-tools/ImageConverterHub";
+
+// Individual converter landing pages
+import PngToJpg from "./pages/bild/PngToJpg";
+import JpgToPng from "./pages/bild/JpgToPng";
+import WebpToJpg from "./pages/bild/WebpToJpg";
+import WebpToPng from "./pages/bild/WebpToPng";
+import HeicToJpg from "./pages/bild/HeicToJpg";
+import AvifToJpg from "./pages/bild/AvifToJpg";
+import GifToMp4Landing from "./pages/GifToMp4";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +77,16 @@ const App = () => (
               <Route path="/file-tools/convert-webp" element={<WebPConverter />} />
               <Route path="/file-tools/heic-to-jpg" element={<HEICToJPG />} />
               <Route path="/file-tools/gif-to-mp4" element={<GifToMp4 />} />
+              <Route path="/file-tools/convert" element={<ImageConverterHub />} />
+              
+              {/* Individual converter landing pages */}
+              <Route path="/bild/png-zu-jpg" element={<PngToJpg />} />
+              <Route path="/bild/jpg-zu-png" element={<JpgToPng />} />
+              <Route path="/bild/webp-zu-jpg" element={<WebpToJpg />} />
+              <Route path="/bild/webp-zu-png" element={<WebpToPng />} />
+              <Route path="/bild/heic-zu-jpg" element={<HeicToJpg />} />
+              <Route path="/bild/avif-zu-jpg" element={<AvifToJpg />} />
+              <Route path="/gif-zu-mp4" element={<GifToMp4Landing />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
