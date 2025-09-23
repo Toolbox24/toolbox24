@@ -116,25 +116,9 @@ const PngToJpg = () => {
               <FileImage className="h-10 w-10 text-primary" />
               PNG zu JPG Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie PNG-Dateien kostenlos und sicher in JPG-Format um. Komplett im Browser - ohne Upload auf Server.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie PNG-Dateien kostenlos in JPG-Format um. Kleinere Dateien für bessere Performance.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem PNG zu JPG Konverter können Sie PNG-Bilder schnell und einfach in das JPG-Format umwandeln. 
-                JPG-Dateien sind deutlich kleiner als PNG-Dateien und eignen sich perfekt für Fotos und Bilder ohne Transparenz. 
-                Die Konvertierung erfolgt vollständig in Ihrem Browser - Ihre Bilder verlassen niemals Ihren Computer.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>PNG-Datei auswählen oder per Drag & Drop hochladen</li>
-                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte JPG-Datei herunterladen</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -251,45 +235,65 @@ const PngToJpg = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Warum PNG zu JPG konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  JPG-Dateien sind deutlich kleiner als PNG-Dateien und eignen sich besonders für Fotos und Bilder 
-                  ohne Transparenz. Sie laden schneller auf Webseiten und benötigen weniger Speicherplatz.
-                </p>
-              </CardContent>
-            </Card>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über PNG zu JPG Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem PNG zu JPG Konverter können Sie PNG-Bilder schnell und einfach in das JPG-Format umwandeln. 
+                JPG-Dateien sind deutlich kleiner als PNG-Dateien und eignen sich perfekt für Fotos und Bilder ohne Transparenz. 
+                Die Konvertierung erfolgt vollständig in Ihrem Browser - Ihre Bilder verlassen niemals Ihren Computer.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>PNG-Datei auswählen oder per Drag & Drop hochladen</li>
+                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte JPG-Datei herunterladen</li>
+              </ol>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Sind meine Daten sicher?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, absolut! Die Konvertierung erfolgt vollständig in Ihrem Browser. Ihre Bilder werden niemals 
-                  auf unsere Server hochgeladen oder gespeichert.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Warum PNG zu JPG konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    JPG-Dateien sind deutlich kleiner als PNG-Dateien und eignen sich besonders für Fotos und Bilder 
+                    ohne Transparenz. Sie laden schneller auf Webseiten und benötigen weniger Speicherplatz.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Welche Qualitätseinstellung sollte ich wählen?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Für Fotos empfehlen wir 80-90% Qualität. Für Grafiken oder wenn Dateigröße wichtiger ist, 
-                  können Sie auch 60-70% wählen. Bei 100% ist die Datei größer, aber die Qualität maximal.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Sind meine Daten sicher?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, absolut! Die Konvertierung erfolgt vollständig in Ihrem Browser. Ihre Bilder werden niemals 
+                    auf unsere Server hochgeladen oder gespeichert.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Welche Qualitätseinstellung sollte ich wählen?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Für Fotos empfehlen wir 80-90% Qualität. Für Grafiken oder wenn Dateigröße wichtiger ist, 
+                    können Sie auch 60-70% wählen. Bei 100% ist die Datei größer, aber die Qualität maximal.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

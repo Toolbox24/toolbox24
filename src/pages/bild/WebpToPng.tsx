@@ -109,25 +109,9 @@ const WebpToPng = () => {
               <FileImage className="h-10 w-10 text-primary" />
               WEBP zu PNG Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie WEBP-Dateien kostenlos und sicher in PNG-Format um. Verlustfreie Qualität mit Transparenz-Unterstützung.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie WEBP-Dateien kostenlos in PNG-Format um. Verlustfreie Qualität mit Transparenz-Unterstützung.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem WEBP zu PNG Konverter können Sie moderne WEBP-Bilder in das weit unterstützte PNG-Format umwandeln. 
-                PNG bietet verlustfreie Komprimierung und unterstützt Transparenz, wodurch es sich ideal für Logos, Grafiken 
-                und Bilder mit transparenten Hintergründen eignet.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>WEBP-Datei auswählen oder per Drag & Drop hochladen</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte PNG-Datei herunterladen</li>
-                <li>Profitieren Sie von verlustfreier Qualität und Transparenz</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -228,45 +212,65 @@ const WebpToPng = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über WEBP zu PNG Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem WEBP zu PNG Konverter können Sie moderne WEBP-Bilder in das weit unterstützte PNG-Format umwandeln. 
+                PNG bietet verlustfreie Komprimierung und unterstützt Transparenz, wodurch es sich ideal für Logos, Grafiken 
+                und Bilder mit transparenten Hintergründen eignet.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>WEBP-Datei auswählen oder per Drag & Drop hochladen</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte PNG-Datei herunterladen</li>
+                <li>Profitieren Sie von verlustfreier Qualität und Transparenz</li>
+              </ol>
+            </div>
             
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Warum WEBP zu PNG konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  PNG bietet verlustfreie Komprimierung und wird universell unterstützt. Es eignet sich besonders für 
-                  Grafiken, Logos und Bilder mit Transparenz, bei denen Qualität wichtiger ist als Dateigröße.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Warum WEBP zu PNG konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    PNG bietet verlustfreie Komprimierung und wird universell unterstützt. Es eignet sich besonders für 
+                    Grafiken, Logos und Bilder mit Transparenz, bei denen Qualität wichtiger ist als Dateigröße.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Bleibt die Transparenz erhalten?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, sowohl WEBP als auch PNG unterstützen Transparenz. Bei der Konvertierung bleibt die Transparenz 
-                  vollständig erhalten, wodurch PNG ideal für Logos und Grafiken mit transparenten Bereichen ist.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Bleibt die Transparenz erhalten?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, sowohl WEBP als auch PNG unterstützen Transparenz. Bei der Konvertierung bleibt die Transparenz 
+                    vollständig erhalten, wodurch PNG ideal für Logos und Grafiken mit transparenten Bereichen ist.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Sind PNG-Dateien größer als WEBP?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, PNG-Dateien sind normalerweise größer als WEBP-Dateien, da PNG verlustfreie Komprimierung verwendet. 
-                  Der Vorteil liegt in der universellen Unterstützung und der garantiert hohen Qualität.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Sind PNG-Dateien größer als WEBP?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, PNG-Dateien sind normalerweise größer als WEBP-Dateien, da PNG verlustfreie Komprimierung verwendet. 
+                    Der Vorteil liegt in der universellen Unterstützung und der garantiert hohen Qualität.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
