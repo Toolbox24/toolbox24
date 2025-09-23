@@ -20,12 +20,26 @@ const ImageCompress = () => {
   const { toast } = useToast();
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setFile(null);
+      setPreviewUrl(null);
+      setDownloadUrl(null);
+      setOriginalSize(0);
+      setCompressedSize(0);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     if (selectedFiles.length > 0) {
       const selectedFile = selectedFiles[0];
       setFile(selectedFile);
       setOriginalSize(selectedFile.size);
       setDownloadUrl(null);
       setCompressedSize(0);
+      setProgress(0);
+      setIsProcessing(false);
       
       // Create preview
       const url = URL.createObjectURL(selectedFile);

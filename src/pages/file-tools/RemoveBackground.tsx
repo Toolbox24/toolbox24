@@ -29,11 +29,26 @@ const RemoveBackground = () => {
   const { toast } = useToast();
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setFile(null);
+      setPreviewUrl(null);
+      setResultPreviewUrl(null);
+      setDownloadUrl(null);
+      setProgress(0);
+      setIsProcessing(false);
+      setShowComparison(false);
+      return;
+    }
+    
     if (selectedFiles.length > 0) {
       const selectedFile = selectedFiles[0];
       setFile(selectedFile);
       setDownloadUrl(null);
       setResultPreviewUrl(null);
+      setProgress(0);
+      setIsProcessing(false);
+      setShowComparison(false);
       
       // Create preview
       const url = URL.createObjectURL(selectedFile);
