@@ -25,31 +25,31 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary via-primary-hover to-primary py-20 text-primary-foreground">
+      <section className="bg-gradient-to-r from-primary/5 to-primary/10 py-12 border-b border-primary/10">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 leading-tight text-foreground">
             Kostenlose Vorlagen – Word & PDF Muster für Kündigung, Bewerbung, Verträge & mehr
           </h1>
-          <p className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 max-w-4xl mx-auto">
+          <p className="text-base md:text-lg mb-6 text-muted-foreground max-w-3xl mx-auto">
             Über 100 Vorlagen sofort zum Download – ohne Anmeldung, rechtlich geprüft, direkt als Word & PDF.
           </p>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
+          <form onSubmit={handleSearch} className="max-w-xl mx-auto">
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="text"
                 placeholder="Nach Vorlagen suchen (z.B. Kündigung, Bewerbung)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-32 py-6 text-lg bg-white text-foreground border-0 shadow-lg"
+                className="pl-10 pr-24 py-3 text-base bg-white text-foreground border border-border shadow-sm"
               />
               <Button 
                 type="submit" 
-                size="lg" 
+                size="sm" 
                 variant="default"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-accent hover:bg-accent-hover"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary-hover"
               >
                 Suchen
               </Button>
@@ -59,7 +59,7 @@ const Home = () => {
       </section>
 
       {/* SEO Intro Text */}
-      <section className="py-12 bg-background">
+      <section className="py-8 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-lg text-muted-foreground leading-relaxed">
