@@ -25,19 +25,19 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary/5 to-primary/10 py-8 border-b border-primary/10">
+      <section className="bg-gradient-to-r from-primary/5 to-primary/10 py-12 border-b border-primary/10">
         <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-medium mb-3 leading-tight text-foreground">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-4 leading-tight text-foreground">
               Kostenlose Vorlagen – Word & PDF Muster für Kündigung, Bewerbung, Verträge & mehr
             </h1>
-            <p className="text-sm md:text-base mb-6 text-muted-foreground">
+            <p className="text-base md:text-lg mb-8 text-muted-foreground">
               Über 100 Vorlagen sofort zum Download – ohne Anmeldung, rechtlich geprüft, direkt als Word & PDF.
             </p>
           </div>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-lg mx-auto">
+          <form onSubmit={handleSearch} className="max-w-xl mx-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
@@ -45,13 +45,13 @@ const Home = () => {
                 placeholder="Nach Vorlagen suchen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-20 py-2.5 text-sm bg-white text-foreground border border-border shadow-sm"
+                className="pl-10 pr-24 py-3 text-base bg-white text-foreground border border-border shadow-sm"
               />
               <Button 
                 type="submit" 
-                size="sm" 
+                size="default" 
                 variant="default"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary-hover text-xs px-3"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary hover:bg-primary-hover"
               >
                 Suchen
               </Button>
@@ -61,20 +61,20 @@ const Home = () => {
       </section>
 
       {/* SEO Intro Text */}
-      <section className="py-6 bg-background">
+      <section className="py-10 bg-background">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center space-y-4">
-            <p className="text-sm text-muted-foreground leading-relaxed">
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <p className="text-base text-muted-foreground leading-relaxed">
               Willkommen bei VorlagenHub – Ihrer kostenlosen Quelle für professionelle <strong>Vorlagen und Muster</strong>. 
               Ob Sie eine <strong>Kündigung</strong> für Fitnessstudio oder Mietvertrag schreiben, eine perfekte <strong>Bewerbung</strong> 
               erstellen oder wichtige <strong>Verträge</strong> aufsetzen möchten – bei uns finden Sie rechtlich geprüfte Vorlagen für jeden Anlass.
             </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed">
               Alle <strong>Muster</strong> stehen als Word- und PDF-Download zur Verfügung und können sofort ohne Anmeldung heruntergeladen werden. 
               Von <strong>Mahnung</strong> und Widerruf bis hin zu Arbeitsverträgen und Vollmachten – unser umfangreiches Archiv bietet über 100 
               <strong>kostenlose Vorlagen</strong> für Privat- und Geschäftskunden.
             </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-base text-muted-foreground leading-relaxed">
               Sparen Sie Zeit und Geld mit unseren professionell erstellten Dokumentvorlagen.
             </p>
           </div>
@@ -82,9 +82,9 @@ const Home = () => {
       </section>
 
       {/* Categories Section */}
-      <section className="py-16 bg-background">
+      <section className="py-12 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">
             Beliebte Kategorien
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -105,9 +105,9 @@ const Home = () => {
       </section>
 
       {/* Featured Templates Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">
             Beliebteste Vorlagen
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -115,7 +115,7 @@ const Home = () => {
               <TemplateCard key={template.id} template={template} />
             ))}
           </div>
-          <div className="text-center mt-8">
+          <div className="text-center mt-10">
             <Button 
               variant="outline" 
               size="lg"
@@ -128,9 +128,9 @@ const Home = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-16 bg-muted/30">
+      <section className="py-12 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">
+          <h2 className="text-2xl md:text-3xl font-semibold text-center mb-10">
             Häufig gestellte Fragen
           </h2>
           <div className="max-w-3xl mx-auto space-y-8">
