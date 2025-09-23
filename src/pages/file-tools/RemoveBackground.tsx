@@ -60,7 +60,7 @@ const RemoveBackground = () => {
     try {
       toast({
         title: "Lädt KI-Modell",
-        description: "Das Hintergrund-Entfernungsmodell wird geladen..."
+        description: "Das spezialisierte Hintergrund-Entfernungsmodell wird geladen..."
       });
 
       setProgress(30);
@@ -69,12 +69,22 @@ const RemoveBackground = () => {
       const imageElement = await loadImage(file);
       setProgress(50);
 
-      // Create segmentation pipeline
-      const segmenter = await pipeline(
-        'image-segmentation', 
-        'Xenova/segformer-b0-finetuned-ade-512-512',
-        { device: 'webgpu' }
-      );
+      // Try specialized background removal model first, fallback to segmentation
+      let backgroundRemover;
+      try {
+        backgroundRemover = await pipeline(
+          'image-segmentation', 
+          'Xenova/rembg-new',
+          { device: 'webgpu' }
+        );
+      } catch (error) {
+        console.log('Specialized model not available, using fallback...');
+        backgroundRemover = await pipeline(
+          'image-segmentation', 
+          'Xenova/detr-resnet-50-panoptic',
+          { device: 'webgpu' }
+        );
+      }
       setProgress(70);
 
       // Convert image to canvas for processing
@@ -82,10 +92,11 @@ const RemoveBackground = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Could not get canvas context');
 
-      // Resize if needed (max 1024px)
+      // Use original image dimensions for better quality
       const maxSize = 1024;
       let { width, height } = imageElement;
       
+      // Only resize if image is too large
       if (width > maxSize || height > maxSize) {
         if (width > height) {
           height = Math.round((height * maxSize) / width);
@@ -100,14 +111,13 @@ const RemoveBackground = () => {
       canvas.height = height;
       ctx.drawImage(imageElement, 0, 0, width, height);
 
-      const imageData = canvas.toDataURL('image/jpeg', 0.8);
       setProgress(80);
 
-      // Process with segmentation model
-      const result = await segmenter(imageData);
+      // Process with background removal model
+      const result = await backgroundRemover(canvas);
       
       if (!result || !Array.isArray(result) || result.length === 0) {
-        throw new Error('Invalid segmentation result');
+        throw new Error('Background removal failed');
       }
 
       setProgress(90);
@@ -122,22 +132,32 @@ const RemoveBackground = () => {
       // Draw original image
       outputCtx.drawImage(canvas, 0, 0);
       
-      // Apply mask to remove background
+      // Apply mask to remove background with better edge handling
       const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const data = outputImageData.data;
       
-      // Use the first segmentation result
+      // Get the mask from the result
       const mask = result[0];
 
       if (mask && mask.mask) {
-        for (let i = 0; i < mask.mask.data.length; i++) {
-          const maskValue = mask.mask.data[i];
-          // Apply mask based on invert setting
-          const shouldBeTransparent = invertMask ? maskValue > 0.5 : maskValue < 0.5;
+        const maskData = mask.mask.data;
+        
+        // Apply smooth alpha blending for better edges
+        for (let i = 0; i < maskData.length; i++) {
+          const maskValue = maskData[i];
           
-          if (shouldBeTransparent) {
-            data[i * 4 + 3] = 0; // Set alpha to 0 (transparent)
+          // Determine alpha based on mask and invert setting
+          let alpha;
+          if (invertMask) {
+            // Inverted: keep background, remove foreground
+            alpha = Math.round((1 - maskValue) * 255);
+          } else {
+            // Normal: keep foreground, remove background
+            alpha = Math.round(maskValue * 255);
           }
+          
+          // Apply smooth alpha for better edge quality
+          data[i * 4 + 3] = alpha;
         }
       }
 
@@ -258,18 +278,29 @@ const RemoveBackground = () => {
               {resultPreviewUrl && (
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">Ohne Hintergrund</h3>
-                  <div className="relative">
-                    <img 
-                      src={resultPreviewUrl} 
-                      alt="Ohne Hintergrund" 
-                      className="w-full h-64 object-cover rounded border"
+                  <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 p-4 rounded border">
+                    <div 
+                      className="relative w-full h-64 rounded overflow-hidden"
                       style={{
-                        backgroundColor: 'transparent',
-                        backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)',
-                        backgroundSize: '20px 20px',
-                        backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                        backgroundImage: `
+                          linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
+                          linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
+                          linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
+                          linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
+                        `,
+                        backgroundSize: '16px 16px',
+                        backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
                       }}
-                    />
+                    >
+                      <img 
+                        src={resultPreviewUrl} 
+                        alt="Ohne Hintergrund" 
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      Transparente Bereiche werden durch das Schachbrettmuster dargestellt
+                    </p>
                   </div>
                 </div>
               )}
