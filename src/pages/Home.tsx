@@ -27,15 +27,15 @@ const Home = () => {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary via-primary-hover to-primary py-20 text-primary-foreground">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-            100+ kostenlose Vorlagen
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+            Kostenlose Vorlagen – Word & PDF Muster für Kündigung, Bewerbung, Verträge & mehr
           </h1>
-          <p className="text-xl md:text-2xl mb-8 opacity-90">
-            Word & PDF Downloads ohne Anmeldung
+          <p className="text-lg md:text-xl lg:text-2xl mb-8 opacity-90 max-w-4xl mx-auto">
+            Über 100 Vorlagen sofort zum Download – ohne Anmeldung, rechtlich geprüft, direkt als Word & PDF.
           </p>
           
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="max-w-2xl mx-auto mb-8">
+          <form onSubmit={handleSearch} className="max-w-2xl mx-auto">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
               <Input
@@ -55,10 +55,23 @@ const Home = () => {
               </Button>
             </div>
           </form>
+        </div>
+      </section>
 
-          <p className="text-lg opacity-80">
-            Rechtlich geprüfte Muster für Kündigungen, Bewerbungen, Verträge und mehr
-          </p>
+      {/* SEO Intro Text */}
+      <section className="py-12 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Willkommen bei VorlagenHub – Ihrer kostenlosen Quelle für professionelle <strong>Vorlagen und Muster</strong>. 
+              Ob Sie eine <strong>Kündigung</strong> für Fitnessstudio oder Mietvertrag schreiben, eine perfekte <strong>Bewerbung</strong> 
+              erstellen oder wichtige <strong>Verträge</strong> aufsetzen möchten – bei uns finden Sie rechtlich geprüfte Vorlagen 
+              für jeden Anlass. Alle <strong>Muster</strong> stehen als Word- und PDF-Download zur Verfügung und können sofort 
+              ohne Anmeldung heruntergeladen werden. Von <strong>Mahnung</strong> und Widerruf bis hin zu Arbeitsverträgen 
+              und Vollmachten – unser umfangreiches Archiv bietet über 100 <strong>kostenlose Vorlagen</strong> für Privat- 
+              und Geschäftskunden. Sparen Sie Zeit und Geld mit unseren professionell erstellten Dokumentvorlagen.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -108,38 +121,39 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Info Section */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-8">
-            Warum VorlagenHub?
+      {/* FAQ Section */}
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">
+            Häufig gestellte Fragen
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="p-6">
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icons.Download className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Sofort verfügbar</h3>
+          <div className="max-w-3xl mx-auto space-y-8">
+            <div className="bg-card p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3 text-primary">Sind die Vorlagen kostenlos?</h3>
               <p className="text-muted-foreground">
-                Keine Anmeldung erforderlich. Einfach herunterladen und verwenden.
+                Ja, alle unsere Vorlagen sind komplett kostenlos und ohne Anmeldung verfügbar. 
+                Sie können sie sofort herunterladen und verwenden.
               </p>
             </div>
-            <div className="p-6">
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icons.Shield className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Rechtlich geprüft</h3>
+            <div className="bg-card p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3 text-primary">Kann ich die Word-Dateien bearbeiten?</h3>
               <p className="text-muted-foreground">
-                Alle Vorlagen wurden von Experten erstellt und regelmäßig aktualisiert.
+                Selbstverständlich! Alle Word-Vorlagen können Sie nach dem Download beliebig anpassen, 
+                bearbeiten und an Ihre Bedürfnisse anpassen.
               </p>
             </div>
-            <div className="p-6">
-              <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icons.FileText className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Word & PDF</h3>
+            <div className="bg-card p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3 text-primary">Sind die Vorlagen rechtlich gültig?</h3>
               <p className="text-muted-foreground">
-                Alle Vorlagen in beiden Formaten - einfach zu bearbeiten und zu verwenden.
+                Unsere Vorlagen wurden von Experten erstellt und regelmäßig aktualisiert. Sie ersetzen jedoch 
+                keine individuelle Rechtsberatung. Bei komplexeren Fällen empfehlen wir die Konsultation eines Anwalts.
+              </p>
+            </div>
+            <div className="bg-card p-6 rounded-lg shadow-sm">
+              <h3 className="text-xl font-semibold mb-3 text-primary">Welche Formate gibt es?</h3>
+              <p className="text-muted-foreground">
+                Alle Vorlagen stehen sowohl als Word-Dokument (.docx) als auch als PDF zur Verfügung. 
+                So können Sie je nach Bedarf das passende Format wählen.
               </p>
             </div>
           </div>

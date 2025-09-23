@@ -20,49 +20,49 @@ export const categories: Category[] = [
   {
     id: "kuendigung",
     name: "Kündigungen",
-    description: "Vorlagen für alle Arten von Kündigungen",
+    description: "Vorlagen für alle Arten von Kündigungen – Fitnessstudio, Mietvertrag, Handyvertrag & mehr.",
     icon: "FileX",
     slug: "kuendigung"
   },
   {
     id: "bewerbung",
     name: "Bewerbungen",
-    description: "Bewerbungsschreiben und Lebensläufe",
+    description: "Muster für Bewerbungsschreiben, Lebenslauf und Deckblatt.",
     icon: "FileText",
     slug: "bewerbung"
   },
   {
     id: "vertraege",
     name: "Verträge & Arbeit",
-    description: "Arbeitsverträge und Arbeitszeugnisse",
+    description: "Arbeitsverträge, Arbeitszeugnisse, Urlaubsanträge & mehr.",
     icon: "FileSignature",
     slug: "vertraege"
   },
   {
-    id: "alltag",
-    name: "Alltag & Privates",
-    description: "Vorlagen für den täglichen Gebrauch",
-    icon: "Home",
-    slug: "alltag"
-  },
-  {
     id: "finanzen",
     name: "Finanzen",
-    description: "Mahnungen und Finanzvorlagen",
+    description: "Mahnungen, Ratenzahlungen, SEPA-Widerruf & Finanzdokumente.",
     icon: "Euro",
     slug: "finanzen"
   },
   {
+    id: "alltag",
+    name: "Alltag & Privates",
+    description: "Vollmachten, Patientenverfügung, Widerruf Onlinekauf.",
+    icon: "Home",
+    slug: "alltag"
+  },
+  {
     id: "schule",
     name: "Schule & Uni",
-    description: "Vorlagen für Bildungseinrichtungen",
+    description: "Exmatrikulation, Abgabefrist verlängern, Praktikumsbestätigung.",
     icon: "GraduationCap",
     slug: "schule"
   },
   {
     id: "business",
     name: "Business",
-    description: "Geschäftliche Vorlagen und Verträge",
+    description: "Angebote, Auftragsbestätigungen, NDA, Rechnungsvorlagen.",
     icon: "Briefcase",
     slug: "business"
   }
