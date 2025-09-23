@@ -137,22 +137,23 @@ const Header = () => {
                           Bildgröße ändern (Resize)
                         </Link>
                       </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/file-tools/heic-to-jpg"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          HEIC zu JPG
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/file-tools/all"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors border-t mt-2 pt-2"
-                        >
-                          Alle Datei-Tools
-                        </Link>
-                      </NavigationMenuLink>
+                       <NavigationMenuLink asChild>
+                         <Link
+                           to="/file-tools/convert"
+                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                         >
+                           Bild konvertieren
+                         </Link>
+                       </NavigationMenuLink>
+                       <div className="border-t my-2"></div>
+                       <NavigationMenuLink asChild>
+                         <Link
+                           to="/file-tools/all"
+                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                         >
+                           Alle Datei-Tools
+                         </Link>
+                       </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
