@@ -84,25 +84,9 @@ const GifToMp4 = () => {
               <FileImage className="h-10 w-10 text-primary" />
               GIF zu MP4 Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie GIF-Animationen kostenlos und sicher in MP4-Videos um. Kleinere Dateien, bessere Qualität.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie GIF-Animationen kostenlos in MP4-Videos um. Kleinere Dateien, bessere Qualität.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem GIF zu MP4 Konverter können Sie animierte GIF-Dateien in das moderne MP4-Videoformat umwandeln. 
-                MP4-Videos sind deutlich kleiner als GIF-Dateien bei besserer Qualität und werden von allen modernen 
-                Geräten und Plattformen unterstützt, einschließlich Social Media.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>GIF-Animation auswählen oder per Drag & Drop hochladen</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte MP4-Datei herunterladen</li>
-                <li>Profitieren Sie von kleinerer Dateigröße und besserer Qualität</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -211,45 +195,65 @@ const GifToMp4 = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Warum GIF zu MP4 konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  MP4-Videos sind deutlich kleiner als GIF-Dateien (oft 80% kleiner) bei besserer Qualität. 
-                  Sie laden schneller, verbrauchen weniger Bandbreite und werden von allen Social Media Plattformen unterstützt.
-                </p>
-              </CardContent>
-            </Card>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über GIF zu MP4 Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem GIF zu MP4 Konverter können Sie animierte GIF-Dateien in das moderne MP4-Videoformat umwandeln. 
+                MP4-Videos sind deutlich kleiner als GIF-Dateien bei besserer Qualität und werden von allen modernen 
+                Geräten und Plattformen unterstützt, einschließlich Social Media.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>GIF-Animation auswählen oder per Drag & Drop hochladen</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte MP4-Datei herunterladen</li>
+                <li>Profitieren Sie von kleinerer Dateigröße und besserer Qualität</li>
+              </ol>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Unterstützen alle Plattformen MP4?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, MP4 wird universell unterstützt - von Browsern über Social Media bis zu Messaging-Apps. 
-                  Instagram, Twitter, WhatsApp und andere bevorzugen MP4 gegenüber GIF für bessere Performance.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Warum GIF zu MP4 konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    MP4-Videos sind deutlich kleiner als GIF-Dateien (oft 80% kleiner) bei besserer Qualität. 
+                    Sie laden schneller, verbrauchen weniger Bandbreite und werden von allen Social Media Plattformen unterstützt.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Bleibt die Animationsqualität erhalten?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, die Animationsqualität wird beibehalten oder sogar verbessert. MP4 verwendet moderne 
-                  Videokomprimierung, die glattere Animationen bei kleineren Dateigrößen ermöglicht.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Unterstützen alle Plattformen MP4?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, MP4 wird universell unterstützt - von Browsern über Social Media bis zu Messaging-Apps. 
+                    Instagram, Twitter, WhatsApp und andere bevorzugen MP4 gegenüber GIF für bessere Performance.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Bleibt die Animationsqualität erhalten?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, die Animationsqualität wird beibehalten oder sogar verbessert. MP4 verwendet moderne 
+                    Videokomprimierung, die glattere Animationen bei kleineren Dateigrößen ermöglicht.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

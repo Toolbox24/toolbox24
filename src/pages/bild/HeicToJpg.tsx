@@ -93,25 +93,9 @@ const HeicToJpg = () => {
               <FileImage className="h-10 w-10 text-primary" />
               HEIC zu JPG Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie iPhone HEIC-Fotos kostenlos und sicher in JPG-Format um. Für universelle Kompatibilität.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie iPhone HEIC-Fotos kostenlos in JPG-Format um. Für universelle Kompatibilität.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem HEIC zu JPG Konverter können Sie iPhone-Fotos im HEIC-Format schnell in das universell 
-                unterstützte JPG-Format umwandeln. HEIC (High Efficiency Image Container) wird seit iOS 11 als Standard 
-                verwendet, aber viele Geräte und Anwendungen können diese Dateien nicht öffnen. JPG garantiert maximale Kompatibilität.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>HEIC-Datei auswählen oder per Drag & Drop hochladen</li>
-                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte JPG-Datei herunterladen</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -236,46 +220,66 @@ const HeicToJpg = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Was ist HEIC und warum konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  HEIC (High Efficiency Image Container) ist Apples modernes Bildformat, das seit iOS 11 verwendet wird. 
-                  Es bietet bessere Komprimierung als JPG, wird aber nicht von allen Geräten und Anwendungen unterstützt. 
-                  JPG garantiert universelle Kompatibilität.
-                </p>
-              </CardContent>
-            </Card>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über HEIC zu JPG Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem HEIC zu JPG Konverter können Sie iPhone-Fotos im HEIC-Format schnell in das universell 
+                unterstützte JPG-Format umwandeln. HEIC (High Efficiency Image Container) wird seit iOS 11 als Standard 
+                verwendet, aber viele Geräte und Anwendungen können diese Dateien nicht öffnen. JPG garantiert maximale Kompatibilität.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>HEIC-Datei auswählen oder per Drag & Drop hochladen</li>
+                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte JPG-Datei herunterladen</li>
+              </ol>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Geht Qualität bei der Konvertierung verloren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Minimal, ja. Da sowohl HEIC als auch JPG verlustbehaftete Formate sind, kann es zu geringen Qualitätsverlusten 
-                  kommen. Mit unserer Qualitätseinstellung können Sie das optimale Verhältnis von Dateigröße und Qualität wählen.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Was ist HEIC und warum konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    HEIC (High Efficiency Image Container) ist Apples modernes Bildformat, das seit iOS 11 verwendet wird. 
+                    Es bietet bessere Komprimierung als JPG, wird aber nicht von allen Geräten und Anwendungen unterstützt. 
+                    JPG garantiert universelle Kompatibilität.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Kann ich mehrere HEIC-Dateien auf einmal konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Momentan unterstützen wir die Konvertierung einer Datei nach der anderen. Für Stapelverarbeitung 
-                  können Sie unseren allgemeinen Bildkonverter verwenden, der Batch-Funktionen bietet.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Geht Qualität bei der Konvertierung verloren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Minimal, ja. Da sowohl HEIC als auch JPG verlustbehaftete Formate sind, kann es zu geringen Qualitätsverlusten 
+                    kommen. Mit unserer Qualitätseinstellung können Sie das optimale Verhältnis von Dateigröße und Qualität wählen.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Kann ich mehrere HEIC-Dateien auf einmal konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Momentan unterstützen wir die Konvertierung einer Datei nach der anderen. Für Stapelverarbeitung 
+                    können Sie unseren allgemeinen Bildkonverter verwenden, der Batch-Funktionen bietet.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

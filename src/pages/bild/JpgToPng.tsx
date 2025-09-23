@@ -109,25 +109,9 @@ const JpgToPng = () => {
               <FileImage className="h-10 w-10 text-primary" />
               JPG zu PNG Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie JPG-Dateien kostenlos und sicher in PNG-Format um. Komplett im Browser - ohne Upload auf Server.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie JPG-Dateien kostenlos in PNG-Format um. Verlustfreie Qualität mit Transparenz-Unterstützung.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem JPG zu PNG Konverter können Sie JPG-Bilder schnell und einfach in das PNG-Format umwandeln. 
-                PNG-Dateien bieten verlustfreie Komprimierung und unterstützen Transparenz, wodurch sie sich ideal für 
-                Logos, Grafiken und Bilder mit Text eignen. Die Konvertierung erfolgt vollständig in Ihrem Browser.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>JPG-Datei auswählen oder per Drag & Drop hochladen</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte PNG-Datei herunterladen</li>
-                <li>Profitieren Sie von verlustfreier Qualität und Transparenz-Unterstützung</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -228,45 +212,65 @@ const JpgToPng = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Warum JPG zu PNG konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  PNG-Dateien bieten verlustfreie Komprimierung und unterstützen Transparenz. Sie eignen sich besonders 
-                  für Logos, Grafiken, Screenshots und Bilder mit Text, bei denen hohe Qualität wichtiger ist als Dateigröße.
-                </p>
-              </CardContent>
-            </Card>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über JPG zu PNG Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem JPG zu PNG Konverter können Sie JPG-Bilder schnell und einfach in das PNG-Format umwandeln. 
+                PNG-Dateien bieten verlustfreie Komprimierung und unterstützen Transparenz, wodurch sie sich ideal für 
+                Logos, Grafiken und Bilder mit Text eignen. Die Konvertierung erfolgt vollständig in Ihrem Browser.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>JPG-Datei auswählen oder per Drag & Drop hochladen</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte PNG-Datei herunterladen</li>
+                <li>Profitieren Sie von verlustfreier Qualität und Transparenz-Unterstützung</li>
+              </ol>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Wird die Bildqualität verbessert?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Die Konvertierung von JPG zu PNG kann keine bereits verlorene Qualität wiederherstellen, aber sie 
-                  verhindert weiteren Qualitätsverlust und ermöglicht Transparenz für zukünftige Bearbeitungen.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Warum JPG zu PNG konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    PNG-Dateien bieten verlustfreie Komprimierung und unterstützen Transparenz. Sie eignen sich besonders 
+                    für Logos, Grafiken, Screenshots und Bilder mit Text, bei denen hohe Qualität wichtiger ist als Dateigröße.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Sind die Dateien größer als JPG?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, PNG-Dateien sind normalerweise größer als JPG-Dateien, da sie verlustfreie Komprimierung verwenden. 
-                  Der Vorteil liegt in der besseren Qualität und Transparenz-Unterstützung.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Wird die Bildqualität verbessert?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Die Konvertierung von JPG zu PNG kann keine bereits verlorene Qualität wiederherstellen, aber sie 
+                    verhindert weiteren Qualitätsverlust und ermöglicht Transparenz für zukünftige Bearbeitungen.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Sind die Dateien größer als JPG?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, PNG-Dateien sind normalerweise größer als JPG-Dateien, da sie verlustfreie Komprimierung verwenden. 
+                    Der Vorteil liegt in der besseren Qualität und Transparenz-Unterstützung.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

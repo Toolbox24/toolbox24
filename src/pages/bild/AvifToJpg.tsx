@@ -122,25 +122,9 @@ const AvifToJpg = () => {
               <FileImage className="h-10 w-10 text-primary" />
               AVIF zu JPG Konverter
             </h1>
-            <p className="text-xl text-muted-foreground mb-6">
-              Wandeln Sie AVIF-Dateien kostenlos und sicher in JPG-Format um. Für universelle Kompatibilität.
+            <p className="text-xl text-muted-foreground">
+              Wandeln Sie AVIF-Dateien kostenlos in JPG-Format um. Für universelle Kompatibilität.
             </p>
-            
-            <div className="prose max-w-3xl mx-auto text-left">
-              <p className="text-muted-foreground">
-                Mit unserem AVIF zu JPG Konverter können Sie das moderne AVIF-Bildformat in das universell unterstützte 
-                JPG-Format umwandeln. AVIF (AV1 Image File Format) bietet hervorragende Komprimierung, wird aber noch 
-                nicht von allen Browsern und Anwendungen unterstützt. JPG garantiert maximale Kompatibilität überall.
-              </p>
-              
-              <h2 className="text-2xl font-semibold mt-8 mb-4">So funktioniert's:</h2>
-              <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-                <li>AVIF-Datei auswählen oder per Drag & Drop hochladen</li>
-                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
-                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
-                <li>Konvertierte JPG-Datei herunterladen</li>
-              </ol>
-            </div>
           </div>
 
           <div className="grid gap-8">
@@ -269,45 +253,65 @@ const AvifToJpg = () => {
             )}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-12 space-y-6">
-            <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Was ist AVIF und warum konvertieren?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  AVIF (AV1 Image File Format) ist ein sehr modernes Bildformat mit hervorragender Komprimierung. 
-                  Es wird aber noch nicht von allen Browsern und Anwendungen unterstützt. JPG garantiert universelle Kompatibilität.
-                </p>
-              </CardContent>
-            </Card>
+          {/* SEO Content Section */}
+          <div className="mt-12 space-y-8">
+            <div className="prose max-w-3xl mx-auto">
+              <h2 className="text-2xl font-semibold mb-4">Über AVIF zu JPG Konvertierung</h2>
+              <p className="text-muted-foreground mb-6">
+                Mit unserem AVIF zu JPG Konverter können Sie das moderne AVIF-Bildformat in das universell unterstützte 
+                JPG-Format umwandeln. AVIF (AV1 Image File Format) bietet hervorragende Komprimierung, wird aber noch 
+                nicht von allen Browsern und Anwendungen unterstützt. JPG garantiert maximale Kompatibilität überall.
+              </p>
+              
+              <h3 className="text-xl font-semibold mb-4">So funktioniert's:</h3>
+              <ol className="list-decimal list-inside space-y-2 text-muted-foreground mb-8">
+                <li>AVIF-Datei auswählen oder per Drag & Drop hochladen</li>
+                <li>JPG-Qualität nach Bedarf anpassen (10-100%)</li>
+                <li>Auf "Konvertieren" klicken und wenige Sekunden warten</li>
+                <li>Konvertierte JPG-Datei herunterladen</li>
+              </ol>
+            </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Welche Browser unterstützen AVIF?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  AVIF wird von Chrome 85+, Firefox 93+, Safari 16+ und anderen modernen Browsern unterstützt. 
-                  Ältere Browser können AVIF-Dateien nicht anzeigen, weshalb JPG die sichere Wahl ist.
-                </p>
-              </CardContent>
-            </Card>
+            {/* FAQ Section */}
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold">Häufige Fragen</h2>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Was ist AVIF und warum konvertieren?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    AVIF (AV1 Image File Format) ist ein sehr modernes Bildformat mit hervorragender Komprimierung. 
+                    Es wird aber noch nicht von allen Browsern und Anwendungen unterstützt. JPG garantiert universelle Kompatibilität.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Sind die konvertierten JPG-Dateien größer?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  Ja, meist sind JPG-Dateien größer als AVIF-Dateien, da AVIF eine sehr effiziente Komprimierung hat. 
-                  Der Vorteil von JPG liegt in der universellen Kompatibilität mit allen Geräten und Anwendungen.
-                </p>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Welche Browser unterstützen AVIF?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    AVIF wird von Chrome 85+, Firefox 93+, Safari 16+ und anderen modernen Browsern unterstützt. 
+                    Ältere Browser können AVIF-Dateien nicht anzeigen, weshalb JPG die sichere Wahl ist.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Sind die konvertierten JPG-Dateien größer?</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Ja, meist sind JPG-Dateien größer als AVIF-Dateien, da AVIF eine sehr effiziente Komprimierung hat. 
+                    Der Vorteil von JPG liegt in der universellen Kompatibilität mit allen Geräten und Anwendungen.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
