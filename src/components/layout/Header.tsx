@@ -1,4 +1,4 @@
-import { Search, ChevronDown, FileText, File, Settings } from "lucide-react";
+import { Search, ChevronDown, FileText, File, Settings, Menu, X, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +18,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showResults, setShowResults] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
 
@@ -73,6 +75,23 @@ const Header = () => {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    if (isMobileMenuOpen) {
+      setExpandedSubmenu(null);
+    }
+  };
+
+  const toggleSubmenu = (submenu: string) => {
+    setExpandedSubmenu(expandedSubmenu === submenu ? null : submenu);
+  };
+
+  const handleMobileNavigation = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+    setExpandedSubmenu(null);
+  };
+
   const getTypeLabel = (type: SearchResult['type']) => {
     switch (type) {
       case 'template':
@@ -89,19 +108,20 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-card border-b sticky top-0 z-50 backdrop-blur-sm bg-card/95">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-8">
-            <h1 
-              className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
-              onClick={() => navigate("/")}
-            >
-              Toolbox24
-            </h1>
-            
-            {/* Navigation Menu */}
-            <NavigationMenu className="hidden md:flex">
+    <>
+      <header className="bg-card border-b sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-8">
+              <h1 
+                className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
+                onClick={() => navigate("/")}
+              >
+                Toolbox24
+              </h1>
+              
+              {/* Desktop Navigation Menu */}
+              <NavigationMenu className="hidden lg:flex">
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent">
@@ -259,7 +279,8 @@ const Header = () => {
             </NavigationMenu>
           </div>
           
-          <div className="relative flex-1 max-w-md" ref={searchRef}>
+          {/* Desktop Search */}
+          <div className="relative flex-1 max-w-md hidden lg:block" ref={searchRef}>
             <form onSubmit={handleSearch}>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -315,9 +336,231 @@ const Header = () => {
               </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={toggleMobileMenu}
+            className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors"
+            aria-label="Menu öffnen"
+          >
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
+          </button>
         </div>
       </div>
     </header>
+
+    {/* Mobile Menu Overlay */}
+    {isMobileMenuOpen && (
+      <div className="fixed inset-0 z-40 lg:hidden">
+        <div 
+          className="fixed inset-0 bg-black/50" 
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+        <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
+          <div className="p-6 space-y-6">
+            {/* Mobile Search */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                type="text"
+                placeholder="Services durchsuchen..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (searchQuery.trim()) {
+                      handleMobileNavigation(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+                    }
+                  }
+                }}
+              />
+            </div>
+
+            {/* Mobile Navigation */}
+            <nav className="space-y-2">
+              {/* Vorlagen */}
+              <div>
+                <button
+                  onClick={() => toggleSubmenu('vorlagen')}
+                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <span className="font-medium">Vorlagen</span>
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${
+                      expandedSubmenu === 'vorlagen' ? 'rotate-90' : ''
+                    }`} 
+                  />
+                </button>
+                {expandedSubmenu === 'vorlagen' && (
+                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
+                    <button
+                      onClick={() => handleMobileNavigation('/kategorie/kuendigung')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Kündigungen
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/kategorie/bewerbung')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Bewerbungen
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/kategorie/vertraege')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Verträge & Arbeit
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/kategorie/finanzen')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Finanzen
+                    </button>
+                    <div className="border-t my-2"></div>
+                    <button
+                      onClick={() => handleMobileNavigation('/alle-vorlagen')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
+                    >
+                      Alle Vorlagen
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* PDF Tools */}
+              <div>
+                <button
+                  onClick={() => toggleSubmenu('pdf-tools')}
+                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <span className="font-medium">PDF Tools</span>
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${
+                      expandedSubmenu === 'pdf-tools' ? 'rotate-90' : ''
+                    }`} 
+                  />
+                </button>
+                {expandedSubmenu === 'pdf-tools' && (
+                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
+                    <button
+                      onClick={() => handleMobileNavigation('/pdf-tools/merge')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      PDF zusammenfügen
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/pdf-tools/compress')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      PDF komprimieren
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/pdf-tools/split')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      PDF teilen
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/pdf-tools/to-word')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      PDF in Word umwandeln
+                    </button>
+                    <div className="border-t my-2"></div>
+                    <button
+                      onClick={() => handleMobileNavigation('/pdf-tools/all')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
+                    >
+                      Alle PDF-Tools
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Datei Tools */}
+              <div>
+                <button
+                  onClick={() => toggleSubmenu('datei-tools')}
+                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                >
+                  <span className="font-medium">Datei Tools</span>
+                  <ChevronRight 
+                    className={`h-4 w-4 transition-transform ${
+                      expandedSubmenu === 'datei-tools' ? 'rotate-90' : ''
+                    }`} 
+                  />
+                </button>
+                {expandedSubmenu === 'datei-tools' && (
+                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
+                    <button
+                      onClick={() => handleMobileNavigation('/file-tools/compress-image')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Bild komprimieren
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/file-tools/remove-background')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Hintergrund entfernen
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/file-tools/resize-image')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Bildgröße ändern
+                    </button>
+                    <button
+                      onClick={() => handleMobileNavigation('/file-tools/convert')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    >
+                      Bild konvertieren
+                    </button>
+                    <div className="border-t my-2"></div>
+                    <button
+                      onClick={() => handleMobileNavigation('/file-tools/all')}
+                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
+                    >
+                      Alle Datei-Tools
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Direct Links */}
+              <div className="border-t pt-4 space-y-1">
+                <button
+                  onClick={() => handleMobileNavigation('/kontakt')}
+                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
+                >
+                  Kontakt
+                </button>
+                <button
+                  onClick={() => handleMobileNavigation('/impressum')}
+                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
+                >
+                  Impressum
+                </button>
+                <button
+                  onClick={() => handleMobileNavigation('/rechtliches')}
+                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
+                >
+                  Rechtliches
+                </button>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 
