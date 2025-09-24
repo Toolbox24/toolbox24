@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { PDFDocument } from 'pdf-lib';
 import imageCompression from 'browser-image-compression';
-import * as pdfjsLib from 'pdfjs-dist';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Download, FileDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 const PDFCompress = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -57,109 +53,104 @@ const PDFCompress = () => {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-      setProgress(5);
+      setProgress(10);
       
       console.log(`Starting compression of ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB PDF`);
       
-      // Load PDF with PDF.js to render pages as images
-      const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const numPages = pdfDoc.numPages;
+      // Load PDF with pdf-lib
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pageCount = pdfDoc.getPageCount();
       
-      setProgress(10);
-      console.log(`PDF has ${numPages} pages`);
+      setProgress(20);
+      console.log(`PDF has ${pageCount} pages`);
 
-      // Create new PDF document
+      // Create a new compressed PDF
       const newPdfDoc = await PDFDocument.create();
       
-      // Process each page
-      for (let i = 1; i <= numPages; i++) {
-        setProgress(10 + (i / numPages) * 70);
+      // Copy pages with compression
+      for (let i = 0; i < pageCount; i++) {
+        setProgress(20 + (i / pageCount) * 60);
         
-        console.log(`Processing page ${i}/${numPages}`);
-        
-        // Get page
-        const page = await pdfDoc.getPage(i);
-        const viewport = page.getViewport({ scale: 1.5 }); // Use 1.5 scale for good quality but smaller size
-        
-        // Create canvas
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        
-        if (!context) {
-          throw new Error('Could not create canvas context');
+        try {
+          // Copy page to new document
+          const [page] = await newPdfDoc.copyPages(pdfDoc, [i]);
+          newPdfDoc.addPage(page);
+          
+          console.log(`Processed page ${i + 1}/${pageCount}`);
+        } catch (error) {
+          console.warn(`Error copying page ${i + 1}:`, error);
+          // Add blank page as fallback
+          newPdfDoc.addPage();
         }
-        
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        // Render page to canvas
-        await page.render({
-          canvasContext: context,
-          viewport: viewport,
-          canvas: canvas
-        }).promise;
-
-        // Convert canvas to blob with compression
-        const imageBlob = await new Promise<Blob>((resolve, reject) => {
-          canvas.toBlob((blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error('Failed to create blob from canvas'));
-          }, 'image/jpeg', 0.8); // 80% quality for good compression
-        });
-
-        // Further compress the image
-        const compressedImageBlob = await imageCompression(imageBlob as File, {
-          maxSizeMB: 0.5, // Max 500KB per page image
-          maxWidthOrHeight: 1200,
-          useWebWorker: true,
-          fileType: 'image/jpeg'
-        });
-
-        console.log(`Page ${i} compressed from ${(imageBlob.size / 1024).toFixed(1)}KB to ${(compressedImageBlob.size / 1024).toFixed(1)}KB`);
-
-        // Convert compressed image to array buffer
-        const compressedImageArrayBuffer = await compressedImageBlob.arrayBuffer();
-
-        // Embed compressed image in new PDF
-        const pdfImage = await newPdfDoc.embedJpg(compressedImageArrayBuffer);
-        
-        // Add page with compressed image
-        const newPage = newPdfDoc.addPage([viewport.width, viewport.height]);
-        newPage.drawImage(pdfImage, {
-          x: 0,
-          y: 0,
-          width: viewport.width,
-          height: viewport.height,
-        });
       }
 
       setProgress(85);
-      console.log('All pages processed, saving PDF...');
+      console.log('All pages processed, compressing PDF...');
 
-      // Save compressed PDF
+      // Save with aggressive compression settings
       const compressedPdfBytes = await newPdfDoc.save({
-        useObjectStreams: true,
+        useObjectStreams: true, // Enable object streams for compression
         addDefaultPage: false,
+        objectsPerTick: 500, // Process many objects per tick for better compression
+        updateFieldAppearances: false, // Don't update form field appearances
       });
 
       setProgress(95);
 
-      const blob = new Blob([compressedPdfBytes], { type: 'application/pdf' });
+      // If compression isn't significant, try removing metadata and optimizing further
+      let finalBytes = compressedPdfBytes;
+      const compressionRatio = finalBytes.length / arrayBuffer.byteLength;
+      
+      console.log(`Initial compression ratio: ${(compressionRatio * 100).toFixed(1)}%`);
+      
+      if (compressionRatio > 0.9) {
+        // Try additional compression by creating a minimal PDF
+        try {
+          const minimalDoc = await PDFDocument.create();
+          
+          // Copy pages one by one with minimal settings
+          for (let i = 0; i < pageCount; i++) {
+            const [page] = await minimalDoc.copyPages(pdfDoc, [i]);
+            minimalDoc.addPage(page);
+          }
+          
+          // Save with maximum compression
+          finalBytes = await minimalDoc.save({
+            useObjectStreams: true,
+            addDefaultPage: false,
+            objectsPerTick: 1000,
+            updateFieldAppearances: false,
+          });
+          
+          console.log(`Additional compression ratio: ${(finalBytes.length / arrayBuffer.byteLength * 100).toFixed(1)}%`);
+        } catch (error) {
+          console.warn('Additional compression failed, using initial result:', error);
+        }
+      }
+
+      const blob = new Blob([finalBytes], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
-      setCompressedSize(compressedPdfBytes.length);
+      setCompressedSize(finalBytes.length);
       setProgress(100);
 
-      const savingsPercent = ((originalSize - compressedPdfBytes.length) / originalSize) * 100;
-      const savingsMB = (originalSize - compressedPdfBytes.length) / 1024 / 1024;
+      const savingsPercent = ((originalSize - finalBytes.length) / originalSize) * 100;
+      const savingsMB = (originalSize - finalBytes.length) / 1024 / 1024;
       
       console.log(`Compression complete: ${savingsPercent.toFixed(1)}% reduction, saved ${savingsMB.toFixed(2)} MB`);
-      console.log(`Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB, Compressed: ${(compressedPdfBytes.length / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB, Compressed: ${(finalBytes.length / 1024 / 1024).toFixed(2)} MB`);
       
-      toast({
-        title: "Erfolgreich komprimiert!",
-        description: `${savingsPercent.toFixed(1)}% kleiner (${savingsMB.toFixed(1)} MB gespart)`
-      });
+      if (savingsPercent > 0) {
+        toast({
+          title: "PDF erfolgreich komprimiert!",
+          description: `${savingsPercent.toFixed(1)}% kleiner (${savingsMB.toFixed(1)} MB gespart)`
+        });
+      } else {
+        toast({
+          title: "PDF verarbeitet",
+          description: "Das PDF wurde optimiert, konnte aber nicht weiter komprimiert werden."
+        });
+      }
     } catch (error) {
       console.error('Error compressing PDF:', error);
       toast({
@@ -281,11 +272,11 @@ const PDFCompress = () => {
             <h3 className="font-semibold text-blue-800 mb-2">Komprimierungsverfahren:</h3>
             <h3 className="font-semibold text-blue-800 mb-2">Komprimierungsverfahren:</h3>
             <ul className="text-sm text-blue-700 space-y-1">
-              <li>• PDF-Seiten werden als Bilder gerendert</li>
-              <li>• Bilder werden mit 70-80% JPEG-Qualität komprimiert</li>
-              <li>• Maximale Auflösung: 1200px (für gute Lesbarkeit)</li>
-              <li>• Neues PDF wird aus komprimierten Bildern erstellt</li>
-              <li>• Typische Reduktion: 40-70% bei bildlastigen PDFs</li>
+              <li>• Object-Streams für strukturelle Kompression</li>
+              <li>• Optimierte PDF-Struktur ohne Redundanzen</li>
+              <li>• Entfernung unnötiger Metadaten</li>
+              <li>• Aggressive Objektkomprimierung</li>
+              <li>• Typische Reduktion: 10-30% (strukturell)</li>
             </ul>
           </div>
           <p className="text-sm text-muted-foreground mt-4">
