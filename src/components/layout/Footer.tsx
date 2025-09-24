@@ -13,7 +13,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate("/alle-vorlagen")}
+                  onClick={() => navigate("/de/alle-vorlagen")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Vorlagen
@@ -21,7 +21,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/pdf-tools/alle")}
+                  onClick={() => navigate("/de/pdf-tools/alle")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   PDF Tools
@@ -29,7 +29,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/datei-tools/alle")}
+                  onClick={() => navigate("/de/datei-tools/alle")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Datei Tools
@@ -44,7 +44,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate("/blog")}
+                  onClick={() => navigate("/de/blog")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Blog
@@ -59,7 +59,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <button
-                  onClick={() => navigate("/rechtliches")}
+                  onClick={() => navigate("/de/rechtliches")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Rechtliches
@@ -67,7 +67,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/impressum")}
+                  onClick={() => navigate("/de/impressum")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Impressum
@@ -75,7 +75,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/kontakt")}
+                  onClick={() => navigate("/de/kontakt")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Kontakt
@@ -88,7 +88,7 @@ const Footer = () => {
           <div>
             <h4 
               className="font-semibold mb-4 text-primary cursor-pointer hover:text-primary-hover transition-colors"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/de/")}
             >
               Toolbox24
             </h4>

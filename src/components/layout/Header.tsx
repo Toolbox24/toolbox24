@@ -50,7 +50,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowResults(false);
     }
   };
@@ -115,7 +115,7 @@ const Header = () => {
             <div className="flex items-center gap-8">
               <h1 
                 className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/de/")}
               >
                 Toolbox24
               </h1>
@@ -131,7 +131,7 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/kategorie/kuendigung"
+                          to="/de/kategorie/kuendigung"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Kündigungen
@@ -139,7 +139,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/kategorie/bewerbung"
+                          to="/de/kategorie/bewerbung"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bewerbungen
@@ -147,7 +147,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/kategorie/vertraege"
+                          to="/de/kategorie/vertraege"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Verträge & Arbeit
@@ -155,7 +155,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/kategorie/finanzen"
+                          to="/de/kategorie/finanzen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Finanzen
@@ -164,7 +164,7 @@ const Header = () => {
                       <div className="border-t my-2"></div>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/alle-vorlagen"
+                          to="/de/alle-vorlagen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Alle Vorlagen
@@ -182,7 +182,7 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/pdf-zusammenfuegen"
+                          to="/de/pdf-tools/pdf-zusammenfuegen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF zusammenfügen
@@ -190,7 +190,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/pdf-komprimieren"
+                          to="/de/pdf-tools/pdf-komprimieren"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF komprimieren
@@ -198,7 +198,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/pdf-teilen"
+                          to="/de/pdf-tools/pdf-teilen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF teilen
@@ -206,7 +206,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/pdf-zu-word"
+                          to="/de/pdf-tools/pdf-zu-word"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF in Word umwandeln
@@ -215,7 +215,7 @@ const Header = () => {
                       <div className="border-t my-2"></div>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/alle"
+                          to="/de/pdf-tools/alle"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Alle PDF-Tools
@@ -233,7 +233,7 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/datei-tools/bild-komprimieren"
+                          to="/de/datei-tools/bild-komprimieren"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bild komprimieren
@@ -241,7 +241,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/datei-tools/hintergrund-entfernen"
+                          to="/de/datei-tools/hintergrund-entfernen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Hintergrund entfernen
@@ -249,7 +249,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/datei-tools/bild-groesse-aendern"
+                          to="/de/datei-tools/bild-groesse-aendern"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bildgröße ändern (Resize)
@@ -257,7 +257,7 @@ const Header = () => {
                       </NavigationMenuLink>
                        <NavigationMenuLink asChild>
                           <Link
-                            to="/datei-tools/konverter"
+                            to="/de/datei-tools/konverter"
                             className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                           >
                             Bild konvertieren
@@ -266,7 +266,7 @@ const Header = () => {
                        <div className="border-t my-2"></div>
                        <NavigationMenuLink asChild>
                           <Link
-                            to="/datei-tools/alle"
+                            to="/de/datei-tools/alle"
                             className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                           >
                             Alle Datei-Tools
@@ -375,7 +375,7 @@ const Header = () => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
                     if (searchQuery.trim()) {
-                      handleMobileNavigation(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+                      handleMobileNavigation(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
                     }
                   }
                 }}
@@ -400,32 +400,32 @@ const Header = () => {
                 {expandedSubmenu === 'vorlagen' && (
                   <div className="ml-4 mt-2 space-y-1 animate-fade-in">
                     <button
-                      onClick={() => handleMobileNavigation('/kategorie/kuendigung')}
+                      onClick={() => handleMobileNavigation('/de/kategorie/kuendigung')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Kündigungen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/kategorie/bewerbung')}
+                      onClick={() => handleMobileNavigation('/de/kategorie/bewerbung')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bewerbungen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/kategorie/vertraege')}
+                      onClick={() => handleMobileNavigation('/de/kategorie/vertraege')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Verträge & Arbeit
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/kategorie/finanzen')}
+                      onClick={() => handleMobileNavigation('/de/kategorie/finanzen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Finanzen
                     </button>
                     <div className="border-t my-2"></div>
                     <button
-                      onClick={() => handleMobileNavigation('/alle-vorlagen')}
+                      onClick={() => handleMobileNavigation('/de/alle-vorlagen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
                     >
                       Alle Vorlagen
@@ -450,32 +450,32 @@ const Header = () => {
                 {expandedSubmenu === 'pdf-tools' && (
                   <div className="ml-4 mt-2 space-y-1 animate-fade-in">
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zusammenfuegen')}
+                      onClick={() => handleMobileNavigation('/de/pdf-tools/pdf-zusammenfuegen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF zusammenfügen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-komprimieren')}
+                      onClick={() => handleMobileNavigation('/de/pdf-tools/pdf-komprimieren')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF komprimieren
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-teilen')}
+                      onClick={() => handleMobileNavigation('/de/pdf-tools/pdf-teilen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF teilen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zu-word')}
+                      onClick={() => handleMobileNavigation('/de/pdf-tools/pdf-zu-word')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF in Word umwandeln
                     </button>
                     <div className="border-t my-2"></div>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/alle')}
+                      onClick={() => handleMobileNavigation('/de/pdf-tools/alle')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
                     >
                       Alle PDF-Tools
@@ -500,32 +500,32 @@ const Header = () => {
                 {expandedSubmenu === 'datei-tools' && (
                   <div className="ml-4 mt-2 space-y-1 animate-fade-in">
                     <button
-                      onClick={() => handleMobileNavigation('/datei-tools/bild-komprimieren')}
+                      onClick={() => handleMobileNavigation('/de/datei-tools/bild-komprimieren')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bild komprimieren
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/datei-tools/hintergrund-entfernen')}
+                      onClick={() => handleMobileNavigation('/de/datei-tools/hintergrund-entfernen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Hintergrund entfernen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/datei-tools/bild-groesse-aendern')}
+                      onClick={() => handleMobileNavigation('/de/datei-tools/bild-groesse-aendern')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bildgröße ändern
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/datei-tools/konverter')}
+                      onClick={() => handleMobileNavigation('/de/datei-tools/konverter')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bild konvertieren
                     </button>
                     <div className="border-t my-2"></div>
                     <button
-                      onClick={() => handleMobileNavigation('/datei-tools/alle')}
+                      onClick={() => handleMobileNavigation('/de/datei-tools/alle')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
                     >
                       Alle Datei-Tools
@@ -537,19 +537,19 @@ const Header = () => {
               {/* Direct Links */}
               <div className="border-t pt-4 space-y-1">
                 <button
-                  onClick={() => handleMobileNavigation('/kontakt')}
+                  onClick={() => handleMobileNavigation('/de/kontakt')}
                   className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
                 >
                   Kontakt
                 </button>
                 <button
-                  onClick={() => handleMobileNavigation('/impressum')}
+                  onClick={() => handleMobileNavigation('/de/impressum')}
                   className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
                 >
                   Impressum
                 </button>
                 <button
-                  onClick={() => handleMobileNavigation('/rechtliches')}
+                  onClick={() => handleMobileNavigation('/de/rechtliches')}
                   className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
                 >
                   Rechtliches

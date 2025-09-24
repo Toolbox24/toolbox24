@@ -19,6 +19,7 @@ import Impressum from "./pages/Impressum";
 import Kontakt from "./pages/Kontakt";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import LanguageRedirect from "./components/LanguageRedirect";
 
 // PDF Tools
 import AllPDFTools from "./pages/pdf-tools/AllPDFTools";
@@ -70,63 +71,84 @@ const App = () => (
         <div className="min-h-screen flex flex-col">
           <Header />
           <main className="flex-1">
+            <LanguageRedirect />
             <Routes>
-              <Route path="/" element={<Home />} />
+              {/* Root redirect to German */}
+              <Route path="/" element={<div />} />
+              
+              {/* German Routes */}
+              <Route path="/de" element={<Home />} />
+              <Route path="/de/" element={<Home />} />
+              <Route path="/de/kategorie/:slug" element={<CategoryPage />} />
+              <Route path="/de/vorlage/:slug" element={<TemplateDetail />} />
+              <Route path="/de/suche" element={<SearchResults />} />
+              <Route path="/de/alle-vorlagen" element={<AllTemplates />} />
+              <Route path="/de/alle-tools" element={<AlleTools />} />
+              
+              {/* PDF Tools */}
+              <Route path="/de/pdf-tools/alle" element={<AllPDFTools />} />
+              <Route path="/de/pdf-tools/pdf-zusammenfuegen" element={<PDFMerge />} />
+              <Route path="/de/pdf-tools/pdf-komprimieren" element={<PDFCompress />} />
+              <Route path="/de/pdf-tools/pdf-teilen" element={<PDFSplit />} />
+              <Route path="/de/pdf-tools/pdf-zu-word" element={<PDFToWord />} />
+              <Route path="/de/pdf-tools/word-zu-pdf" element={<WordToPDF />} />
+              <Route path="/de/pdf-tools/pdf-zu-bilder" element={<PDFToImages />} />
+              <Route path="/de/pdf-tools/bilder-zu-pdf" element={<ImagesToPDF />} />
+              <Route path="/de/pdf-tools/seiten-loeschen" element={<PDFDeletePages />} />
+              
+              {/* Datei Tools */}
+              <Route path="/de/datei-tools/alle" element={<AllFileTools />} />
+              <Route path="/de/datei-tools/bild-komprimieren" element={<ImageCompress />} />
+              <Route path="/de/datei-tools/bild-groesse-aendern" element={<ImageResize />} />
+              <Route path="/de/datei-tools/bild-zuschneiden" element={<ImageCrop />} />
+              <Route path="/de/datei-tools/bild-drehen" element={<ImageRotate />} />
+              <Route path="/de/datei-tools/hintergrund-entfernen" element={<RemoveBackground />} />
+              <Route path="/de/datei-tools/bild-konvertieren" element={<ImageConverter />} />
+              <Route path="/de/datei-tools/webp-konverter" element={<WebPConverter />} />
+              <Route path="/de/datei-tools/heic-zu-jpg" element={<HEICToJPG />} />
+              <Route path="/de/datei-tools/gif-zu-mp4" element={<GifToMp4 />} />
+              <Route path="/de/datei-tools/konverter" element={<ImageConverterHub />} />
+              
+              {/* Individual converter landing pages */}
+              <Route path="/de/bild/png-zu-jpg" element={<PngToJpg />} />
+              <Route path="/de/bild/jpg-zu-png" element={<JpgToPng />} />
+              <Route path="/de/bild/webp-zu-jpg" element={<WebpToJpg />} />
+              <Route path="/de/bild/webp-zu-png" element={<WebpToPng />} />
+              <Route path="/de/bild/heic-zu-jpg" element={<HeicToJpg />} />
+              <Route path="/de/bild/avif-zu-jpg" element={<AvifToJpg />} />
+              <Route path="/de/gif-zu-mp4" element={<GifToMp4Landing />} />
+              
+              {/* Image compression pages */}
+              <Route path="/de/bild/jpeg-komprimieren" element={<JpegCompress />} />
+              <Route path="/de/bild/png-komprimieren" element={<PngCompress />} />
+              <Route path="/de/bild/svg-komprimieren" element={<SvgCompress />} />
+              <Route path="/de/bild/gif-komprimieren" element={<GifCompress />} />
+              
+              {/* Blog Pages */}
+              <Route path="/de/blog" element={<Blog />} />
+              <Route path="/de/blog/:slug" element={<BlogPost />} />
+              
+              {/* Legal Pages */}
+              <Route path="/de/rechtliches" element={<Rechtliches />} />
+              <Route path="/de/impressum" element={<Impressum />} />
+              <Route path="/de/kontakt" element={<Kontakt />} />
+              
+              {/* Legacy routes - redirect to German versions */}
               <Route path="/kategorie/:slug" element={<CategoryPage />} />
               <Route path="/vorlage/:slug" element={<TemplateDetail />} />
               <Route path="/suche" element={<SearchResults />} />
               <Route path="/alle-vorlagen" element={<AllTemplates />} />
               <Route path="/alle-tools" element={<AlleTools />} />
-              
-              {/* PDF Tools */}
-              <Route path="/pdf-tools/alle" element={<AllPDFTools />} />
-              <Route path="/pdf-tools/pdf-zusammenfuegen" element={<PDFMerge />} />
-              <Route path="/pdf-tools/pdf-komprimieren" element={<PDFCompress />} />
-              <Route path="/pdf-tools/pdf-teilen" element={<PDFSplit />} />
-              <Route path="/pdf-tools/pdf-zu-word" element={<PDFToWord />} />
-              <Route path="/pdf-tools/word-zu-pdf" element={<WordToPDF />} />
-              <Route path="/pdf-tools/pdf-zu-bilder" element={<PDFToImages />} />
-              <Route path="/pdf-tools/bilder-zu-pdf" element={<ImagesToPDF />} />
-              <Route path="/pdf-tools/seiten-loeschen" element={<PDFDeletePages />} />
-              
-              {/* Datei Tools */}
-              <Route path="/datei-tools/alle" element={<AllFileTools />} />
-              <Route path="/datei-tools/bild-komprimieren" element={<ImageCompress />} />
-              <Route path="/datei-tools/bild-groesse-aendern" element={<ImageResize />} />
-              <Route path="/datei-tools/bild-zuschneiden" element={<ImageCrop />} />
-              <Route path="/datei-tools/bild-drehen" element={<ImageRotate />} />
-              <Route path="/datei-tools/hintergrund-entfernen" element={<RemoveBackground />} />
-              <Route path="/datei-tools/bild-konvertieren" element={<ImageConverter />} />
-              <Route path="/datei-tools/webp-konverter" element={<WebPConverter />} />
-              <Route path="/datei-tools/heic-zu-jpg" element={<HEICToJPG />} />
-              <Route path="/datei-tools/gif-zu-mp4" element={<GifToMp4 />} />
-              <Route path="/datei-tools/konverter" element={<ImageConverterHub />} />
-              
-              {/* Individual converter landing pages */}
-              <Route path="/bild/png-zu-jpg" element={<PngToJpg />} />
-              <Route path="/bild/jpg-zu-png" element={<JpgToPng />} />
-              <Route path="/bild/webp-zu-jpg" element={<WebpToJpg />} />
-              <Route path="/bild/webp-zu-png" element={<WebpToPng />} />
-              <Route path="/bild/heic-zu-jpg" element={<HeicToJpg />} />
-              <Route path="/bild/avif-zu-jpg" element={<AvifToJpg />} />
-              <Route path="/gif-zu-mp4" element={<GifToMp4Landing />} />
-              
-              {/* Image compression pages */}
-              <Route path="/bild/jpeg-komprimieren" element={<JpegCompress />} />
-              <Route path="/bild/png-komprimieren" element={<PngCompress />} />
-              <Route path="/bild/svg-komprimieren" element={<SvgCompress />} />
-              <Route path="/bild/gif-komprimieren" element={<GifCompress />} />
-              
-              {/* Blog Pages */}
+              <Route path="/pdf-tools/*" element={<div />} />
+              <Route path="/datei-tools/*" element={<div />} />
+              <Route path="/bild/*" element={<div />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
-              
-              {/* Legal Pages */}
               <Route path="/rechtliches" element={<Rechtliches />} />
               <Route path="/impressum" element={<Impressum />} />
               <Route path="/kontakt" element={<Kontakt />} />
               
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              {/* 404 Catch-all */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

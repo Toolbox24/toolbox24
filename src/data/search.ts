@@ -16,7 +16,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF zusammenfügen",
     description: "Mehrere PDF-Dateien zu einem Dokument vereinen",
     type: "pdf-tool",
-    path: "/pdf-tools/pdf-zusammenfuegen",
+    path: "/de/pdf-tools/pdf-zusammenfuegen",
     keywords: ["pdf", "zusammenfügen", "merge", "verbinden", "vereinen"]
   },
   {
@@ -24,7 +24,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF komprimieren",
     description: "PDF-Dateigröße reduzieren ohne Qualitätsverlust",
     type: "pdf-tool",
-    path: "/pdf-tools/pdf-komprimieren",
+    path: "/de/pdf-tools/pdf-komprimieren",
     keywords: ["pdf", "komprimieren", "verkleinern", "dateigröße", "compress"]
   },
   {
@@ -32,7 +32,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF teilen",
     description: "Seiten aus PDF-Dokumenten extrahieren",
     type: "pdf-tool",
-    path: "/pdf-tools/pdf-teilen",
+    path: "/de/pdf-tools/pdf-teilen",
     keywords: ["pdf", "teilen", "trennen", "seiten", "split", "extrahieren"]
   },
   {
@@ -40,7 +40,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF in Word umwandeln",
     description: "PDF-Dateien in bearbeitbare Word-Dokumente konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/pdf-zu-word",
+    path: "/de/pdf-tools/pdf-zu-word",
     keywords: ["pdf", "word", "docx", "konvertieren", "umwandeln"]
   },
   {
@@ -48,7 +48,7 @@ const pdfTools: SearchResult[] = [
     title: "Word in PDF umwandeln",
     description: "Word-Dokumente in PDF-Format konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/word-zu-pdf",
+    path: "/de/pdf-tools/word-zu-pdf",
     keywords: ["word", "pdf", "docx", "konvertieren", "umwandeln"]
   },
   {
@@ -56,7 +56,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF in Bilder umwandeln",
     description: "PDF-Seiten in JPG oder PNG Bilder konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/pdf-zu-bilder",
+    path: "/de/pdf-tools/pdf-zu-bilder",
     keywords: ["pdf", "bilder", "jpg", "png", "konvertieren", "images"]
   },
   {
@@ -64,7 +64,7 @@ const pdfTools: SearchResult[] = [
     title: "Bilder in PDF umwandeln",
     description: "JPG, PNG und andere Bilder in PDF konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/bilder-zu-pdf",
+    path: "/de/pdf-tools/bilder-zu-pdf",
     keywords: ["bilder", "pdf", "jpg", "png", "konvertieren", "images"]
   },
   {
@@ -72,7 +72,7 @@ const pdfTools: SearchResult[] = [
     title: "Seiten aus PDF löschen",
     description: "Unerwünschte Seiten aus PDF-Dokumenten entfernen",
     type: "pdf-tool",
-    path: "/pdf-tools/seiten-loeschen",
+    path: "/de/pdf-tools/seiten-loeschen",
     keywords: ["pdf", "seiten", "löschen", "entfernen", "delete"]
   }
 ];
@@ -84,7 +84,7 @@ const fileTools: SearchResult[] = [
     title: "Bild komprimieren",
     description: "Bildgröße reduzieren ohne sichtbaren Qualitätsverlust",
     type: "file-tool",
-    path: "/datei-tools/bild-komprimieren",
+    path: "/de/datei-tools/bild-komprimieren",
     keywords: ["bild", "komprimieren", "verkleinern", "jpg", "png", "webp"]
   },
   {
@@ -92,7 +92,7 @@ const fileTools: SearchResult[] = [
     title: "Bildgröße ändern",
     description: "Abmessungen von Bildern durch neue Breite und Höhe ändern",
     type: "file-tool",
-    path: "/datei-tools/bild-groesse-aendern",
+    path: "/de/datei-tools/bild-groesse-aendern",
     keywords: ["bild", "größe", "resize", "abmessungen", "breite", "höhe"]
   },
   {
@@ -100,7 +100,7 @@ const fileTools: SearchResult[] = [
     title: "Bild zuschneiden",
     description: "Bilder durch Ziehen eines Auswahlbereichs zurechtschneiden",
     type: "file-tool",
-    path: "/datei-tools/bild-zuschneiden",
+    path: "/de/datei-tools/bild-zuschneiden",
     keywords: ["bild", "zuschneiden", "crop", "ausschnitt", "bereich"]
   },
   {
@@ -108,7 +108,7 @@ const fileTools: SearchResult[] = [
     title: "Bild drehen",
     description: "Bilder um 90°, 180°, 270° drehen oder spiegeln",
     type: "file-tool",
-    path: "/datei-tools/bild-drehen",
+    path: "/de/datei-tools/bild-drehen",
     keywords: ["bild", "drehen", "rotate", "spiegeln", "flip"]
   },
   {
@@ -116,7 +116,7 @@ const fileTools: SearchResult[] = [
     title: "Hintergrund entfernen",
     description: "KI-basierte Hintergrundentfernung für Personen- und Objektbilder",
     type: "file-tool",
-    path: "/datei-tools/hintergrund-entfernen",
+    path: "/de/datei-tools/hintergrund-entfernen",
     keywords: ["hintergrund", "entfernen", "freistellen", "ki", "background"]
   },
   // Converter Tools
@@ -125,7 +125,7 @@ const fileTools: SearchResult[] = [
     title: "PNG zu JPG",
     description: "PNG Bilder in JPG Format konvertieren",
     type: "file-tool",
-    path: "/bild/png-zu-jpg",
+    path: "/de/bild/png-zu-jpg",
     keywords: ["png", "jpg", "jpeg", "konvertieren", "converter"]
   },
   {
@@ -133,7 +133,7 @@ const fileTools: SearchResult[] = [
     title: "JPG zu PNG",
     description: "JPG Bilder in verlustfreies PNG Format umwandeln",
     type: "file-tool",
-    path: "/bild/jpg-zu-png",
+    path: "/de/bild/jpg-zu-png",
     keywords: ["jpg", "jpeg", "png", "konvertieren", "converter"]
   },
   {
@@ -141,7 +141,7 @@ const fileTools: SearchResult[] = [
     title: "WEBP zu JPG",
     description: "WEBP Bilder in JPG Format konvertieren",
     type: "file-tool",
-    path: "/bild/webp-zu-jpg",
+    path: "/de/bild/webp-zu-jpg",
     keywords: ["webp", "jpg", "jpeg", "konvertieren", "converter"]
   },
   {
@@ -149,7 +149,7 @@ const fileTools: SearchResult[] = [
     title: "WEBP zu PNG",
     description: "WEBP Bilder in PNG Format umwandeln",
     type: "file-tool",
-    path: "/bild/webp-zu-png",
+    path: "/de/bild/webp-zu-png",
     keywords: ["webp", "png", "konvertieren", "converter"]
   },
   {
@@ -157,7 +157,7 @@ const fileTools: SearchResult[] = [
     title: "HEIC zu JPG",
     description: "iPhone HEIC Bilder in JPG Format konvertieren",
     type: "file-tool",
-    path: "/bild/heic-zu-jpg",
+    path: "/de/bild/heic-zu-jpg",
     keywords: ["heic", "jpg", "jpeg", "iphone", "apple", "konvertieren"]
   },
   {
@@ -165,7 +165,7 @@ const fileTools: SearchResult[] = [
     title: "AVIF zu JPG",
     description: "AVIF Bilder in JPG Format konvertieren",
     type: "file-tool",
-    path: "/bild/avif-zu-jpg",
+    path: "/de/bild/avif-zu-jpg",
     keywords: ["avif", "jpg", "jpeg", "konvertieren", "converter"]
   },
   {
@@ -173,7 +173,7 @@ const fileTools: SearchResult[] = [
     title: "GIF zu MP4",
     description: "Animierte GIFs in MP4 Videos konvertieren",
     type: "file-tool",
-    path: "/gif-zu-mp4",
+    path: "/de/gif-zu-mp4",
     keywords: ["gif", "mp4", "video", "animation", "konvertieren"]
   }
 ];
@@ -184,7 +184,7 @@ const templateSearchResults: SearchResult[] = templates.map(template => ({
   title: template.title,
   description: template.description,
   type: 'template' as const,
-  path: `/vorlage/${template.slug}`,
+  path: `/de/vorlage/${template.slug}`,
   keywords: template.keywords
 }));
 
@@ -194,7 +194,7 @@ const categorySearchResults: SearchResult[] = categories.map(category => ({
   title: category.name,
   description: category.description,
   type: 'category' as const,
-  path: `/kategorie/${category.slug}`,
+  path: `/de/kategorie/${category.slug}`,
   keywords: [category.name.toLowerCase(), category.slug]
 }));
 
