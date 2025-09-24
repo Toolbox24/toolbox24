@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock } from "lucide-react";
+import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock, Star, Globe, Users } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -157,35 +157,76 @@ const Home = () => {
       </section>
 
       {/* About Toolbox24 */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">Warum Toolbox24?</h2>
+      <section className="py-20 bg-gradient-to-br from-muted/20 via-background to-primary/5 relative overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,.1)_50%,transparent_75%)] bg-[length:20px_20px] opacity-30"></div>
+        
+        <div className="container mx-auto px-4 relative">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+                Warum Toolbox24?
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Die umfassende Lösung für alle Ihre digitalen Bedürfnisse
+              </p>
+            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Alles an einem Ort</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Von PDF-Bearbeitung über Bildkonvertierung bis hin zu rechtssicheren Vorlagen - 
-                  Toolbox24 vereint alle wichtigen Online-Tools an einem Ort.
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              <div className="group">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-6 h-full hover:shadow-lg transition-all duration-300 hover:border-primary/30">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+                    <Globe className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Alles an einem Ort</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Von PDF-Bearbeitung über Bildkonvertierung bis hin zu rechtssicheren Vorlagen - 
+                    Toolbox24 vereint alle wichtigen Online-Tools an einem Ort.
+                  </p>
+                </div>
               </div>
               
-              <div>
-                <h3 className="text-xl font-semibold mb-4">Sicher und privat</h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  Alle Verarbeitungen erfolgen lokal in Ihrem Browser. Ihre Dateien werden 
-                  niemals hochgeladen oder gespeichert - maximaler Datenschutz garantiert.
-                </p>
+              <div className="group">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-6 h-full hover:shadow-lg transition-all duration-300 hover:border-primary/30">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+                    <Shield className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Sicher und privat</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Alle Verarbeitungen erfolgen lokal in Ihrem Browser. Ihre Dateien werden 
+                    niemals hochgeladen oder gespeichert - maximaler Datenschutz garantiert.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group">
+                <div className="bg-card/60 backdrop-blur-sm border border-border/50 rounded-xl p-6 h-full hover:shadow-lg transition-all duration-300 hover:border-primary/30">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
+                    <Clock className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Schnell & unkompliziert</h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    Intuitive Bedienung und blitzschnelle Ergebnisse. Keine langen Wartezeiten, 
+                    keine komplizierte Installation - einfach loslegen.
+                  </p>
+                </div>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-xl font-semibold mb-4 text-center">Für jeden Bedarf</h3>
-              <p className="text-muted-foreground leading-relaxed text-center">
+            <div className="text-center bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+              <div className="flex items-center justify-center mb-4">
+                <Star className="h-8 w-8 text-primary mr-3" />
+                <h3 className="text-2xl font-semibold text-foreground">Für jeden Bedarf</h3>
+                <Star className="h-8 w-8 text-primary ml-3" />
+              </div>
+              <p className="text-muted-foreground leading-relaxed text-lg max-w-3xl mx-auto">
                 Ob private Kündigung, professionelle Bewerbung oder geschäftliche Präsentation - 
-                unsere Tools unterstützen Sie bei allen digitalen Aufgaben schnell und unkompliziert.
+                unsere Tools unterstützen Sie bei allen digitalen Aufgaben schnell und zuverlässig.
               </p>
+              <div className="flex items-center justify-center mt-6 text-sm text-muted-foreground">
+                <Users className="h-4 w-4 mr-2" />
+                <span>Bereits von über 1 Million Nutzern vertraut</span>
+              </div>
             </div>
           </div>
         </div>
