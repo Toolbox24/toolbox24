@@ -73,9 +73,6 @@ const App = () => (
           <main className="flex-1">
             <LanguageRedirect />
             <Routes>
-              {/* Root redirect to German */}
-              <Route path="/" element={<div />} />
-              
               {/* German Routes */}
               <Route path="/de" element={<Home />} />
               <Route path="/de/" element={<Home />} />
