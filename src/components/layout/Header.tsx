@@ -182,7 +182,7 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/merge"
+                          to="/pdf-tools/pdf-zusammenfuegen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF zusammenfügen
@@ -190,7 +190,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/compress"
+                          to="/pdf-tools/pdf-komprimieren"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF komprimieren
@@ -198,7 +198,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/split"
+                          to="/pdf-tools/pdf-teilen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF teilen
@@ -206,7 +206,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/to-word"
+                          to="/pdf-tools/pdf-zu-word"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           PDF in Word umwandeln
@@ -215,7 +215,7 @@ const Header = () => {
                       <div className="border-t my-2"></div>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/pdf-tools/all"
+                          to="/pdf-tools/alle"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Alle PDF-Tools
@@ -233,7 +233,7 @@ const Header = () => {
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/file-tools/compress-image"
+                          to="/datei-tools/bild-komprimieren"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bild komprimieren
@@ -241,7 +241,7 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/file-tools/remove-background"
+                          to="/datei-tools/hintergrund-entfernen"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Hintergrund entfernen
@@ -249,28 +249,28 @@ const Header = () => {
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/file-tools/resize-image"
+                          to="/datei-tools/bild-groesse-aendern"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
                           Bildgröße ändern (Resize)
                         </Link>
                       </NavigationMenuLink>
                        <NavigationMenuLink asChild>
-                         <Link
-                           to="/file-tools/convert"
-                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                         >
-                           Bild konvertieren
-                         </Link>
+                          <Link
+                            to="/datei-tools/konverter"
+                            className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                          >
+                            Bild konvertieren
+                          </Link>
                        </NavigationMenuLink>
                        <div className="border-t my-2"></div>
                        <NavigationMenuLink asChild>
-                         <Link
-                           to="/file-tools/all"
-                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                         >
-                           Alle Datei-Tools
-                         </Link>
+                          <Link
+                            to="/datei-tools/alle"
+                            className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                          >
+                            Alle Datei-Tools
+                          </Link>
                        </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
@@ -450,32 +450,32 @@ const Header = () => {
                 {expandedSubmenu === 'pdf-tools' && (
                   <div className="ml-4 mt-2 space-y-1 animate-fade-in">
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/merge')}
+                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zusammenfuegen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF zusammenfügen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/compress')}
+                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-komprimieren')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF komprimieren
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/split')}
+                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-teilen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF teilen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/to-word')}
+                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zu-word')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       PDF in Word umwandeln
                     </button>
                     <div className="border-t my-2"></div>
                     <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/all')}
+                      onClick={() => handleMobileNavigation('/pdf-tools/alle')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
                     >
                       Alle PDF-Tools
@@ -500,32 +500,32 @@ const Header = () => {
                 {expandedSubmenu === 'datei-tools' && (
                   <div className="ml-4 mt-2 space-y-1 animate-fade-in">
                     <button
-                      onClick={() => handleMobileNavigation('/file-tools/compress-image')}
+                      onClick={() => handleMobileNavigation('/datei-tools/bild-komprimieren')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bild komprimieren
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/file-tools/remove-background')}
+                      onClick={() => handleMobileNavigation('/datei-tools/hintergrund-entfernen')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Hintergrund entfernen
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/file-tools/resize-image')}
+                      onClick={() => handleMobileNavigation('/datei-tools/bild-groesse-aendern')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bildgröße ändern
                     </button>
                     <button
-                      onClick={() => handleMobileNavigation('/file-tools/convert')}
+                      onClick={() => handleMobileNavigation('/datei-tools/konverter')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
                     >
                       Bild konvertieren
                     </button>
                     <div className="border-t my-2"></div>
                     <button
-                      onClick={() => handleMobileNavigation('/file-tools/all')}
+                      onClick={() => handleMobileNavigation('/datei-tools/alle')}
                       className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
                     >
                       Alle Datei-Tools

@@ -21,7 +21,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/pdf-tools/all")}
+                  onClick={() => navigate("/pdf-tools/alle")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   PDF Tools
@@ -29,7 +29,7 @@ const Footer = () => {
               </li>
               <li>
                 <button
-                  onClick={() => navigate("/file-tools/all")}
+                  onClick={() => navigate("/datei-tools/alle")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >
                   Datei Tools

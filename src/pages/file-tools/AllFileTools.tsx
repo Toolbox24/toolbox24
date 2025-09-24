@@ -56,32 +56,32 @@ const AllFileTools = () => {
       title: "Bild komprimieren",
       description: "Reduzieren Sie die Dateigröße Ihrer Bilder ohne sichtbaren Qualitätsverlust",
       icon: ImageIcon,
-      path: "/file-tools/compress-image",
+      path: "/datei-tools/bild-komprimieren",
       badge: "Beliebt"
     },
     {
       title: "Bildgröße ändern (Resize)",
       description: "Ändern Sie die Abmessungen Ihrer Bilder durch Eingabe neuer Breite und Höhe",
       icon: RefreshCw,
-      path: "/file-tools/resize-image"
+      path: "/datei-tools/bild-groesse-aendern"
     },
     {
       title: "Bild zuschneiden (Crop)",
       description: "Schneiden Sie Ihre Bilder durch Ziehen eines Auswahlbereichs zurecht",
       icon: Crop,
-      path: "/file-tools/crop-image"
+      path: "/datei-tools/bild-zuschneiden"
     },
     {
       title: "Bild drehen/flippen",
       description: "Drehen Sie Bilder um 90°, 180°, 270° oder spiegeln Sie sie horizontal/vertikal",
       icon: RotateCw,
-      path: "/file-tools/rotate-image"
+      path: "/datei-tools/bild-drehen"
     },
     {
       title: "Hintergrund entfernen",
       description: "Entfernen Sie automatisch den Hintergrund von Personen- und Objektbildern",
       icon: Trash2,
-      path: "/file-tools/remove-background",
+      path: "/datei-tools/hintergrund-entfernen",
       badge: "KI-basiert"
     }
   ];

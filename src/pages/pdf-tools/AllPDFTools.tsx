@@ -56,50 +56,50 @@ const AllPDFTools = () => {
       title: "PDF zusammenfügen",
       description: "Fügen Sie mehrere PDF-Dateien zu einem einzigen Dokument zusammen",
       icon: Merge,
-      path: "/pdf-tools/merge",
+      path: "/pdf-tools/pdf-zusammenfuegen",
       badge: "Beliebt"
     },
     {
       title: "PDF komprimieren",
       description: "Reduzieren Sie die Dateigröße Ihrer PDF-Dokumente ohne Qualitätsverlust",
       icon: Download,
-      path: "/pdf-tools/compress"
+      path: "/pdf-tools/pdf-komprimieren"
     },
     {
       title: "PDF teilen",
       description: "Extrahieren Sie bestimmte Seiten aus einem PDF-Dokument",
       icon: Scissors,
-      path: "/pdf-tools/split"
+      path: "/pdf-tools/pdf-teilen"
     },
     {
       title: "PDF in Word umwandeln",
       description: "Konvertieren Sie PDF-Dateien in bearbeitbare Word-Dokumente (DOCX)",
       icon: FileText,
-      path: "/pdf-tools/to-word"
+      path: "/pdf-tools/pdf-zu-word"
     },
     {
       title: "Word in PDF umwandeln",
       description: "Wandeln Sie Word-Dokumente (DOCX) in PDF-Format um",
       icon: FileText,
-      path: "/pdf-tools/from-word"
+      path: "/pdf-tools/word-zu-pdf"
     },
     {
       title: "PDF in Bilder umwandeln",
       description: "Konvertieren Sie PDF-Seiten in JPG oder PNG Bilder",
       icon: ImageIcon,
-      path: "/pdf-tools/to-images"
+      path: "/pdf-tools/pdf-zu-bilder"
     },
     {
       title: "Bilder in PDF umwandeln",
       description: "Erstellen Sie PDF-Dokumente aus JPG, PNG oder anderen Bildformaten",
       icon: FileImage,
-      path: "/pdf-tools/from-images"
+      path: "/pdf-tools/bilder-zu-pdf"
     },
     {
       title: "Seiten aus PDF löschen",
       description: "Entfernen Sie unerwünschte Seiten aus PDF-Dokumenten",
       icon: Trash2,
-      path: "/pdf-tools/delete-pages"
+      path: "/pdf-tools/seiten-loeschen"
     }
   ];
 

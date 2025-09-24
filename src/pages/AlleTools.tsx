@@ -14,25 +14,25 @@ const AlleTools = () => {
       title: "PDF zusammenfügen",
       description: "Mehrere PDF-Dateien zu einem Dokument vereinen",
       icon: Merge,
-      path: "/pdf-tools/merge"
+      path: "/pdf-tools/pdf-zusammenfuegen"
     },
     {
       title: "PDF komprimieren",
       description: "PDF-Dateigröße reduzieren ohne Qualitätsverlust",
       icon: Download,
-      path: "/pdf-tools/compress"
+      path: "/pdf-tools/pdf-komprimieren"
     },
     {
       title: "PDF teilen",
       description: "Seiten aus PDF-Dokumenten extrahieren",
       icon: Scissors,
-      path: "/pdf-tools/split"
+      path: "/pdf-tools/pdf-teilen"
     },
     {
       title: "PDF in Word umwandeln",
       description: "PDF-Dateien in bearbeitbare Word-Dokumente konvertieren",
       icon: FileText,
-      path: "/pdf-tools/to-word"
+      path: "/pdf-tools/pdf-zu-word"
     }
   ];
 
@@ -42,19 +42,19 @@ const AlleTools = () => {
       title: "Bild komprimieren",
       description: "Bildgröße reduzieren ohne sichtbaren Qualitätsverlust",
       icon: ImageIcon,
-      path: "/file-tools/compress-image"
+      path: "/datei-tools/bild-komprimieren"
     },
     {
       title: "Hintergrund entfernen",
       description: "KI-basierte Hintergrundentfernung für Bilder",
       icon: Trash2,
-      path: "/file-tools/remove-background"
+      path: "/datei-tools/hintergrund-entfernen"
     },
     {
       title: "Bildgröße ändern",
       description: "Abmessungen von Bildern anpassen",
       icon: RotateCw,
-      path: "/file-tools/resize-image"
+      path: "/datei-tools/bild-groesse-aendern"
     },
     {
       title: "PNG zu JPG",
@@ -130,7 +130,7 @@ const AlleTools = () => {
           <div className="text-center">
             <Button 
               size="lg"
-              onClick={() => navigate("/pdf-tools/all")}
+              onClick={() => navigate("/pdf-tools/alle")}
             >
               Alle PDF-Tools anzeigen
             </Button>
@@ -169,7 +169,7 @@ const AlleTools = () => {
           <div className="text-center">
             <Button 
               size="lg"
-              onClick={() => navigate("/file-tools/all")}
+              onClick={() => navigate("/datei-tools/alle")}
             >
               Alle Datei-Tools anzeigen
             </Button>

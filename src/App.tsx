@@ -77,28 +77,28 @@ const App = () => (
               <Route path="/alle-tools" element={<AlleTools />} />
               
               {/* PDF Tools */}
-              <Route path="/pdf-tools/all" element={<AllPDFTools />} />
-              <Route path="/pdf-tools/merge" element={<PDFMerge />} />
-              <Route path="/pdf-tools/compress" element={<PDFCompress />} />
-              <Route path="/pdf-tools/split" element={<PDFSplit />} />
-              <Route path="/pdf-tools/to-word" element={<PDFToWord />} />
-              <Route path="/pdf-tools/from-word" element={<WordToPDF />} />
-              <Route path="/pdf-tools/to-images" element={<PDFToImages />} />
-              <Route path="/pdf-tools/from-images" element={<ImagesToPDF />} />
-              <Route path="/pdf-tools/delete-pages" element={<PDFDeletePages />} />
+              <Route path="/pdf-tools/alle" element={<AllPDFTools />} />
+              <Route path="/pdf-tools/pdf-zusammenfuegen" element={<PDFMerge />} />
+              <Route path="/pdf-tools/pdf-komprimieren" element={<PDFCompress />} />
+              <Route path="/pdf-tools/pdf-teilen" element={<PDFSplit />} />
+              <Route path="/pdf-tools/pdf-zu-word" element={<PDFToWord />} />
+              <Route path="/pdf-tools/word-zu-pdf" element={<WordToPDF />} />
+              <Route path="/pdf-tools/pdf-zu-bilder" element={<PDFToImages />} />
+              <Route path="/pdf-tools/bilder-zu-pdf" element={<ImagesToPDF />} />
+              <Route path="/pdf-tools/seiten-loeschen" element={<PDFDeletePages />} />
               
-              {/* File Tools */}
-              <Route path="/file-tools/all" element={<AllFileTools />} />
-              <Route path="/file-tools/compress-image" element={<ImageCompress />} />
-              <Route path="/file-tools/resize-image" element={<ImageResize />} />
-              <Route path="/file-tools/crop-image" element={<ImageCrop />} />
-              <Route path="/file-tools/rotate-image" element={<ImageRotate />} />
-              <Route path="/file-tools/remove-background" element={<RemoveBackground />} />
-              <Route path="/file-tools/convert-png-jpg" element={<ImageConverter />} />
-              <Route path="/file-tools/convert-webp" element={<WebPConverter />} />
-              <Route path="/file-tools/heic-to-jpg" element={<HEICToJPG />} />
-              <Route path="/file-tools/gif-to-mp4" element={<GifToMp4 />} />
-              <Route path="/file-tools/convert" element={<ImageConverterHub />} />
+              {/* Datei Tools */}
+              <Route path="/datei-tools/alle" element={<AllFileTools />} />
+              <Route path="/datei-tools/bild-komprimieren" element={<ImageCompress />} />
+              <Route path="/datei-tools/bild-groesse-aendern" element={<ImageResize />} />
+              <Route path="/datei-tools/bild-zuschneiden" element={<ImageCrop />} />
+              <Route path="/datei-tools/bild-drehen" element={<ImageRotate />} />
+              <Route path="/datei-tools/hintergrund-entfernen" element={<RemoveBackground />} />
+              <Route path="/datei-tools/bild-konvertieren" element={<ImageConverter />} />
+              <Route path="/datei-tools/webp-konverter" element={<WebPConverter />} />
+              <Route path="/datei-tools/heic-zu-jpg" element={<HEICToJPG />} />
+              <Route path="/datei-tools/gif-zu-mp4" element={<GifToMp4 />} />
+              <Route path="/datei-tools/konverter" element={<ImageConverterHub />} />
               
               {/* Individual converter landing pages */}
               <Route path="/bild/png-zu-jpg" element={<PngToJpg />} />

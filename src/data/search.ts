@@ -16,7 +16,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF zusammenfügen",
     description: "Mehrere PDF-Dateien zu einem Dokument vereinen",
     type: "pdf-tool",
-    path: "/pdf-tools/merge",
+    path: "/pdf-tools/pdf-zusammenfuegen",
     keywords: ["pdf", "zusammenfügen", "merge", "verbinden", "vereinen"]
   },
   {
@@ -24,7 +24,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF komprimieren",
     description: "PDF-Dateigröße reduzieren ohne Qualitätsverlust",
     type: "pdf-tool",
-    path: "/pdf-tools/compress",
+    path: "/pdf-tools/pdf-komprimieren",
     keywords: ["pdf", "komprimieren", "verkleinern", "dateigröße", "compress"]
   },
   {
@@ -32,7 +32,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF teilen",
     description: "Seiten aus PDF-Dokumenten extrahieren",
     type: "pdf-tool",
-    path: "/pdf-tools/split",
+    path: "/pdf-tools/pdf-teilen",
     keywords: ["pdf", "teilen", "trennen", "seiten", "split", "extrahieren"]
   },
   {
@@ -40,7 +40,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF in Word umwandeln",
     description: "PDF-Dateien in bearbeitbare Word-Dokumente konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/to-word",
+    path: "/pdf-tools/pdf-zu-word",
     keywords: ["pdf", "word", "docx", "konvertieren", "umwandeln"]
   },
   {
@@ -48,7 +48,7 @@ const pdfTools: SearchResult[] = [
     title: "Word in PDF umwandeln",
     description: "Word-Dokumente in PDF-Format konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/from-word",
+    path: "/pdf-tools/word-zu-pdf",
     keywords: ["word", "pdf", "docx", "konvertieren", "umwandeln"]
   },
   {
@@ -56,7 +56,7 @@ const pdfTools: SearchResult[] = [
     title: "PDF in Bilder umwandeln",
     description: "PDF-Seiten in JPG oder PNG Bilder konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/to-images",
+    path: "/pdf-tools/pdf-zu-bilder",
     keywords: ["pdf", "bilder", "jpg", "png", "konvertieren", "images"]
   },
   {
@@ -64,7 +64,7 @@ const pdfTools: SearchResult[] = [
     title: "Bilder in PDF umwandeln",
     description: "JPG, PNG und andere Bilder in PDF konvertieren",
     type: "pdf-tool",
-    path: "/pdf-tools/from-images",
+    path: "/pdf-tools/bilder-zu-pdf",
     keywords: ["bilder", "pdf", "jpg", "png", "konvertieren", "images"]
   },
   {
@@ -72,7 +72,7 @@ const pdfTools: SearchResult[] = [
     title: "Seiten aus PDF löschen",
     description: "Unerwünschte Seiten aus PDF-Dokumenten entfernen",
     type: "pdf-tool",
-    path: "/pdf-tools/delete-pages",
+    path: "/pdf-tools/seiten-loeschen",
     keywords: ["pdf", "seiten", "löschen", "entfernen", "delete"]
   }
 ];
@@ -84,7 +84,7 @@ const fileTools: SearchResult[] = [
     title: "Bild komprimieren",
     description: "Bildgröße reduzieren ohne sichtbaren Qualitätsverlust",
     type: "file-tool",
-    path: "/file-tools/compress-image",
+    path: "/datei-tools/bild-komprimieren",
     keywords: ["bild", "komprimieren", "verkleinern", "jpg", "png", "webp"]
   },
   {
@@ -92,7 +92,7 @@ const fileTools: SearchResult[] = [
     title: "Bildgröße ändern",
     description: "Abmessungen von Bildern durch neue Breite und Höhe ändern",
     type: "file-tool",
-    path: "/file-tools/resize-image",
+    path: "/datei-tools/bild-groesse-aendern",
     keywords: ["bild", "größe", "resize", "abmessungen", "breite", "höhe"]
   },
   {
@@ -100,7 +100,7 @@ const fileTools: SearchResult[] = [
     title: "Bild zuschneiden",
     description: "Bilder durch Ziehen eines Auswahlbereichs zurechtschneiden",
     type: "file-tool",
-    path: "/file-tools/crop-image",
+    path: "/datei-tools/bild-zuschneiden",
     keywords: ["bild", "zuschneiden", "crop", "ausschnitt", "bereich"]
   },
   {
@@ -108,7 +108,7 @@ const fileTools: SearchResult[] = [
     title: "Bild drehen",
     description: "Bilder um 90°, 180°, 270° drehen oder spiegeln",
     type: "file-tool",
-    path: "/file-tools/rotate-image",
+    path: "/datei-tools/bild-drehen",
     keywords: ["bild", "drehen", "rotate", "spiegeln", "flip"]
   },
   {
@@ -116,7 +116,7 @@ const fileTools: SearchResult[] = [
     title: "Hintergrund entfernen",
     description: "KI-basierte Hintergrundentfernung für Personen- und Objektbilder",
     type: "file-tool",
-    path: "/file-tools/remove-background",
+    path: "/datei-tools/hintergrund-entfernen",
     keywords: ["hintergrund", "entfernen", "freistellen", "ki", "background"]
   },
   // Converter Tools
