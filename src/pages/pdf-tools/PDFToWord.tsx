@@ -98,7 +98,7 @@ const PDFToWord = () => {
     }
   };
 
-  const createWordDocument = async (text: string): Promise<Uint8Array> => {
+  const createWordDocument = async (text: string): Promise<Blob> => {
     setProcessStatus('Word-Dokument wird erstellt...');
     setProgress(85);
     
@@ -144,7 +144,8 @@ const PDFToWord = () => {
     });
     
     setProgress(95);
-    return await Packer.toBuffer(doc);
+    // Use browser-compatible Packer.toBlob() instead of toBuffer()
+    return await Packer.toBlob(doc);
   };
 
   const convertPDFToWord = async () => {
@@ -177,13 +178,10 @@ const PDFToWord = () => {
       setExtractedText(text);
       
       // Create Word document
-      const docxBuffer = await createWordDocument(text);
+      const docxBlob = await createWordDocument(text);
       
-      // Create download blob
-      const blob = new Blob([docxBuffer], { 
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' 
-      });
-      const url = URL.createObjectURL(blob);
+      // Create download URL directly from blob
+      const url = URL.createObjectURL(docxBlob);
       setDownloadUrl(url);
       setProgress(100);
       setProcessStatus('');
