@@ -3,31 +3,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useNavigate } from "react-router-dom";
 import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock, Star, Globe, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/hooks/useLanguage";
 
-const Home = () => {
+const HomeEN = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { getLocalizedPath } = useLanguage();
 
   const popularTools = [
     {
       title: t('home.popularTools.pdfMerge.title'),
       description: t('home.popularTools.pdfMerge.description'),
       icon: Merge,
-      path: getLocalizedPath("/pdf-tools/pdf-zusammenfuegen")
+      path: "/en/pdf-tools/merge-pdf"
     },
     {
       title: t('home.popularTools.removeBackground.title'),
       description: t('home.popularTools.removeBackground.description'),
       icon: Trash2,
-      path: getLocalizedPath("/datei-tools/hintergrund-entfernen")
+      path: "/en/file-tools/remove-background"
     },
     {
       title: t('home.popularTools.cancellationTemplate.title'),
       description: t('home.popularTools.cancellationTemplate.description'),
       icon: FileX,
-      path: getLocalizedPath("/kategorie/kuendigung")
+      path: "/en/category/cancellation"
     }
   ];
 
@@ -37,21 +35,21 @@ const Home = () => {
       emoji: "📄",
       description: t('home.services.templates.description'),
       buttonText: t('home.services.templates.button'),
-      path: getLocalizedPath("/alle-vorlagen")
+      path: "/en/all-templates"
     },
     {
       title: t('home.services.pdfTools.title'),
       emoji: "📋",
       description: t('home.services.pdfTools.description'),
       buttonText: t('home.services.pdfTools.button'),
-      path: getLocalizedPath("/pdf-tools/alle")
+      path: "/en/pdf-tools/all"
     },
     {
       title: t('home.services.fileTools.title'),
       emoji: "🖼️",
       description: t('home.services.fileTools.description'),
       buttonText: t('home.services.fileTools.button'),
-      path: getLocalizedPath("/datei-tools/alle")
+      path: "/en/file-tools/all"
     }
   ];
 
@@ -85,18 +83,18 @@ const Home = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Toolbox24
+              {t('home.title')}
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Kostenlose Online-Tools für PDFs, Bilder und Vorlagen
+              {t('home.subtitle')}
             </p>
             
             <Button 
               size="lg" 
               className="text-lg px-8 py-6"
-              onClick={() => navigate("/de/alle-tools")}
+              onClick={() => navigate("/en/all-tools")}
             >
-              Alle Tools entdecken
+              {t('home.cta')}
             </Button>
           </div>
         </div>
@@ -106,9 +104,9 @@ const Home = () => {
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Beliebte Tools</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{t('home.popularTools.title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Unsere meistgenutzten Online-Tools für den täglichen Bedarf
+              {t('home.popularTools.subtitle')}
             </p>
           </div>
           
@@ -131,7 +129,7 @@ const Home = () => {
                     className="w-full"
                     onClick={() => navigate(tool.path)}
                   >
-                    Jetzt nutzen
+                    {t('home.popularTools.pdfMerge.button')}
                   </Button>
                 </CardContent>
               </Card>
@@ -144,9 +142,9 @@ const Home = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">Alle Services</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">{t('home.services.title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Entdecken Sie unsere drei Hauptkategorien digitaler Tools
+              {t('home.services.subtitle')}
             </p>
           </div>
           
@@ -179,10 +177,10 @@ const Home = () => {
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
-                Warum Toolbox24?
+                {t('home.about.title')}
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Die umfassende Lösung für alle Ihre digitalen Bedürfnisse
+                {t('home.about.subtitle')}
               </p>
             </div>
             
@@ -192,10 +190,9 @@ const Home = () => {
                   <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
                     <Globe className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Alles an einem Ort</h3>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">{t('home.about.allInOne.title')}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Von PDF-Bearbeitung über Bildkonvertierung bis hin zu rechtssicheren Vorlagen - 
-                    Toolbox24 vereint alle wichtigen Online-Tools an einem Ort.
+                    {t('home.about.allInOne.description')}
                   </p>
                 </div>
               </div>
@@ -205,10 +202,9 @@ const Home = () => {
                   <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
                     <Shield className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Sicher und privat</h3>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">{t('home.about.secure.title')}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Alle Verarbeitungen erfolgen lokal in Ihrem Browser. Ihre Dateien werden 
-                    niemals hochgeladen oder gespeichert - maximaler Datenschutz garantiert.
+                    {t('home.about.secure.description')}
                   </p>
                 </div>
               </div>
@@ -218,10 +214,9 @@ const Home = () => {
                   <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/15 transition-colors">
                     <Clock className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">Schnell & unkompliziert</h3>
+                  <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">{t('home.about.fast.title')}</h3>
                   <p className="text-muted-foreground leading-relaxed">
-                    Intuitive Bedienung und blitzschnelle Ergebnisse. Keine langen Wartezeiten, 
-                    keine komplizierte Installation - einfach loslegen.
+                    {t('home.about.fast.description')}
                   </p>
                 </div>
               </div>
@@ -236,10 +231,10 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-black">
-              Ihre Vorteile
+              {t('home.advantages.title')}
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Entdecken Sie, warum Millionen von Nutzern Toolbox24 für ihre digitalen Aufgaben vertrauen
+              {t('home.advantages.subtitle')}
             </p>
           </div>
           
@@ -262,4 +257,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeEN;

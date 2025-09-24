@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { searchServices, SearchResult } from "@/data/search";
+import LanguageDropdown from "@/components/LanguageDropdown";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/useLanguage";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,6 +25,8 @@ const Header = () => {
   const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+  const { getLocalizedPath } = useLanguage();
 
   // Handle search input changes
   useEffect(() => {
@@ -50,7 +55,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(getLocalizedPath(`/suche?q=${encodeURIComponent(searchQuery.trim())}`));
       setShowResults(false);
     }
   };
@@ -115,7 +120,7 @@ const Header = () => {
             <div className="flex items-center gap-8">
               <h1 
                 className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
-                onClick={() => navigate("/de/")}
+                onClick={() => navigate(getLocalizedPath("/"))}
               >
                 Toolbox24
               </h1>
@@ -335,6 +340,11 @@ const Header = () => {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Language Dropdown */}
+          <div className="hidden lg:block">
+            <LanguageDropdown />
           </div>
 
           {/* Mobile Menu Button */}
