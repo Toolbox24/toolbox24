@@ -1,6 +1,9 @@
-import { Search, ChevronDown, FileText, File, Settings, Menu, X, ChevronRight } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -8,63 +11,45 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
-import { cn } from "@/lib/utils";
-import { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/hooks/useLanguage";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { searchServices, SearchResult } from "@/data/search";
+} from '@/components/ui/navigation-menu';
+import { Search, Menu, X, ChevronRight, FileText, Wrench, Image } from 'lucide-react';
+import { searchServices } from '@/data/search';
+import type { SearchResult } from '@/data/search';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Header = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [showResults, setShowResults] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
   const navigate = useNavigate();
-  const searchRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
 
-  // Handle search input changes
   useEffect(() => {
     if (searchQuery.trim()) {
       const results = searchServices(searchQuery);
       setSearchResults(results);
-      setShowResults(true);
     } else {
       setSearchResults([]);
-      setShowResults(false);
     }
   }, [searchQuery]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowResults(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       const searchPath = currentLanguage === 'en' ? '/en/search' : '/de/suche';
       navigate(`${searchPath}?q=${encodeURIComponent(searchQuery.trim())}`);
-      setShowResults(false);
+      setSearchQuery('');
+      setSearchResults([]);
     }
   };
 
   const handleResultClick = (result: SearchResult) => {
     navigate(result.path);
-    setSearchQuery("");
-    setShowResults(false);
+    setSearchQuery('');
+    setSearchResults([]);
   };
 
   const getTypeIcon = (type: SearchResult['type']) => {
@@ -73,9 +58,9 @@ const Header = () => {
       case 'category':
         return <FileText className="h-4 w-4" />;
       case 'pdf-tool':
-        return <File className="h-4 w-4" />;
+        return <FileText className="h-4 w-4" />;
       case 'file-tool':
-        return <Settings className="h-4 w-4" />;
+        return <Image className="h-4 w-4" />;
       default:
         return <FileText className="h-4 w-4" />;
     }
@@ -102,13 +87,13 @@ const Header = () => {
   const getTypeLabel = (type: SearchResult['type']) => {
     switch (type) {
       case 'template':
-        return 'Vorlage';
+        return currentLanguage === 'en' ? 'Template' : 'Vorlage';
       case 'category':
-        return 'Kategorie';
+        return currentLanguage === 'en' ? 'Category' : 'Kategorie';
       case 'pdf-tool':
         return 'PDF Tool';
       case 'file-tool':
-        return 'Datei Tool';
+        return currentLanguage === 'en' ? 'File Tool' : 'Datei Tool';
       default:
         return '';
     }
@@ -116,65 +101,54 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-card border-b sticky top-0 z-50 backdrop-blur-sm bg-card/95">
+      <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border/40">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-8">
-              <h1 
-                className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
-                onClick={() => navigate("/")}
-              >
-                Toolbox24
-              </h1>
-              
-              {/* Desktop Navigation Menu */}
-              <NavigationMenu className="hidden lg:flex">
+            {/* Logo */}
+            <Link to={currentLanguage === 'en' ? '/en/' : '/de/'} className="text-xl font-bold text-primary">
+              Toolbox24
+            </Link>
+
+            {/* Desktop Navigation */}
+            <NavigationMenu className="hidden md:flex">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent">
-                    Vorlagen
-                  </NavigationMenuTrigger>
+                  <NavigationMenuTrigger>{t('navigation.templates')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-64 p-4 space-y-2">
+                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
+                          <Link
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            to={currentLanguage === 'en' ? '/en/all-templates' : '/de/alle-vorlagen'}
+                          >
+                            <FileText className="h-6 w-6" />
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              {t('templates.allTemplates', { ns: 'templates' })}
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              {currentLanguage === 'en' 
+                                ? 'Discover our complete collection of professional document templates.'
+                                : 'Entdecken Sie unsere komplette Sammlung professioneller Dokumentvorlagen.'
+                              }
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </div>
                       <NavigationMenuLink asChild>
-                        <Link
-                          to="/kategorie/kuendigung"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Kündigungen
+                        <Link to={currentLanguage === 'en' ? '/en/category/kuendigungen' : '/de/kategorie/kuendigungen'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('templates.categories.kuendigungen.name', { ns: 'templates' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('templates.categories.kuendigungen.description', { ns: 'templates' })}
+                          </p>
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link
-                          to="/kategorie/bewerbung"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Bewerbungen
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/kategorie/vertraege"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Verträge & Arbeit
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/kategorie/finanzen"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Finanzen
-                        </Link>
-                      </NavigationMenuLink>
-                      <div className="border-t my-2"></div>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/alle-vorlagen"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Alle Vorlagen
+                        <Link to={currentLanguage === 'en' ? '/en/category/bewerbungen' : '/de/kategorie/bewerbungen'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('templates.categories.bewerbungen.name', { ns: 'templates' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('templates.categories.bewerbungen.description', { ns: 'templates' })}
+                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </div>
@@ -182,50 +156,39 @@ const Header = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent">
-                    PDF Tools
-                  </NavigationMenuTrigger>
+                  <NavigationMenuTrigger>{t('navigation.pdfTools')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-64 p-4 space-y-2">
+                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
+                          <Link
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            to={currentLanguage === 'en' ? '/en/pdf-tools' : '/de/pdf-tools'}
+                          >
+                            <Wrench className="h-6 w-6" />
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              {t('tools.pdfTools.title', { ns: 'tools' })}
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              {t('tools.pdfTools.description', { ns: 'tools' })}
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                      </div>
                       <NavigationMenuLink asChild>
-                        <Link
-                          to="/pdf-tools/pdf-zusammenfuegen"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          PDF zusammenfügen
+                        <Link to={currentLanguage === 'en' ? '/en/pdf-tools/merge-pdf' : '/de/pdf-tools/pdf-zusammenfuegen'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('tools.pdfTools.merge.title', { ns: 'tools' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('tools.pdfTools.merge.description', { ns: 'tools' })}
+                          </p>
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
-                        <Link
-                          to="/pdf-tools/pdf-komprimieren"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          PDF komprimieren
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/pdf-tools/pdf-teilen"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          PDF teilen
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/pdf-tools/pdf-zu-word"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          PDF in Word umwandeln
-                        </Link>
-                      </NavigationMenuLink>
-                      <div className="border-t my-2"></div>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/pdf-tools/alle"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Alle PDF-Tools
+                        <Link to={currentLanguage === 'en' ? '/en/pdf-tools/compress-pdf' : '/de/pdf-tools/pdf-komprimieren'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('tools.pdfTools.compress.title', { ns: 'tools' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('tools.pdfTools.compress.description', { ns: 'tools' })}
+                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </div>
@@ -233,221 +196,179 @@ const Header = () => {
                 </NavigationMenuItem>
 
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent">
-                    Datei-Tools
-                  </NavigationMenuTrigger>
+                  <NavigationMenuTrigger>{t('navigation.fileTools')}</NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <div className="w-64 p-4 space-y-2">
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/datei-tools/bild-komprimieren"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Bild komprimieren
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/datei-tools/hintergrund-entfernen"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Hintergrund entfernen
-                        </Link>
-                      </NavigationMenuLink>
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to="/datei-tools/bild-groesse-aendern"
-                          className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                        >
-                          Bildgröße ändern (Resize)
-                        </Link>
-                      </NavigationMenuLink>
-                       <NavigationMenuLink asChild>
+                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                      <div className="row-span-3">
+                        <NavigationMenuLink asChild>
                           <Link
-                            to="/datei-tools/konverter"
-                            className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
+                            className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
+                            to={currentLanguage === 'en' ? '/en/file-tools' : '/de/datei-tools'}
                           >
-                            Bild konvertieren
+                            <Image className="h-6 w-6" />
+                            <div className="mb-2 mt-4 text-lg font-medium">
+                              {t('tools.fileTools.title', { ns: 'tools' })}
+                            </div>
+                            <p className="text-sm leading-tight text-muted-foreground">
+                              {t('tools.fileTools.description', { ns: 'tools' })}
+                            </p>
                           </Link>
-                       </NavigationMenuLink>
-                       <div className="border-t my-2"></div>
-                       <NavigationMenuLink asChild>
-                          <Link
-                            to="/datei-tools/alle"
-                            className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
-                          >
-                            Alle Datei-Tools
-                          </Link>
-                       </NavigationMenuLink>
+                        </NavigationMenuLink>
+                      </div>
+                      <NavigationMenuLink asChild>
+                        <Link to={currentLanguage === 'en' ? '/en/file-tools/compress-image' : '/de/datei-tools/bild-komprimieren'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('tools.fileTools.imageCompress.title', { ns: 'tools' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('tools.fileTools.imageCompress.description', { ns: 'tools' })}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                      <NavigationMenuLink asChild>
+                        <Link to={currentLanguage === 'en' ? '/en/file-tools/convert-image' : '/de/datei-tools/bild-konvertieren'} className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                          <div className="text-sm font-medium leading-none">{t('tools.fileTools.imageConverter.title', { ns: 'tools' })}</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            {t('tools.fileTools.imageConverter.description', { ns: 'tools' })}
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-          </div>
-          
-          {/* Desktop Search */}
-          <div className="relative flex-1 max-w-md hidden lg:block" ref={searchRef}>
-            <form onSubmit={handleSearch}>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+
+            {/* Search Bar */}
+            <div className="hidden md:block relative flex-1 max-w-md">
+              <form onSubmit={handleSearch} className="relative">
                 <Input
                   type="text"
-                  placeholder="Services durchsuchen..."
+                  placeholder={t('search.placeholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => searchQuery.trim() && setShowResults(true)}
                   className="pl-10 pr-4"
                 />
-                <Button 
-                  type="submit" 
-                  size="sm" 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2"
-                >
-                  Suchen
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Button type="submit" size="sm" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 p-0">
+                  <Search className="h-4 w-4" />
                 </Button>
-              </div>
-            </form>
+              </form>
 
-            {/* Search Results Dropdown */}
-            {showResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 bg-background border border-border rounded-md shadow-lg mt-1 z-50 max-h-96 overflow-y-auto">
-                <div className="p-2">
-                  {searchResults.map((result) => (
-                    <button
-                      key={result.id}
-                      onClick={() => handleResultClick(result)}
-                      className="w-full text-left p-3 rounded hover:bg-muted transition-colors border-none bg-transparent"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="text-primary mt-0.5">
-                          {getTypeIcon(result.type)}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-foreground truncate">
-                              {result.title}
-                            </span>
-                            <span className="text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground">
-                              {getTypeLabel(result.type)}
-                            </span>
+              {/* Search Results Dropdown */}
+              {searchQuery.trim() && searchResults.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-96 overflow-y-auto">
+                  <div className="p-2">
+                    {searchResults.map((result) => (
+                      <button
+                        key={result.id}
+                        onClick={() => handleResultClick(result)}
+                        className="w-full text-left p-3 rounded hover:bg-muted transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="text-primary mt-0.5">
+                            {getTypeIcon(result.type)}
                           </div>
-                          <p className="text-sm text-muted-foreground line-clamp-1">
-                            {result.description}
-                          </p>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-foreground truncate">
+                                {result.title}
+                              </span>
+                              <Badge variant="secondary" className="text-xs">
+                                {getTypeLabel(result.type)}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-1">
+                              {result.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </button>
-                  ))}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            {/* Language Switcher and Mobile Menu */}
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher />
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="md:hidden"
+                onClick={toggleMobileMenu}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            </div>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMobileMenu}
-            className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors"
-            aria-label="Menu öffnen"
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
         </div>
-      </div>
-    </header>
+      </header>
 
-    {/* Mobile Menu Overlay */}
-    {isMobileMenuOpen && (
-      <div className="fixed inset-0 z-40 lg:hidden">
-        <div 
-          className="fixed inset-0 bg-black/50" 
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-        <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
-          <div className="p-6 space-y-6">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 bg-black/20" onClick={toggleMobileMenu} />
+          <div className="fixed top-0 right-0 bottom-0 w-full max-w-sm bg-background p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-lg font-semibold">Menu</span>
+              <Button variant="ghost" size="sm" onClick={toggleMobileMenu}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+
             {/* Mobile Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Services durchsuchen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (searchQuery.trim()) {
-                      handleMobileNavigation(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
-                    }
-                  }
-                }}
-              />
+            <div className="mb-6">
+              <form onSubmit={handleSearch} className="relative">
+                <Input
+                  type="text"
+                  placeholder={t('search.placeholder')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              </form>
             </div>
 
             {/* Mobile Navigation */}
-            <nav className="space-y-2">
-              {/* Vorlagen */}
+            <nav className="space-y-4">
               <div>
                 <button
-                  onClick={() => toggleSubmenu('vorlagen')}
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                  onClick={() => toggleSubmenu('templates')}
+                  className="flex items-center justify-between w-full py-2 text-sm font-medium"
                 >
-                  <span className="font-medium">Vorlagen</span>
+                  {t('navigation.templates')}
                   <ChevronRight 
                     className={`h-4 w-4 transition-transform ${
-                      expandedSubmenu === 'vorlagen' ? 'rotate-90' : ''
+                      expandedSubmenu === 'templates' ? 'rotate-90' : ''
                     }`} 
                   />
                 </button>
-                {expandedSubmenu === 'vorlagen' && (
-                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
-                    <button
-                      onClick={() => handleMobileNavigation('/kategorie/kuendigung')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Kündigungen
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/kategorie/bewerbung')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Bewerbungen
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/kategorie/vertraege')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Verträge & Arbeit
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/kategorie/finanzen')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Finanzen
-                    </button>
-                    <div className="border-t my-2"></div>
-                    <button
+                {expandedSubmenu === 'templates' && (
+                  <div className="ml-4 mt-2 space-y-2">
+                    <button 
                       onClick={() => handleMobileNavigation('/alle-vorlagen')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
                     >
-                      Alle Vorlagen
+                      {t('templates.allTemplates', { ns: 'templates' })}
+                    </button>
+                    <button 
+                      onClick={() => handleMobileNavigation('/kategorie/kuendigungen')}
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      {t('templates.categories.kuendigungen.name', { ns: 'templates' })}
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* PDF Tools */}
               <div>
                 <button
                   onClick={() => toggleSubmenu('pdf-tools')}
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                  className="flex items-center justify-between w-full py-2 text-sm font-medium"
                 >
-                  <span className="font-medium">PDF Tools</span>
+                  {t('navigation.pdfTools')}
                   <ChevronRight 
                     className={`h-4 w-4 transition-transform ${
                       expandedSubmenu === 'pdf-tools' ? 'rotate-90' : ''
@@ -455,118 +376,70 @@ const Header = () => {
                   />
                 </button>
                 {expandedSubmenu === 'pdf-tools' && (
-                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
-                    <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zusammenfuegen')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                  <div className="ml-4 mt-2 space-y-2">
+                    <button 
+                      onClick={() => handleMobileNavigation('/pdf-tools')}
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
                     >
-                      PDF zusammenfügen
+                      {t('tools.pdfTools.title', { ns: 'tools' })}
                     </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-komprimieren')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    <button 
+                      onClick={() => handleMobileNavigation(currentLanguage === 'en' ? '/pdf-tools/merge-pdf' : '/pdf-tools/pdf-zusammenfuegen')}
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
                     >
-                      PDF komprimieren
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-teilen')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      PDF teilen
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/pdf-zu-word')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      PDF in Word umwandeln
-                    </button>
-                    <div className="border-t my-2"></div>
-                    <button
-                      onClick={() => handleMobileNavigation('/pdf-tools/alle')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
-                    >
-                      Alle PDF-Tools
+                      {t('tools.pdfTools.merge.title', { ns: 'tools' })}
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Datei Tools */}
               <div>
                 <button
-                  onClick={() => toggleSubmenu('datei-tools')}
-                  className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-muted transition-colors text-left"
+                  onClick={() => toggleSubmenu('file-tools')}
+                  className="flex items-center justify-between w-full py-2 text-sm font-medium"
                 >
-                  <span className="font-medium">Datei Tools</span>
+                  {t('navigation.fileTools')}
                   <ChevronRight 
                     className={`h-4 w-4 transition-transform ${
-                      expandedSubmenu === 'datei-tools' ? 'rotate-90' : ''
+                      expandedSubmenu === 'file-tools' ? 'rotate-90' : ''
                     }`} 
                   />
                 </button>
-                {expandedSubmenu === 'datei-tools' && (
-                  <div className="ml-4 mt-2 space-y-1 animate-fade-in">
-                    <button
-                      onClick={() => handleMobileNavigation('/datei-tools/bild-komprimieren')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                {expandedSubmenu === 'file-tools' && (
+                  <div className="ml-4 mt-2 space-y-2">
+                    <button 
+                      onClick={() => handleMobileNavigation('/datei-tools')}
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
                     >
-                      Bild komprimieren
+                      {t('tools.fileTools.title', { ns: 'tools' })}
                     </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/datei-tools/hintergrund-entfernen')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
+                    <button 
+                      onClick={() => handleMobileNavigation(currentLanguage === 'en' ? '/file-tools/compress-image' : '/datei-tools/bild-komprimieren')}
+                      className="block w-full text-left py-1 text-sm text-muted-foreground hover:text-foreground"
                     >
-                      Hintergrund entfernen
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/datei-tools/bild-groesse-aendern')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Bildgröße ändern
-                    </button>
-                    <button
-                      onClick={() => handleMobileNavigation('/datei-tools/konverter')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm text-muted-foreground"
-                    >
-                      Bild konvertieren
-                    </button>
-                    <div className="border-t my-2"></div>
-                    <button
-                      onClick={() => handleMobileNavigation('/datei-tools/alle')}
-                      className="block w-full text-left p-2 rounded hover:bg-muted transition-colors text-sm font-medium"
-                    >
-                      Alle Datei-Tools
+                      {t('tools.fileTools.imageCompress.title', { ns: 'tools' })}
                     </button>
                   </div>
                 )}
               </div>
 
               {/* Direct Links */}
-              <div className="border-t pt-4 space-y-1">
-                <button
-                  onClick={() => handleMobileNavigation('/kontakt')}
-                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
-                >
-                  Kontakt
-                </button>
-                <button
-                  onClick={() => handleMobileNavigation('/impressum')}
-                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
-                >
-                  Impressum
-                </button>
-                <button
-                  onClick={() => handleMobileNavigation('/rechtliches')}
-                  className="w-full text-left p-3 rounded-lg hover:bg-muted transition-colors font-medium"
-                >
-                  Rechtliches
-                </button>
-              </div>
+              <button 
+                onClick={() => handleMobileNavigation('/kontakt')}
+                className="block w-full text-left py-2 text-sm font-medium"
+              >
+                {t('navigation.contact')}
+              </button>
+              <button 
+                onClick={() => handleMobileNavigation('/impressum')}
+                className="block w-full text-left py-2 text-sm font-medium"
+              >
+                {t('navigation.legal')}
+              </button>
             </nav>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   );
 };
