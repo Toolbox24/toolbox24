@@ -44,6 +44,14 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <button
+                  onClick={() => navigate("/blog")}
+                  className="text-muted-foreground hover:text-primary transition-colors text-left"
+                >
+                  Blog
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => navigate("/rechtliches")}
                   className="text-muted-foreground hover:text-primary transition-colors text-left"
                 >

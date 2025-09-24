@@ -17,6 +17,8 @@ import NotFound from "./pages/NotFound";
 import Rechtliches from "./pages/Rechtliches";
 import Impressum from "./pages/Impressum";
 import Kontakt from "./pages/Kontakt";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 
 // PDF Tools
 import AllPDFTools from "./pages/pdf-tools/AllPDFTools";
@@ -114,6 +116,10 @@ const App = () => (
               <Route path="/bild/png-komprimieren" element={<PngCompress />} />
               <Route path="/bild/svg-komprimieren" element={<SvgCompress />} />
               <Route path="/bild/gif-komprimieren" element={<GifCompress />} />
+              
+              {/* Blog Pages */}
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
               
               {/* Legal Pages */}
               <Route path="/rechtliches" element={<Rechtliches />} />
