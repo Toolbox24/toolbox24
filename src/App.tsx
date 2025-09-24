@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LanguageRedirect } from "@/components/LanguageRedirect";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import ScrollToTop from "./components/layout/ScrollToTop";
@@ -69,36 +70,93 @@ const App = () => (
           <Header />
           <main className="flex-1">
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/kategorie/:slug" element={<CategoryPage />} />
-              <Route path="/vorlage/:slug" element={<TemplateDetail />} />
-              <Route path="/suche" element={<SearchResults />} />
-              <Route path="/alle-vorlagen" element={<AllTemplates />} />
-              <Route path="/alle-tools" element={<AlleTools />} />
+              {/* Root redirect */}
+              <Route path="/" element={<LanguageRedirect />} />
               
-              {/* PDF Tools */}
-              <Route path="/pdf-tools/alle" element={<AllPDFTools />} />
-              <Route path="/pdf-tools/pdf-zusammenfuegen" element={<PDFMerge />} />
-              <Route path="/pdf-tools/pdf-komprimieren" element={<PDFCompress />} />
-              <Route path="/pdf-tools/pdf-teilen" element={<PDFSplit />} />
-              <Route path="/pdf-tools/pdf-zu-word" element={<PDFToWord />} />
-              <Route path="/pdf-tools/word-zu-pdf" element={<WordToPDF />} />
-              <Route path="/pdf-tools/pdf-zu-bilder" element={<PDFToImages />} />
-              <Route path="/pdf-tools/bilder-zu-pdf" element={<ImagesToPDF />} />
-              <Route path="/pdf-tools/seiten-loeschen" element={<PDFDeletePages />} />
+              {/* German routes */}
+              <Route path="/de" element={<Home />} />
+              <Route path="/de/" element={<Home />} />
+              <Route path="/de/kategorie/:slug" element={<CategoryPage />} />
+              <Route path="/de/vorlage/:slug" element={<TemplateDetail />} />
+              <Route path="/de/suche" element={<SearchResults />} />
+              <Route path="/de/alle-vorlagen" element={<AllTemplates />} />
+              <Route path="/de/alle-tools" element={<AlleTools />} />
               
-              {/* Datei Tools */}
-              <Route path="/datei-tools/alle" element={<AllFileTools />} />
-              <Route path="/datei-tools/bild-komprimieren" element={<ImageCompress />} />
-              <Route path="/datei-tools/bild-groesse-aendern" element={<ImageResize />} />
-              <Route path="/datei-tools/bild-zuschneiden" element={<ImageCrop />} />
-              <Route path="/datei-tools/bild-drehen" element={<ImageRotate />} />
-              <Route path="/datei-tools/hintergrund-entfernen" element={<RemoveBackground />} />
-              <Route path="/datei-tools/bild-konvertieren" element={<ImageConverter />} />
-              <Route path="/datei-tools/webp-konverter" element={<WebPConverter />} />
-              <Route path="/datei-tools/heic-zu-jpg" element={<HEICToJPG />} />
-              <Route path="/datei-tools/gif-zu-mp4" element={<GifToMp4 />} />
-              <Route path="/datei-tools/konverter" element={<ImageConverterHub />} />
+              {/* German PDF Tools */}
+              <Route path="/de/pdf-tools" element={<AllPDFTools />} />
+              <Route path="/de/pdf-tools/pdf-zusammenfuegen" element={<PDFMerge />} />
+              <Route path="/de/pdf-tools/pdf-komprimieren" element={<PDFCompress />} />
+              <Route path="/de/pdf-tools/pdf-teilen" element={<PDFSplit />} />
+              <Route path="/de/pdf-tools/pdf-zu-word" element={<PDFToWord />} />
+              <Route path="/de/pdf-tools/word-zu-pdf" element={<WordToPDF />} />
+              <Route path="/de/pdf-tools/pdf-zu-bilder" element={<PDFToImages />} />
+              <Route path="/de/pdf-tools/bilder-zu-pdf" element={<ImagesToPDF />} />
+              <Route path="/de/pdf-tools/seiten-loeschen" element={<PDFDeletePages />} />
+              
+              {/* German File Tools */}
+              <Route path="/de/datei-tools" element={<AllFileTools />} />
+              <Route path="/de/datei-tools/bild-komprimieren" element={<ImageCompress />} />
+              <Route path="/de/datei-tools/bild-groesse-aendern" element={<ImageResize />} />
+              <Route path="/de/datei-tools/bild-zuschneiden" element={<ImageCrop />} />
+              <Route path="/de/datei-tools/bild-drehen" element={<ImageRotate />} />
+              <Route path="/de/datei-tools/hintergrund-entfernen" element={<RemoveBackground />} />
+              <Route path="/de/datei-tools/bild-konvertieren" element={<ImageConverter />} />
+              <Route path="/de/datei-tools/webp-konverter" element={<WebPConverter />} />
+              <Route path="/de/datei-tools/heic-zu-jpg" element={<HEICToJPG />} />
+              <Route path="/de/datei-tools/gif-zu-mp4" element={<GifToMp4 />} />
+              <Route path="/de/datei-tools/konverter" element={<ImageConverterHub />} />
+              
+              {/* German Legal & Contact */}
+              <Route path="/de/rechtliches" element={<Rechtliches />} />
+              <Route path="/de/impressum" element={<Impressum />} />
+              <Route path="/de/kontakt" element={<Kontakt />} />
+              
+              {/* English routes */}
+              <Route path="/en" element={<Home />} />
+              <Route path="/en/" element={<Home />} />
+              <Route path="/en/category/:slug" element={<CategoryPage />} />
+              <Route path="/en/template/:slug" element={<TemplateDetail />} />
+              <Route path="/en/search" element={<SearchResults />} />
+              <Route path="/en/all-templates" element={<AllTemplates />} />
+              <Route path="/en/all-tools" element={<AlleTools />} />
+              
+              {/* English PDF Tools */}
+              <Route path="/en/pdf-tools" element={<AllPDFTools />} />
+              <Route path="/en/pdf-tools/merge-pdf" element={<PDFMerge />} />
+              <Route path="/en/pdf-tools/compress-pdf" element={<PDFCompress />} />
+              <Route path="/en/pdf-tools/split-pdf" element={<PDFSplit />} />
+              <Route path="/en/pdf-tools/pdf-to-word" element={<PDFToWord />} />
+              <Route path="/en/pdf-tools/word-to-pdf" element={<WordToPDF />} />
+              <Route path="/en/pdf-tools/pdf-to-images" element={<PDFToImages />} />
+              <Route path="/en/pdf-tools/images-to-pdf" element={<ImagesToPDF />} />
+              <Route path="/en/pdf-tools/delete-pages" element={<PDFDeletePages />} />
+              
+              {/* English File Tools */}
+              <Route path="/en/file-tools" element={<AllFileTools />} />
+              <Route path="/en/file-tools/compress-image" element={<ImageCompress />} />
+              <Route path="/en/file-tools/resize-image" element={<ImageResize />} />
+              <Route path="/en/file-tools/crop-image" element={<ImageCrop />} />
+              <Route path="/en/file-tools/rotate-image" element={<ImageRotate />} />
+              <Route path="/en/file-tools/remove-background" element={<RemoveBackground />} />
+              <Route path="/en/file-tools/convert-image" element={<ImageConverter />} />
+              <Route path="/en/file-tools/webp-converter" element={<WebPConverter />} />
+              <Route path="/en/file-tools/heic-to-jpg" element={<HEICToJPG />} />
+              <Route path="/en/file-tools/gif-to-mp4" element={<GifToMp4 />} />
+              <Route path="/en/file-tools/converter" element={<ImageConverterHub />} />
+              
+              {/* English Legal & Contact */}
+              <Route path="/en/legal" element={<Rechtliches />} />
+              <Route path="/en/imprint" element={<Impressum />} />
+              <Route path="/en/contact" element={<Kontakt />} />
+              
+              {/* Legacy routes - redirect to root for language detection */}
+              <Route path="/pdf-tools/*" element={<LanguageRedirect />} />
+              <Route path="/datei-tools/*" element={<LanguageRedirect />} />
+              <Route path="/alle-vorlagen" element={<LanguageRedirect />} />
+              <Route path="/alle-tools" element={<LanguageRedirect />} />
+              <Route path="/rechtliches" element={<LanguageRedirect />} />
+              <Route path="/impressum" element={<LanguageRedirect />} />
+              <Route path="/kontakt" element={<LanguageRedirect />} />
               
               {/* Individual converter landing pages */}
               <Route path="/bild/png-zu-jpg" element={<PngToJpg />} />
@@ -115,12 +173,6 @@ const App = () => (
               <Route path="/bild/svg-komprimieren" element={<SvgCompress />} />
               <Route path="/bild/gif-komprimieren" element={<GifCompress />} />
               
-              {/* Legal Pages */}
-              <Route path="/rechtliches" element={<Rechtliches />} />
-              <Route path="/impressum" element={<Impressum />} />
-              <Route path="/kontakt" element={<Kontakt />} />
-              
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>

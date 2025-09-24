@@ -1,0 +1,52 @@
+{
+  "categories": {
+    "kuendigungen": {
+      "name": "Kündigungen",
+      "description": "Professionelle Kündigungsschreiben für verschiedene Anlässe"
+    },
+    "bewerbungen": {
+      "name": "Bewerbungen", 
+      "description": "Moderne Bewerbungsunterlagen und Anschreiben"
+    },
+    "vertraege": {
+      "name": "Verträge",
+      "description": "Rechtssichere Vertragsvorlagen für den Alltag"
+    },
+    "geschaeftlich": {
+      "name": "Geschäftlich",
+      "description": "Professionelle Geschäftsdokumente und Briefe"
+    },
+    "privat": {
+      "name": "Privat",
+      "description": "Nützliche Vorlagen für private Angelegenheiten"
+    },
+    "finanzen": {
+      "name": "Finanzen", 
+      "description": "Finanzielle Dokumente und Anträge"
+    }
+  },
+  "templates": {
+    "title": "Vorlagen",
+    "description": "Professionelle Dokumentvorlagen für jeden Anlass",
+    "allTemplates": "Alle Vorlagen",
+    "searchPlaceholder": "Vorlagen durchsuchen...",
+    "noResults": "Keine Vorlagen gefunden",
+    "downloadWord": "Word herunterladen",
+    "downloadPdf": "PDF herunterladen",
+    "keywords": "Schlagwörter",
+    "category": "Kategorie",
+    "disclaimer": {
+      "title": "Rechtlicher Hinweis",
+      "text": "Unsere Vorlagen dienen als Orientierungshilfe. Bitte prüfen Sie alle Inhalte sorgfältig und passen Sie diese an Ihre individuellen Bedürfnisse an. Bei rechtlichen Fragen konsultieren Sie einen Anwalt."
+    },
+    "howToUse": {
+      "title": "So verwenden Sie die Vorlage:",
+      "steps": [
+        "Laden Sie die Vorlage im gewünschten Format herunter",
+        "Öffnen Sie die Datei in Word oder einem PDF-Reader",
+        "Passen Sie alle Platzhalter und Inhalte an Ihre Situation an",
+        "Prüfen Sie das Dokument sorgfältig vor der Verwendung"
+      ]
+    }
+  }
+}

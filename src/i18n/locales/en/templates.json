@@ -1,0 +1,52 @@
+{
+  "categories": {
+    "kuendigungen": {
+      "name": "Termination Letters",
+      "description": "Professional termination letters for various occasions"
+    },
+    "bewerbungen": {
+      "name": "Applications",
+      "description": "Modern application documents and cover letters"
+    },
+    "vertraege": {
+      "name": "Contracts",
+      "description": "Legally sound contract templates for everyday use"
+    },
+    "geschaeftlich": {
+      "name": "Business",
+      "description": "Professional business documents and letters"
+    },
+    "privat": {
+      "name": "Private",
+      "description": "Useful templates for private matters"
+    },
+    "finanzen": {
+      "name": "Finance",
+      "description": "Financial documents and applications"
+    }
+  },
+  "templates": {
+    "title": "Templates",
+    "description": "Professional document templates for every occasion",
+    "allTemplates": "All Templates", 
+    "searchPlaceholder": "Search templates...",
+    "noResults": "No templates found",
+    "downloadWord": "Download Word",
+    "downloadPdf": "Download PDF",
+    "keywords": "Keywords",
+    "category": "Category",
+    "disclaimer": {
+      "title": "Legal Notice",
+      "text": "Our templates serve as guidance. Please carefully review all content and adapt it to your individual needs. For legal questions, consult a lawyer."
+    },
+    "howToUse": {
+      "title": "How to use the template:",
+      "steps": [
+        "Download the template in your preferred format",
+        "Open the file in Word or a PDF reader",
+        "Adapt all placeholders and content to your situation",
+        "Carefully review the document before use"
+      ]
+    }
+  }
+}

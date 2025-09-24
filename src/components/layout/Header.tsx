@@ -87,7 +87,8 @@ const Header = () => {
   };
 
   const handleMobileNavigation = (path: string) => {
-    navigate(path);
+    const fullPath = currentLanguage === 'en' ? `/en${path}` : `/de${path}`;
+    navigate(fullPath);
     setIsMobileMenuOpen(false);
     setExpandedSubmenu(null);
   };

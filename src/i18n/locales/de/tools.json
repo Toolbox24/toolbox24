@@ -1,0 +1,97 @@
+{
+  "pdfTools": {
+    "title": "PDF Tools",
+    "description": "Professionelle PDF-Bearbeitung direkt im Browser",
+    "merge": {
+      "title": "PDF zusammenfügen",
+      "description": "Mehrere PDF-Dateien zu einem Dokument zusammenfügen",
+      "howTo": "So funktioniert's:",
+      "steps": [
+        "Wählen Sie mindestens 2 PDF-Dateien aus (bis zu 50MB pro Datei)",
+        "Die Dateien werden in der Reihenfolge zusammengefügt, wie Sie sie ausgewählt haben", 
+        "Klicken Sie auf \"PDFs zusammenfügen\"",
+        "Laden Sie die zusammengefügte PDF-Datei herunter"
+      ],
+      "button": "PDFs zusammenfügen",
+      "processing": "Verarbeitung...",
+      "success": "PDF erfolgreich zusammengefügt!",
+      "downloadButton": "Zusammengefügte PDF herunterladen",
+      "error": {
+        "minFiles": "Bitte wählen Sie mindestens 2 PDF-Dateien aus.",
+        "processing": "Fehler beim Zusammenfügen der PDFs."
+      }
+    },
+    "compress": {
+      "title": "PDF komprimieren",
+      "description": "PDF-Dateien komprimieren und Dateigröße reduzieren"
+    },
+    "split": {
+      "title": "PDF teilen", 
+      "description": "PDF-Dokumente in einzelne Seiten aufteilen"
+    },
+    "deletePages": {
+      "title": "PDF-Seiten löschen",
+      "description": "Unerwünschte Seiten aus PDF-Dokumenten entfernen"
+    },
+    "toWord": {
+      "title": "PDF zu Word",
+      "description": "PDF-Dateien in bearbeitbare Word-Dokumente konvertieren"
+    },
+    "wordToPdf": {
+      "title": "Word zu PDF", 
+      "description": "Word-Dokumente in PDF-Format konvertieren"
+    },
+    "toImages": {
+      "title": "PDF zu Bildern",
+      "description": "PDF-Seiten als Bilddateien exportieren"
+    },
+    "imagesToPdf": {
+      "title": "Bilder zu PDF",
+      "description": "Mehrere Bilder in ein PDF-Dokument konvertieren"
+    }
+  },
+  "fileTools": {
+    "title": "Datei-Tools",
+    "description": "Umfassende Datei-Bearbeitung und Konvertierung",
+    "imageCompress": {
+      "title": "Bild komprimieren",
+      "description": "Bildgrößen reduzieren ohne Qualitätsverlust"
+    },
+    "imageConverter": {
+      "title": "Bild konvertieren", 
+      "description": "Bilder zwischen verschiedenen Formaten konvertieren"
+    },
+    "imageCrop": {
+      "title": "Bild zuschneiden",
+      "description": "Bilder präzise zuschneiden und anpassen"
+    },
+    "imageResize": {
+      "title": "Bildgröße ändern",
+      "description": "Bildabmessungen anpassen"
+    },
+    "imageRotate": {
+      "title": "Bild drehen",
+      "description": "Bilder um beliebige Winkel drehen"
+    },
+    "removeBackground": {
+      "title": "Hintergrund entfernen",
+      "description": "Automatisch Hintergründe aus Bildern entfernen"
+    },
+    "webpConverter": {
+      "title": "WebP Konverter",
+      "description": "WebP-Bilder in andere Formate konvertieren"
+    },
+    "heicToJpg": {
+      "title": "HEIC zu JPG",
+      "description": "HEIC-Bilder von Apple-Geräten zu JPG konvertieren"
+    },
+    "gifToMp4": {
+      "title": "GIF zu MP4",
+      "description": "Animierte GIFs in MP4-Videos konvertieren"
+    }
+  },
+  "privacy": {
+    "title": "Datenschutz garantiert",
+    "description": "Alle Verarbeitungen erfolgen lokal in Ihrem Browser. Ihre Dateien werden nicht an externe Server übertragen."
+  }
+}
