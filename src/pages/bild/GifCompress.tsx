@@ -140,7 +140,7 @@ const GifCompress = () => {
           <div className="page-header">
             <h1 className="page-title flex items-center justify-center gap-2">
               <ImageIcon className="h-8 w-8 text-primary" />
-              GIF komprimieren online – kostenlos & sicher
+              GIF komprimieren
             </h1>
             <p className="page-description">
               Reduzieren Sie die Dateigröße Ihrer GIF-Animationen. Für bessere Kompression empfehlen wir die Konvertierung zu MP4.

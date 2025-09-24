@@ -109,7 +109,7 @@ const SvgCompress = () => {
           <div className="page-header">
             <h1 className="page-title flex items-center justify-center gap-2">
               <ImageIcon className="h-8 w-8 text-primary" />
-              SVG komprimieren online – kostenlos & sicher
+              SVG komprimieren
             </h1>
             <p className="page-description">
               Reduzieren Sie die Dateigröße Ihrer SVG-Grafiken durch Entfernung überflüssiger Elemente und Optimierung.

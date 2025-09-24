@@ -131,7 +131,7 @@ const JpegCompress = () => {
           <div className="page-header">
             <h1 className="page-title flex items-center justify-center gap-2">
               <ImageIcon className="h-8 w-8 text-primary" />
-              JPEG komprimieren online – kostenlos & sicher
+              JPG komprimieren
             </h1>
             <p className="page-description">
               Reduzieren Sie die Dateigröße Ihrer JPEG-Bilder schnell und kostenlos direkt in Ihrem Browser.
