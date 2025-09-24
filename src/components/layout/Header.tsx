@@ -129,17 +129,17 @@ const Header = () => {
               <NavigationMenu className="hidden lg:flex">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent">
-                    Vorlagen
-                  </NavigationMenuTrigger>
+                      <NavigationMenuTrigger className="bg-transparent">
+                        {t('nav.templates')}
+                      </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to="/de/kategorie/kuendigung"
+                          to={getLocalizedPath("/kategorie/kuendigung")}
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
-                          Kündigungen
+                          {t('nav.categories.termination')}
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
@@ -181,7 +181,7 @@ const Header = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent">
-                    PDF Tools
+                    {t('nav.pdfTools')}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
@@ -232,7 +232,7 @@ const Header = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent">
-                    Datei-Tools
+                    {t('nav.fileTools')}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
@@ -291,7 +291,7 @@ const Header = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
-                  placeholder="Services durchsuchen..."
+                  placeholder={t('nav.search')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowResults(true)}
@@ -302,7 +302,7 @@ const Header = () => {
                   size="sm" 
                   className="absolute right-1 top-1/2 transform -translate-y-1/2"
                 >
-                  Suchen
+                  {t('nav.searchButton')}
                 </Button>
               </div>
             </form>
