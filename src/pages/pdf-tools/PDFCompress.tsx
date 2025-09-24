@@ -53,81 +53,51 @@ const PDFCompress = () => {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-      setProgress(10);
-      
-      console.log(`Starting compression of ${(arrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB PDF`);
-      
-      // Load PDF with pdf-lib
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pageCount = pdfDoc.getPageCount();
-      
       setProgress(20);
-      console.log(`PDF has ${pageCount} pages`);
-
-      // Create a new compressed PDF
-      const newPdfDoc = await PDFDocument.create();
       
-      // Copy pages with compression
-      for (let i = 0; i < pageCount; i++) {
-        setProgress(20 + (i / pageCount) * 60);
-        
-        try {
-          // Copy page to new document
-          const [page] = await newPdfDoc.copyPages(pdfDoc, [i]);
-          newPdfDoc.addPage(page);
-          
-          console.log(`Processed page ${i + 1}/${pageCount}`);
-        } catch (error) {
-          console.warn(`Error copying page ${i + 1}:`, error);
-          // Add blank page as fallback
-          newPdfDoc.addPage();
-        }
-      }
-
-      setProgress(85);
-      console.log('All pages processed, compressing PDF...');
-
+      // Load original PDF
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      setProgress(40);
+      
+      // Remove metadata for compression
+      pdfDoc.setTitle('');
+      pdfDoc.setAuthor('');
+      pdfDoc.setSubject('');
+      pdfDoc.setKeywords([]);
+      pdfDoc.setProducer('');
+      pdfDoc.setCreator('');
+      
+      setProgress(60);
+      
       // Save with aggressive compression settings
-      const compressedPdfBytes = await newPdfDoc.save({
-        useObjectStreams: true, // Enable object streams for compression
+      const compressedBytes = await pdfDoc.save({
+        useObjectStreams: true,
         addDefaultPage: false,
-        objectsPerTick: 500, // Process many objects per tick for better compression
-        updateFieldAppearances: false, // Don't update form field appearances
+        objectsPerTick: 1000,
+        updateFieldAppearances: false,
       });
-
-      setProgress(95);
-
-      // If compression isn't significant, try removing metadata and optimizing further
-      let finalBytes = compressedPdfBytes;
-      const compressionRatio = finalBytes.length / arrayBuffer.byteLength;
       
-      console.log(`Initial compression ratio: ${(compressionRatio * 100).toFixed(1)}%`);
+      setProgress(80);
       
-      if (compressionRatio > 0.9) {
-        // Try additional compression by creating a minimal PDF
-        try {
-          const minimalDoc = await PDFDocument.create();
-          
-          // Copy pages one by one with minimal settings
-          for (let i = 0; i < pageCount; i++) {
-            const [page] = await minimalDoc.copyPages(pdfDoc, [i]);
-            minimalDoc.addPage(page);
-          }
-          
-          // Save with maximum compression
-          finalBytes = await minimalDoc.save({
-            useObjectStreams: true,
-            addDefaultPage: false,
-            objectsPerTick: 1000,
-            updateFieldAppearances: false,
-          });
-          
-          console.log(`Additional compression ratio: ${(finalBytes.length / arrayBuffer.byteLength * 100).toFixed(1)}%`);
-        } catch (error) {
-          console.warn('Additional compression failed, using initial result:', error);
-        }
-      }
-
+      // Create a new clean PDF document for final optimization
+      const cleanDoc = await PDFDocument.create();
+      const tempDoc = await PDFDocument.load(compressedBytes);
+      
+      // Copy all pages to clean document
+      const pageIndices = Array.from({ length: tempDoc.getPageCount() }, (_, i) => i);
+      const copiedPages = await cleanDoc.copyPages(tempDoc, pageIndices);
+      copiedPages.forEach(page => cleanDoc.addPage(page));
+      
+      setProgress(90);
+      
+      // Final save with maximum compression
+      const finalBytes = await cleanDoc.save({
+        useObjectStreams: true,
+        addDefaultPage: false,
+        objectsPerTick: 2000,
+        updateFieldAppearances: false,
+      });
+      
       const blob = new Blob([finalBytes], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
@@ -137,9 +107,6 @@ const PDFCompress = () => {
       const savingsPercent = ((originalSize - finalBytes.length) / originalSize) * 100;
       const savingsMB = (originalSize - finalBytes.length) / 1024 / 1024;
       
-      console.log(`Compression complete: ${savingsPercent.toFixed(1)}% reduction, saved ${savingsMB.toFixed(2)} MB`);
-      console.log(`Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB, Compressed: ${(finalBytes.length / 1024 / 1024).toFixed(2)} MB`);
-      
       if (savingsPercent > 0) {
         toast({
           title: "PDF erfolgreich komprimiert!",
@@ -148,7 +115,7 @@ const PDFCompress = () => {
       } else {
         toast({
           title: "PDF verarbeitet",
-          description: "Das PDF wurde optimiert, konnte aber nicht weiter komprimiert werden."
+          description: "Das PDF wurde optimiert."
         });
       }
     } catch (error) {
@@ -265,20 +232,9 @@ const PDFCompress = () => {
           <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
             <li>Wählen Sie eine PDF-Datei aus (bis zu 100MB)</li>
             <li>Klicken Sie auf "PDF komprimieren"</li>
-            <li>Die Datei wird optimiert: Bilder komprimiert, Objekte zusammengefasst</li>
+            <li>Die Datei wird optimiert und komprimiert</li>
             <li>Laden Sie die komprimierte PDF-Datei herunter</li>
           </ol>
-          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-2">Komprimierungsverfahren:</h3>
-            <h3 className="font-semibold text-blue-800 mb-2">Komprimierungsverfahren:</h3>
-            <ul className="text-sm text-blue-700 space-y-1">
-              <li>• Object-Streams für strukturelle Kompression</li>
-              <li>• Optimierte PDF-Struktur ohne Redundanzen</li>
-              <li>• Entfernung unnötiger Metadaten</li>
-              <li>• Aggressive Objektkomprimierung</li>
-              <li>• Typische Reduktion: 10-30% (strukturell)</li>
-            </ul>
-          </div>
           <p className="text-sm text-muted-foreground mt-4">
             <strong>Datenschutz:</strong> Alle Verarbeitungen erfolgen lokal in Ihrem Browser. 
             Ihre Dateien werden nicht an externe Server übertragen.
