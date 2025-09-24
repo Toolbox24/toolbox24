@@ -223,17 +223,17 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="text-center bg-card/40 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+            <div className="text-center bg-primary rounded-2xl p-8">
               <div className="flex items-center justify-center mb-4">
-                <Star className="h-8 w-8 text-primary mr-3" />
-                <h3 className="text-2xl font-semibold text-foreground">Für jeden Bedarf</h3>
-                <Star className="h-8 w-8 text-primary ml-3" />
+                <Star className="h-8 w-8 text-white mr-3" />
+                <h3 className="text-2xl font-semibold text-white">Für jeden Bedarf</h3>
+                <Star className="h-8 w-8 text-white ml-3" />
               </div>
-              <p className="text-muted-foreground leading-relaxed text-lg max-w-3xl mx-auto">
+              <p className="text-white/90 leading-relaxed text-lg max-w-3xl mx-auto">
                 Ob private Kündigung, professionelle Bewerbung oder geschäftliche Präsentation - 
                 unsere Tools unterstützen Sie bei allen digitalen Aufgaben schnell und zuverlässig.
               </p>
-              <div className="flex items-center justify-center mt-6 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center mt-6 text-sm text-white/80">
                 <Users className="h-4 w-4 mr-2" />
                 <span>Bereits von über 1 Million Nutzern vertraut</span>
               </div>
