@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileUpload } from "@/components/ui/file-upload";
@@ -52,8 +52,9 @@ const ImageCrop = () => {
   };
 
   const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !imageRef.current) return;
     
+    e.preventDefault();
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -62,14 +63,19 @@ const ImageCrop = () => {
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
     
+    // Ensure coordinates are within image bounds
+    const boundedX = Math.max(0, Math.min(x, canvas.width));
+    const boundedY = Math.max(0, Math.min(y, canvas.height));
+    
     setIsDragging(true);
-    setDragStart({ x, y });
-    setCropArea({ x, y, width: 0, height: 0 });
+    setDragStart({ x: boundedX, y: boundedY });
+    setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current) return;
     
+    e.preventDefault();
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -78,14 +84,24 @@ const ImageCrop = () => {
     const currentX = (e.clientX - rect.left) * scaleX;
     const currentY = (e.clientY - rect.top) * scaleY;
     
-    const width = currentX - dragStart.x;
-    const height = currentY - dragStart.y;
+    // Ensure coordinates are within image bounds
+    const boundedCurrentX = Math.max(0, Math.min(currentX, canvas.width));
+    const boundedCurrentY = Math.max(0, Math.min(currentY, canvas.height));
+    
+    const width = boundedCurrentX - dragStart.x;
+    const height = boundedCurrentY - dragStart.y;
+    
+    // Calculate proper crop area (handle negative width/height)
+    const cropX = width < 0 ? boundedCurrentX : dragStart.x;
+    const cropY = height < 0 ? boundedCurrentY : dragStart.y;
+    const cropWidth = Math.abs(width);
+    const cropHeight = Math.abs(height);
     
     setCropArea({
-      x: width < 0 ? currentX : dragStart.x,
-      y: height < 0 ? currentY : dragStart.y,
-      width: Math.abs(width),
-      height: Math.abs(height)
+      x: cropX,
+      y: cropY,
+      width: cropWidth,
+      height: cropHeight
     });
   }, [isDragging, dragStart]);
 
@@ -101,32 +117,57 @@ const ImageCrop = () => {
     const ctx = canvas.getContext('2d');
     const img = imageRef.current;
     
-    if (!ctx) return;
+    if (!ctx || !img.complete) return;
     
-    // Set canvas size to match image
+    // Set canvas size to match image natural dimensions
     canvas.width = img.naturalWidth;
     canvas.height = img.naturalHeight;
     
-    // Draw image
-    ctx.drawImage(img, 0, 0);
+    // Clear canvas first
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Draw crop overlay
+    // Draw image
+    ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight);
+    
+    // Draw crop overlay if cropArea exists
     if (cropArea && cropArea.width > 0 && cropArea.height > 0) {
-      // Semi-transparent overlay
+      // Semi-transparent overlay over entire image
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
-      // Clear crop area
+      // Clear crop area (remove overlay from selected region)
       ctx.clearRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
-      ctx.drawImage(img, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 
-                   cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+      
+      // Redraw the image in the crop area
+      ctx.drawImage(
+        img, 
+        cropArea.x, cropArea.y, cropArea.width, cropArea.height,
+        cropArea.x, cropArea.y, cropArea.width, cropArea.height
+      );
       
       // Draw crop border
       ctx.strokeStyle = '#3b82f6';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
+      
+      // Add corner handles for better UX
+      const handleSize = 8;
+      ctx.fillStyle = '#3b82f6';
+      // Top-left
+      ctx.fillRect(cropArea.x - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
+      // Top-right
+      ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
+      // Bottom-left
+      ctx.fillRect(cropArea.x - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
+      // Bottom-right
+      ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
     }
   }, [previewUrl, cropArea]);
+
+  // Add useEffect to redraw canvas when cropArea changes
+  useEffect(() => {
+    drawCanvas();
+  }, [drawCanvas, cropArea]);
 
   const resetCrop = () => {
     setCropArea(null);
@@ -271,8 +312,11 @@ const ImageCrop = () => {
                     ref={imageRef}
                     src={previewUrl}
                     alt="Vorschau"
-                    className="hidden"
-                    onLoad={drawCanvas}
+                     className="hidden"
+                     onLoad={() => {
+                       // Small delay to ensure image is fully rendered
+                       setTimeout(drawCanvas, 10);
+                     }}
                   />
                   <canvas
                     ref={canvasRef}
@@ -287,14 +331,14 @@ const ImageCrop = () => {
                       height: 'auto'
                     }}
                   />
-                  {!cropArea && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white">
-                      <div className="text-center">
-                        <Crop className="h-8 w-8 mx-auto mb-2" />
-                        <p>Ziehen Sie einen Bereich zum Zuschneiden aus</p>
-                      </div>
-                    </div>
-                  )}
+                   {(!cropArea || cropArea.width === 0) && (
+                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white pointer-events-none">
+                       <div className="text-center">
+                         <Crop className="h-8 w-8 mx-auto mb-2" />
+                         <p>Ziehen Sie einen Bereich zum Zuschneiden aus</p>
+                       </div>
+                     </div>
+                   )}
                 </div>
 
                 {cropArea && cropArea.width > 0 && cropArea.height > 0 && (
