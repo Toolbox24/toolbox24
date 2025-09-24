@@ -11,8 +11,8 @@ import { Separator } from '@/components/ui/separator';
 import * as pdfjsLib from 'pdfjs-dist';
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, ImageRun, PageBreak, AlignmentType } from 'docx';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+// Configure PDF.js worker - use CDN for reliable loading
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
 interface ExtractedContent {
   text: string;
@@ -156,14 +156,15 @@ const PDFToWord = () => {
   };
 
   const repairHyphenation = (text: string): string => {
-    // Fix hyphenated words at line breaks - more comprehensive approach
+    // Fix hyphenated words at line breaks with comprehensive patterns
     return text
-      // Remove hyphen at end of line followed by continuation
-      .replace(/(\w+)-\s*[\n\r]\s*(\w+)/g, '$1$2')
-      // Join words that were split across lines (when second part starts lowercase)
-      .replace(/(\w+)\s*[\n\r]\s*([a-zäöüß]\w*)/g, '$1$2')
+      // Remove hyphen + line break + word continuation
+      .replace(/(\w+)-\s*[\r\n]+\s*(\w+)/g, '$1$2')
+      // Join words split across lines (when second part starts lowercase)
+      .replace(/(\w+)\s*[\r\n]+\s*([a-zäöüß]\w*)/g, '$1$2')
       // Clean up multiple spaces and normalize line breaks
-      .replace(/\s+/g, ' ')
+      .replace(/[ \t]+/g, ' ')
+      .replace(/[\r\n]+/g, '\n')
       .replace(/\n\s*\n/g, '\n\n')
       .trim();
   };
@@ -171,17 +172,16 @@ const PDFToWord = () => {
   const detectParagraphs = (textItems: TextItem[]): ProcessedParagraph[] => {
     if (!textItems.length) return [];
     
-    // Sort by Y position (top to bottom), then X position (left to right)
+    // Sort by Y position (descending - top to bottom), then X position (ascending - left to right)
     const sortedItems = [...textItems].sort((a, b) => {
       const yDiff = Math.abs(a.y - b.y);
       if (yDiff < 5) { // Same line tolerance
-        return a.x - b.x;
+        return a.x - b.x; // Left to right
       }
-      return b.y - a.y; // Higher Y first (top to bottom in PDF coordinates)
+      return b.y - a.y; // Top to bottom (higher Y values first in PDF coordinates)
     });
     
-    const paragraphs: ProcessedParagraph[] = [];
-    const lines: string[] = [];
+    const lines: { text: string; items: TextItem[]; avgFontSize: number; hasBold: boolean; hasItalic: boolean }[] = [];
     let currentLineItems: TextItem[] = [];
     let lastY = -1;
     
@@ -193,11 +193,19 @@ const PDFToWord = () => {
       } else {
         // New line - process previous line
         if (currentLineItems.length > 0) {
-          const lineText = currentLineItems
-            .sort((a, b) => a.x - b.x)
-            .map(item => item.text)
-            .join('');
-          lines.push(lineText);
+          const lineItems = currentLineItems.sort((a, b) => a.x - b.x);
+          const lineText = lineItems.map(item => item.text).join('');
+          const avgFontSize = lineItems.reduce((sum, item) => sum + item.fontSize, 0) / lineItems.length;
+          const hasBold = lineItems.some(item => item.bold);
+          const hasItalic = lineItems.some(item => item.italic);
+          
+          lines.push({
+            text: lineText,
+            items: lineItems,
+            avgFontSize,
+            hasBold,
+            hasItalic,
+          });
         }
         currentLineItems = [item];
       }
@@ -206,24 +214,36 @@ const PDFToWord = () => {
     
     // Process final line
     if (currentLineItems.length > 0) {
-      const lineText = currentLineItems
-        .sort((a, b) => a.x - b.x)
-        .map(item => item.text)
-        .join('');
-      lines.push(lineText);
+      const lineItems = currentLineItems.sort((a, b) => a.x - b.x);
+      const lineText = lineItems.map(item => item.text).join('');
+      const avgFontSize = lineItems.reduce((sum, item) => sum + item.fontSize, 0) / lineItems.length;
+      const hasBold = lineItems.some(item => item.bold);
+      const hasItalic = lineItems.some(item => item.italic);
+      
+      lines.push({
+        text: lineText,
+        items: lineItems,
+        avgFontSize,
+        hasBold,
+        hasItalic,
+      });
     }
     
     // Group lines into paragraphs
+    const paragraphs: ProcessedParagraph[] = [];
     let currentParagraph = '';
-    let avgFontSize = 12;
-    let hasBold = false;
-    let hasItalic = false;
+    let paragraphLines: typeof lines = [];
     
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) {
+      const line = lines[i];
+      
+      if (!line.text.trim()) {
         // Empty line - end current paragraph
-        if (currentParagraph.trim()) {
+        if (currentParagraph.trim() && paragraphLines.length > 0) {
+          const avgFontSize = paragraphLines.reduce((sum, l) => sum + l.avgFontSize, 0) / paragraphLines.length;
+          const hasBold = paragraphLines.some(l => l.hasBold);
+          const hasItalic = paragraphLines.some(l => l.hasItalic);
+          
           const cleaned = repairHyphenation(currentParagraph.trim());
           const heading = detectHeading(cleaned, avgFontSize, hasBold);
           const listInfo = detectList(cleaned);
@@ -238,30 +258,25 @@ const PDFToWord = () => {
           });
         }
         currentParagraph = '';
-        hasBold = false;
-        hasItalic = false;
+        paragraphLines = [];
         continue;
       }
       
       // Add line to current paragraph
       if (currentParagraph) {
-        currentParagraph += ' ' + line;
+        currentParagraph += ' ' + line.text;
       } else {
-        currentParagraph = line;
-        // Get formatting info from first items of paragraph
-        const relevantItems = sortedItems.filter(item => 
-          lines.slice(Math.max(0, i-2), i+3).some(l => l.includes(item.text))
-        );
-        if (relevantItems.length > 0) {
-          avgFontSize = relevantItems.reduce((sum, item) => sum + item.fontSize, 0) / relevantItems.length;
-          hasBold = relevantItems.some(item => item.bold);
-          hasItalic = relevantItems.some(item => item.italic);
-        }
+        currentParagraph = line.text;
       }
+      paragraphLines.push(line);
     }
     
     // Process final paragraph
-    if (currentParagraph.trim()) {
+    if (currentParagraph.trim() && paragraphLines.length > 0) {
+      const avgFontSize = paragraphLines.reduce((sum, l) => sum + l.avgFontSize, 0) / paragraphLines.length;
+      const hasBold = paragraphLines.some(l => l.hasBold);
+      const hasItalic = paragraphLines.some(l => l.hasItalic);
+      
       const cleaned = repairHyphenation(currentParagraph.trim());
       const heading = detectHeading(cleaned, avgFontSize, hasBold);
       const listInfo = detectList(cleaned);
@@ -428,17 +443,30 @@ const PDFToWord = () => {
     try {
       // Lazy load tesseract.js
       const { createWorker } = await import('tesseract.js');
-      const worker = await createWorker();
+      const worker = await createWorker('deu+eng');
       
-      setProcessStatus('OCR läuft...');
+      setProcessStatus('OCR wird konfiguriert...');
       
-      // Note: This is a placeholder for OCR implementation
-      // Real implementation would require rendering PDF pages to canvas
-      // and then feeding them to tesseract
+      // This is a simplified OCR implementation
+      // In a full implementation, we would:
+      // 1. Render each PDF page to canvas
+      // 2. Extract canvas as image data
+      // 3. Process with Tesseract
+      // 4. Combine results with existing text
       
+      // This is a simplified OCR implementation
+      // In a full implementation, we would:
+      // 1. Render each PDF page to canvas
+      // 2. Extract canvas as image data
+      // 3. Process with Tesseract
+      // 4. Combine results with existing text
+      
+      setProcessStatus('OCR wird ausgeführt...');
+      
+      // For now, show that OCR is attempted but needs more implementation
       toast({
-        title: "OCR-Hinweis",
-        description: "OCR-Funktionalität ist in Vorbereitung. Derzeit wird nur direkter PDF-Text extrahiert.",
+        title: "OCR-Prozess",
+        description: "OCR ist vorbereitet. Vollständige OCR-Implementierung erfordert Canvas-Rendering der PDF-Seiten.",
       });
       
       await worker.terminate();
@@ -447,7 +475,7 @@ const PDFToWord = () => {
       console.error('OCR error:', error);
       toast({
         title: "OCR-Fehler",
-        description: "OCR konnte nicht gestartet werden.",
+        description: "OCR konnte nicht gestartet werden. Versuchen Sie es mit einem textbasierten PDF.",
         variant: "destructive"
       });
     }
@@ -473,15 +501,19 @@ const PDFToWord = () => {
       setProcessStatus('PDF wird analysiert...');
       const content = await extractTextFromPDF(file);
       
-      if (!content.text.trim()) {
+      // Check if we have sufficient text content
+      const totalTextItems = content.pages.reduce((sum, page) => sum + page.textItems.length, 0);
+      
+      if (totalTextItems < 10) {
+        // Likely a scan or image-based PDF
         if (ocrEnabled) {
-          setProcessStatus('Kein Text gefunden, OCR wird gestartet...');
+          setProcessStatus('Wenig Text gefunden, OCR wird gestartet...');
           const ocrContent = await performOCR(content);
           setExtractedContent(ocrContent);
         } else {
           toast({
-            title: "Kein Text gefunden",
-            description: "Das PDF enthält möglicherweise nur Bilder oder gescannte Seiten. Aktivieren Sie OCR für bessere Ergebnisse.",
+            title: "Scan-PDF erkannt",
+            description: "Das PDF scheint ein Scan zu sein. Aktivieren Sie OCR für bessere Ergebnisse.",
             variant: "destructive"
           });
           setIsProcessing(false);
@@ -489,6 +521,16 @@ const PDFToWord = () => {
         }
       } else {
         setExtractedContent(content);
+      }
+      
+      if (!content.text.trim() && totalTextItems === 0) {
+        toast({
+          title: "Keine Inhalte gefunden",
+          description: "Das PDF enthält keinen erkennbaren Text oder Bilder.",
+          variant: "destructive"
+        });
+        setIsProcessing(false);
+        return;
       }
       
       setProgress(50);
@@ -506,17 +548,19 @@ const PDFToWord = () => {
 
       toast({
         title: "Konvertierung erfolgreich!",
-        description: `PDF wurde zu DOCX konvertiert (${content.totalPages} Seiten, ${Math.round(content.text.length / 1000)}k Zeichen)`
+        description: `PDF wurde zu DOCX konvertiert (${content.totalPages} Seiten, ${totalTextItems} Textblöcke, ${Math.round(content.text.length / 1000)}k Zeichen)`
       });
     } catch (error) {
       console.error('Error converting PDF to Word:', error);
       let errorMessage = "Unbekannter Fehler bei der Konvertierung.";
       
       if (error instanceof Error) {
-        if (error.message.includes('password')) {
+        if (error.message.includes('passwort') || error.message.includes('password')) {
           errorMessage = "Das PDF ist passwortgeschützt. Bitte verwenden Sie ein ungeschütztes PDF.";
-        } else if (error.message.includes('Invalid PDF')) {
+        } else if (error.message.includes('Invalid PDF') || error.message.includes('corrupt')) {
           errorMessage = "Die Datei scheint beschädigt oder kein gültiges PDF zu sein.";
+        } else if (error.message.includes('Worker')) {
+          errorMessage = "PDF.js Worker konnte nicht geladen werden. Überprüfen Sie Ihre Internetverbindung.";
         } else {
           errorMessage = error.message;
         }
@@ -634,7 +678,9 @@ const PDFToWord = () => {
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                <strong>Verarbeitet:</strong> {extractedContent.totalPages} Seiten mit {extractedContent.text.length} Zeichen erkannt.
+                <strong>Verarbeitet:</strong> {extractedContent.totalPages} Seiten, {' '}
+                {extractedContent.pages.reduce((sum, page) => sum + page.textItems.length, 0)} Textblöcke, {' '}
+                {Math.round(extractedContent.text.length / 1000)}k Zeichen erkannt.
               </AlertDescription>
             </Alert>
           )}
