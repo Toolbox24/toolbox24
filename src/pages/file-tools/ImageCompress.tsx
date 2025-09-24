@@ -129,7 +129,23 @@ const ImageCompress = () => {
             Bild komprimieren
           </h1>
           <p className="page-description">
-            Reduzieren Sie die Dateigröße Ihrer JPEG- und PNG-Bilder
+            Reduzieren Sie die Dateigröße Ihrer{' '}
+            <a href="/bild/jpeg-komprimieren" className="text-primary underline hover:text-primary/80">
+              JPEG
+            </a>
+            ,{' '}
+            <a href="/bild/png-komprimieren" className="text-primary underline hover:text-primary/80">
+              PNG
+            </a>
+            ,{' '}
+            <a href="/bild/svg-komprimieren" className="text-primary underline hover:text-primary/80">
+              SVG
+            </a>
+            {' '}und{' '}
+            <a href="/bild/gif-komprimieren" className="text-primary underline hover:text-primary/80">
+              GIF
+            </a>
+            {' '}Bilder – schnell, sicher & kostenlos.
           </p>
         </div>
 
@@ -139,7 +155,9 @@ const ImageCompress = () => {
             accept={{ 
               'image/jpeg': ['.jpg', '.jpeg'],
               'image/png': ['.png'],
-              'image/webp': ['.webp']
+              'image/webp': ['.webp'],
+              'image/svg+xml': ['.svg'],
+              'image/gif': ['.gif']
             }}
             multiple={false}
             maxSize={50 * 1024 * 1024} // 50MB
@@ -225,7 +243,7 @@ const ImageCompress = () => {
         <div className="mt-12 p-6 bg-muted/30 rounded-lg">
           <h2 className="text-xl font-semibold mb-4">So funktioniert's:</h2>
           <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-            <li>Wählen Sie ein JPEG, PNG oder WebP Bild aus (bis zu 50MB)</li>
+            <li>Wählen Sie ein JPEG, PNG, WebP, SVG oder GIF Bild aus (bis zu 50MB)</li>
             <li>Stellen Sie die gewünschte Qualität ein</li>
             <li>Klicken Sie auf "Bild komprimieren"</li>
             <li>Laden Sie das komprimierte Bild herunter</li>

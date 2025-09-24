@@ -50,6 +50,10 @@ import WebpToPng from "./pages/bild/WebpToPng";
 import HeicToJpg from "./pages/bild/HeicToJpg";
 import AvifToJpg from "./pages/bild/AvifToJpg";
 import GifToMp4Landing from "./pages/GifToMp4";
+import JpegCompress from "./pages/bild/JpegCompress";
+import PngCompress from "./pages/bild/PngCompress";
+import SvgCompress from "./pages/bild/SvgCompress";
+import GifCompress from "./pages/bild/GifCompress";
 
 const queryClient = new QueryClient();
 
@@ -104,6 +108,12 @@ const App = () => (
               <Route path="/bild/heic-zu-jpg" element={<HeicToJpg />} />
               <Route path="/bild/avif-zu-jpg" element={<AvifToJpg />} />
               <Route path="/gif-zu-mp4" element={<GifToMp4Landing />} />
+              
+              {/* Image compression pages */}
+              <Route path="/bild/jpeg-komprimieren" element={<JpegCompress />} />
+              <Route path="/bild/png-komprimieren" element={<PngCompress />} />
+              <Route path="/bild/svg-komprimieren" element={<SvgCompress />} />
+              <Route path="/bild/gif-komprimieren" element={<GifCompress />} />
               
               {/* Legal Pages */}
               <Route path="/rechtliches" element={<Rechtliches />} />
