@@ -4,7 +4,7 @@ import CategoryCard from "@/components/ui/category-card";
 const AllTemplates = () => {
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-6xl">
         {/* Header */}
         <div className="page-header">
           <h1 className="page-title">Alle Vorlagen</h1>
