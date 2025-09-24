@@ -11,19 +11,19 @@ const Home = () => {
       title: "PDF zusammenfügen",
       description: "Mehrere PDFs zu einem Dokument vereinen",
       icon: Merge,
-      path: "/pdf-tools/merge"
+      path: "/de/pdf-tools/pdf-zusammenfuegen"
     },
     {
       title: "Hintergrund entfernen",
       description: "KI-basierte Hintergrundentfernung für Bilder",
       icon: Trash2,
-      path: "/file-tools/remove-background"
+      path: "/de/datei-tools/hintergrund-entfernen"
     },
     {
       title: "Kündigungsvorlage",
       description: "Rechtssichere Vorlagen für alle Kündigungen",
       icon: FileX,
-      path: "/kategorie/kuendigung"
+      path: "/de/kategorie/kuendigung"
     }
   ];
 
@@ -33,21 +33,21 @@ const Home = () => {
       emoji: "📄",
       description: "Rechtssichere Muster für Kündigungen, Bewerbungen und Verträge",
       buttonText: "Alle Vorlagen anzeigen",
-      path: "/alle-vorlagen"
+      path: "/de/alle-vorlagen"
     },
     {
       title: "PDF Tools",
       emoji: "📋",
       description: "PDF bearbeiten: Zusammenfügen, Teilen, Komprimieren",
       buttonText: "Alle PDF Tools anzeigen",
-      path: "/pdf-tools/all"
+      path: "/de/pdf-tools/alle"
     },
     {
       title: "Datei Tools",
       emoji: "🖼️",
       description: "Bilder bearbeiten: Komprimieren, Konvertieren, Zuschneiden",
       buttonText: "Alle Datei Tools anzeigen",
-      path: "/file-tools/all"
+      path: "/de/datei-tools/alle"
     }
   ];
 
@@ -90,7 +90,7 @@ const Home = () => {
             <Button 
               size="lg" 
               className="text-lg px-8 py-6"
-              onClick={() => navigate("/alle-tools")}
+              onClick={() => navigate("/de/alle-tools")}
             >
               Alle Tools entdecken
             </Button>
