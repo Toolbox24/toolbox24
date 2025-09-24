@@ -6,6 +6,7 @@ import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Download, ImageIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 
 const ImageCompress = () => {
@@ -130,21 +131,21 @@ const ImageCompress = () => {
           </h1>
           <p className="page-description">
             Reduzieren Sie die Dateigröße Ihrer{' '}
-            <a href="/bild/jpeg-komprimieren" className="text-primary underline hover:text-primary/80">
+            <Link to="/bild/jpeg-komprimieren" className="text-primary underline hover:text-primary/80">
               JPEG
-            </a>
+            </Link>
             ,{' '}
-            <a href="/bild/png-komprimieren" className="text-primary underline hover:text-primary/80">
+            <Link to="/bild/png-komprimieren" className="text-primary underline hover:text-primary/80">
               PNG
-            </a>
+            </Link>
             ,{' '}
-            <a href="/bild/svg-komprimieren" className="text-primary underline hover:text-primary/80">
+            <Link to="/bild/svg-komprimieren" className="text-primary underline hover:text-primary/80">
               SVG
-            </a>
+            </Link>
             {' '}und{' '}
-            <a href="/bild/gif-komprimieren" className="text-primary underline hover:text-primary/80">
+            <Link to="/bild/gif-komprimieren" className="text-primary underline hover:text-primary/80">
               GIF
-            </a>
+            </Link>
             {' '}Bilder – schnell, sicher & kostenlos.
           </p>
         </div>

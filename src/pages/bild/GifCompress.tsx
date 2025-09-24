@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Download, ImageIcon } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { Helmet } from 'react-helmet-async';
 
@@ -191,9 +192,9 @@ const GifCompress = () => {
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
                       <strong>Tipp:</strong> Für bessere Kompression und kleinere Dateien empfehlen wir die{' '}
-                      <a href="/gif-zu-mp4" className="underline hover:text-blue-600">
+                      <Link to="/gif-zu-mp4" className="underline hover:text-blue-600">
                         Konvertierung von GIF zu MP4
-                      </a>.
+                      </Link>.
                     </p>
                   </div>
                 </div>
