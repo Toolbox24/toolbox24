@@ -109,7 +109,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-card border-b sticky top-0 z-40 backdrop-blur-sm bg-card/95">
+      <header className="bg-card border-b sticky top-0 z-50 backdrop-blur-sm bg-card/95">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-8">
@@ -343,7 +343,11 @@ const Header = () => {
             className="lg:hidden p-2 rounded-md hover:bg-muted transition-colors"
             aria-label="Menu öffnen"
           >
-            <Menu className="h-6 w-6" />
+            {isMobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
       </div>
@@ -351,13 +355,29 @@ const Header = () => {
 
     {/* Mobile Menu Overlay */}
     {isMobileMenuOpen && (
-      <div className="fixed inset-0 z-30 lg:hidden">
+      <div className="fixed inset-0 z-50 lg:hidden">
         <div 
           className="fixed inset-0 bg-black/50" 
           onClick={() => setIsMobileMenuOpen(false)}
         />
-        <div className="fixed top-16 left-0 right-0 bottom-0 bg-background shadow-xl">
-          <div className="p-4 h-full flex flex-col">
+        <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
+          <div className="p-4 pt-4 h-full flex flex-col">
+            {/* Header with Logo and Close Button */}
+            <div className="flex items-center justify-between mb-6">
+              <h1 
+                className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
+                onClick={() => handleMobileNavigation("/de/")}
+              >
+                Toolbox24
+              </h1>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-md hover:bg-muted transition-colors"
+                aria-label="Menü schließen"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
             
             {/* Mobile Navigation */}
             <nav className="space-y-2 flex-1 overflow-y-auto">
