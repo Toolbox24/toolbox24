@@ -14,6 +14,8 @@ interface CropArea {
   height: number;
 }
 
+type ResizeHandle = 'tl' | 'tr' | 'bl' | 'br' | 't' | 'r' | 'b' | 'l' | null;
+
 const ImageCrop = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -24,6 +26,7 @@ const ImageCrop = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
   const [isMovingCrop, setIsMovingCrop] = useState(false);
+  const [activeHandle, setActiveHandle] = useState<ResizeHandle>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -91,6 +94,27 @@ const ImageCrop = () => {
            y <= cropArea.y + cropArea.height;
   }, [cropArea]);
 
+  const getResizeHandle = useCallback((x: number, y: number): ResizeHandle => {
+    if (!cropArea || cropArea.width === 0 || cropArea.height === 0) return null;
+    
+    const handleSize = window.innerWidth <= 768 ? 30 : 20; // Touch-friendly handle size
+    const tolerance = handleSize / 2;
+    
+    // Corner handles
+    if (Math.abs(x - cropArea.x) <= tolerance && Math.abs(y - cropArea.y) <= tolerance) return 'tl';
+    if (Math.abs(x - (cropArea.x + cropArea.width)) <= tolerance && Math.abs(y - cropArea.y) <= tolerance) return 'tr';
+    if (Math.abs(x - cropArea.x) <= tolerance && Math.abs(y - (cropArea.y + cropArea.height)) <= tolerance) return 'bl';
+    if (Math.abs(x - (cropArea.x + cropArea.width)) <= tolerance && Math.abs(y - (cropArea.y + cropArea.height)) <= tolerance) return 'br';
+    
+    // Side handles
+    if (Math.abs(x - (cropArea.x + cropArea.width / 2)) <= tolerance && Math.abs(y - cropArea.y) <= tolerance) return 't';
+    if (Math.abs(x - (cropArea.x + cropArea.width)) <= tolerance && Math.abs(y - (cropArea.y + cropArea.height / 2)) <= tolerance) return 'r';
+    if (Math.abs(x - (cropArea.x + cropArea.width / 2)) <= tolerance && Math.abs(y - (cropArea.y + cropArea.height)) <= tolerance) return 'b';
+    if (Math.abs(x - cropArea.x) <= tolerance && Math.abs(y - (cropArea.y + cropArea.height / 2)) <= tolerance) return 'l';
+    
+    return null;
+  }, [cropArea]);
+
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !imageRef.current) return;
     
@@ -100,9 +124,21 @@ const ImageCrop = () => {
     const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
     const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
     
-    // Check if touching inside existing crop area
+    // Check for resize handles first
+    const handle = getResizeHandle(boundedX, boundedY);
+    if (handle) {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveHandle(handle);
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+      canvasRef.current.setPointerCapture(e.pointerId);
+      return;
+    }
+    
+    // Check if touching inside existing crop area for moving
     if (cropArea && cropArea.width > 0 && isPointInCropArea(boundedX, boundedY)) {
-      // Moving/resizing existing crop area
+      // Moving existing crop area
       e.preventDefault();
       e.stopPropagation();
       setIsMovingCrop(true);
@@ -119,7 +155,7 @@ const ImageCrop = () => {
       canvasRef.current.setPointerCapture(e.pointerId);
     }
     // If touching outside existing crop area, allow normal scrolling (don't prevent default)
-  }, [getEventCoordinates, cropArea, isPointInCropArea]);
+  }, [getEventCoordinates, cropArea, isPointInCropArea, getResizeHandle]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current) return;
@@ -133,7 +169,64 @@ const ImageCrop = () => {
     const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
     const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
     
-    if (isMovingCrop && cropArea) {
+    if (activeHandle && cropArea) {
+      // Resize crop area using handles
+      const deltaX = boundedCurrentX - dragStart.x;
+      const deltaY = boundedCurrentY - dragStart.y;
+      
+      let newX = cropArea.x;
+      let newY = cropArea.y;
+      let newWidth = cropArea.width;
+      let newHeight = cropArea.height;
+      
+      switch (activeHandle) {
+        case 'tl': // Top-left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newY = Math.max(0, cropArea.y + deltaY);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'tr': // Top-right
+          newY = Math.max(0, cropArea.y + deltaY);
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'bl': // Bottom-left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 'br': // Bottom-right
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 't': // Top
+          newY = Math.max(0, cropArea.y + deltaY);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'r': // Right
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          break;
+        case 'b': // Bottom
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 'l': // Left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          break;
+      }
+      
+      // Ensure crop area doesn't go outside canvas bounds
+      if (newX + newWidth > canvasRef.current.width) {
+        newWidth = canvasRef.current.width - newX;
+      }
+      if (newY + newHeight > canvasRef.current.height) {
+        newHeight = canvasRef.current.height - newY;
+      }
+      
+      setCropArea({ x: newX, y: newY, width: newWidth, height: newHeight });
+      setDragStart({ x: boundedCurrentX, y: boundedCurrentY });
+    } else if (isMovingCrop && cropArea) {
       // Move existing crop area
       const deltaX = boundedCurrentX - dragStart.x;
       const deltaY = boundedCurrentY - dragStart.y;
@@ -166,7 +259,7 @@ const ImageCrop = () => {
         height: cropHeight
       });
     }
-  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea]);
+  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea, activeHandle]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
@@ -176,6 +269,7 @@ const ImageCrop = () => {
     
     setIsDragging(false);
     setIsMovingCrop(false);
+    setActiveHandle(null);
     setDragStart(null);
     
     // Release pointer capture
@@ -192,9 +286,20 @@ const ImageCrop = () => {
     const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
     const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
     
-    // Check if touching inside existing crop area
+    // Check for resize handles first
+    const handle = getResizeHandle(boundedX, boundedY);
+    if (handle) {
+      e.preventDefault();
+      e.stopPropagation();
+      setActiveHandle(handle);
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+      return;
+    }
+    
+    // Check if touching inside existing crop area for moving
     if (cropArea && cropArea.width > 0 && isPointInCropArea(boundedX, boundedY)) {
-      // Moving/resizing existing crop area
+      // Moving existing crop area
       e.preventDefault();
       e.stopPropagation();
       setIsMovingCrop(true);
@@ -209,7 +314,7 @@ const ImageCrop = () => {
       setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
     }
     // If touching outside existing crop area, allow normal scrolling (don't prevent default)
-  }, [getEventCoordinates, cropArea, isPointInCropArea]);
+  }, [getEventCoordinates, cropArea, isPointInCropArea, getResizeHandle]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current || e.touches.length !== 1) return;
@@ -223,7 +328,64 @@ const ImageCrop = () => {
     const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
     const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
     
-    if (isMovingCrop && cropArea) {
+    if (activeHandle && cropArea) {
+      // Resize crop area using handles
+      const deltaX = boundedCurrentX - dragStart.x;
+      const deltaY = boundedCurrentY - dragStart.y;
+      
+      let newX = cropArea.x;
+      let newY = cropArea.y;
+      let newWidth = cropArea.width;
+      let newHeight = cropArea.height;
+      
+      switch (activeHandle) {
+        case 'tl': // Top-left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newY = Math.max(0, cropArea.y + deltaY);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'tr': // Top-right
+          newY = Math.max(0, cropArea.y + deltaY);
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'bl': // Bottom-left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 'br': // Bottom-right
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 't': // Top
+          newY = Math.max(0, cropArea.y + deltaY);
+          newHeight = Math.max(10, cropArea.height - deltaY);
+          break;
+        case 'r': // Right
+          newWidth = Math.max(10, cropArea.width + deltaX);
+          break;
+        case 'b': // Bottom
+          newHeight = Math.max(10, cropArea.height + deltaY);
+          break;
+        case 'l': // Left
+          newX = Math.max(0, cropArea.x + deltaX);
+          newWidth = Math.max(10, cropArea.width - deltaX);
+          break;
+      }
+      
+      // Ensure crop area doesn't go outside canvas bounds
+      if (newX + newWidth > canvasRef.current.width) {
+        newWidth = canvasRef.current.width - newX;
+      }
+      if (newY + newHeight > canvasRef.current.height) {
+        newHeight = canvasRef.current.height - newY;
+      }
+      
+      setCropArea({ x: newX, y: newY, width: newWidth, height: newHeight });
+      setDragStart({ x: boundedCurrentX, y: boundedCurrentY });
+    } else if (isMovingCrop && cropArea) {
       // Move existing crop area
       const deltaX = boundedCurrentX - dragStart.x;
       const deltaY = boundedCurrentY - dragStart.y;
@@ -256,7 +418,7 @@ const ImageCrop = () => {
         height: cropHeight
       });
     }
-  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea]);
+  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea, activeHandle]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
@@ -264,6 +426,7 @@ const ImageCrop = () => {
     
     setIsDragging(false);
     setIsMovingCrop(false);
+    setActiveHandle(null);
     setDragStart(null);
   }, []);
 
@@ -307,17 +470,46 @@ const ImageCrop = () => {
       ctx.lineWidth = 3;
       ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
       
-      // Add corner handles for better UX (larger for mobile)
-      const handleSize = window.innerWidth <= 768 ? 16 : 12;
+      // Draw resize handles (larger for mobile touch targets)
+      const handleSize = window.innerWidth <= 768 ? 30 : 20;
+      const halfHandle = handleSize / 2;
+      
       ctx.fillStyle = '#3b82f6';
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      
+      // Corner handles
+      const drawHandle = (x: number, y: number) => {
+        ctx.fillRect(x - halfHandle, y - halfHandle, handleSize, handleSize);
+        ctx.strokeRect(x - halfHandle, y - halfHandle, handleSize, handleSize);
+      };
+      
       // Top-left
-      ctx.fillRect(cropArea.x - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
+      drawHandle(cropArea.x, cropArea.y);
       // Top-right
-      ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
+      drawHandle(cropArea.x + cropArea.width, cropArea.y);
       // Bottom-left
-      ctx.fillRect(cropArea.x - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
+      drawHandle(cropArea.x, cropArea.y + cropArea.height);
       // Bottom-right
-      ctx.fillRect(cropArea.x + cropArea.width - handleSize/2, cropArea.y + cropArea.height - handleSize/2, handleSize, handleSize);
+      drawHandle(cropArea.x + cropArea.width, cropArea.y + cropArea.height);
+      
+      // Side handles (smaller)
+      const sideHandleSize = window.innerWidth <= 768 ? 24 : 16;
+      const halfSideHandle = sideHandleSize / 2;
+      
+      const drawSideHandle = (x: number, y: number) => {
+        ctx.fillRect(x - halfSideHandle, y - halfSideHandle, sideHandleSize, sideHandleSize);
+        ctx.strokeRect(x - halfSideHandle, y - halfSideHandle, sideHandleSize, sideHandleSize);
+      };
+      
+      // Top
+      drawSideHandle(cropArea.x + cropArea.width / 2, cropArea.y);
+      // Right
+      drawSideHandle(cropArea.x + cropArea.width, cropArea.y + cropArea.height / 2);
+      // Bottom
+      drawSideHandle(cropArea.x + cropArea.width / 2, cropArea.y + cropArea.height);
+      // Left
+      drawSideHandle(cropArea.x, cropArea.y + cropArea.height / 2);
     }
   }, [previewUrl, cropArea]);
 
