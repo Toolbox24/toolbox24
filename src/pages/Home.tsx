@@ -101,17 +101,22 @@ const Home = () => {
       {/* Popular Tools Section */}
       <section className="py-16 bg-muted/30">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Beliebte Tools</h2>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Beliebte Tools</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Unsere meistgenutzten Online-Tools für den täglichen Bedarf
+            </p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {popularTools.map((tool) => (
-              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardHeader className="pb-3">
+              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+                <CardHeader className="pb-3 flex-1">
                   <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <tool.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">{tool.title}</CardTitle>
-                  <CardDescription className="text-sm">
+                  <CardTitle className="text-xl font-semibold mb-3">{tool.title}</CardTitle>
+                  <CardDescription className="text-muted-foreground leading-relaxed">
                     {tool.description}
                   </CardDescription>
                 </CardHeader>
@@ -134,14 +139,19 @@ const Home = () => {
       {/* Categories Overview */}
       <section className="py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Alle Services</h2>
+          <div className="text-center mb-12">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Alle Services</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Entdecken Sie unsere drei Hauptkategorien digitaler Tools
+            </p>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {categories.map((category) => (
               <div key={category.title} className="text-center p-6 bg-card border rounded-lg hover:shadow-sm transition-shadow h-full flex flex-col">
                 <div className="text-4xl mb-4">{category.emoji}</div>
                 <h3 className="text-xl font-semibold mb-3">{category.title}</h3>
-                <p className="text-muted-foreground mb-6 flex-1">
+                <p className="text-muted-foreground leading-relaxed mb-6 flex-1">
                   {category.description}
                 </p>
                 <Button 
