@@ -180,7 +180,7 @@ const AlleTools = () => {
         <section className="bg-muted/30 rounded-lg p-8">
           <h2 className="text-2xl font-bold mb-6 text-center">Warum Toolbox24 wählen?</h2>
           
-          <div className="max-w-4xl mx-auto space-y-6 text-muted-foreground">
+          <div className="max-w-4xl mx-auto space-y-6 text-muted-foreground text-center">
             <p className="leading-relaxed">
               Toolbox24 vereint alle wichtigen Online-Tools an einem Ort. Unsere umfassende Plattform 
               bietet über 100 kostenlose Tools für PDF-Bearbeitung, Bildkonvertierung und professionelle 
