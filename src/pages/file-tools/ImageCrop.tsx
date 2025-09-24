@@ -23,6 +23,7 @@ const ImageCrop = () => {
   const [cropArea, setCropArea] = useState<CropArea | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
+  const [isMovingCrop, setIsMovingCrop] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -81,11 +82,17 @@ const ImageCrop = () => {
     return { x, y };
   }, []);
 
+  const isPointInCropArea = useCallback((x: number, y: number) => {
+    if (!cropArea || cropArea.width === 0 || cropArea.height === 0) return false;
+    
+    return x >= cropArea.x && 
+           x <= cropArea.x + cropArea.width && 
+           y >= cropArea.y && 
+           y <= cropArea.y + cropArea.height;
+  }, [cropArea]);
+
   const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !imageRef.current) return;
-    
-    e.preventDefault();
-    e.stopPropagation();
     
     const { x, y } = getEventCoordinates(e);
     
@@ -93,13 +100,26 @@ const ImageCrop = () => {
     const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
     const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
     
-    setIsDragging(true);
-    setDragStart({ x: boundedX, y: boundedY });
-    setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
-    
-    // Capture pointer for consistent tracking
-    canvasRef.current.setPointerCapture(e.pointerId);
-  }, [getEventCoordinates]);
+    // Check if touching inside existing crop area
+    if (cropArea && cropArea.width > 0 && isPointInCropArea(boundedX, boundedY)) {
+      // Moving/resizing existing crop area
+      e.preventDefault();
+      e.stopPropagation();
+      setIsMovingCrop(true);
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+      canvasRef.current.setPointerCapture(e.pointerId);
+    } else if (!cropArea || cropArea.width === 0) {
+      // Creating new crop area only if none exists
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+      setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
+      canvasRef.current.setPointerCapture(e.pointerId);
+    }
+    // If touching outside existing crop area, allow normal scrolling (don't prevent default)
+  }, [getEventCoordinates, cropArea, isPointInCropArea]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current) return;
@@ -113,22 +133,40 @@ const ImageCrop = () => {
     const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
     const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
     
-    const width = boundedCurrentX - dragStart.x;
-    const height = boundedCurrentY - dragStart.y;
-    
-    // Calculate proper crop area (handle negative width/height)
-    const cropX = width < 0 ? boundedCurrentX : dragStart.x;
-    const cropY = height < 0 ? boundedCurrentY : dragStart.y;
-    const cropWidth = Math.abs(width);
-    const cropHeight = Math.abs(height);
-    
-    setCropArea({
-      x: cropX,
-      y: cropY,
-      width: cropWidth,
-      height: cropHeight
-    });
-  }, [isDragging, dragStart, getEventCoordinates]);
+    if (isMovingCrop && cropArea) {
+      // Move existing crop area
+      const deltaX = boundedCurrentX - dragStart.x;
+      const deltaY = boundedCurrentY - dragStart.y;
+      
+      const newX = Math.max(0, Math.min(cropArea.x + deltaX, canvasRef.current.width - cropArea.width));
+      const newY = Math.max(0, Math.min(cropArea.y + deltaY, canvasRef.current.height - cropArea.height));
+      
+      setCropArea({
+        ...cropArea,
+        x: newX,
+        y: newY
+      });
+      
+      setDragStart({ x: boundedCurrentX, y: boundedCurrentY });
+    } else {
+      // Create new crop area
+      const width = boundedCurrentX - dragStart.x;
+      const height = boundedCurrentY - dragStart.y;
+      
+      // Calculate proper crop area (handle negative width/height)
+      const cropX = width < 0 ? boundedCurrentX : dragStart.x;
+      const cropY = height < 0 ? boundedCurrentY : dragStart.y;
+      const cropWidth = Math.abs(width);
+      const cropHeight = Math.abs(height);
+      
+      setCropArea({
+        x: cropX,
+        y: cropY,
+        width: cropWidth,
+        height: cropHeight
+      });
+    }
+  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea]);
 
   const handlePointerUp = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
@@ -137,6 +175,7 @@ const ImageCrop = () => {
     e.stopPropagation();
     
     setIsDragging(false);
+    setIsMovingCrop(false);
     setDragStart(null);
     
     // Release pointer capture
@@ -147,19 +186,30 @@ const ImageCrop = () => {
   const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current || !imageRef.current || e.touches.length !== 1) return;
     
-    e.preventDefault();
-    e.stopPropagation();
-    
     const { x, y } = getEventCoordinates(e);
     
     // Ensure coordinates are within image bounds
     const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
     const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
     
-    setIsDragging(true);
-    setDragStart({ x: boundedX, y: boundedY });
-    setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
-  }, [getEventCoordinates]);
+    // Check if touching inside existing crop area
+    if (cropArea && cropArea.width > 0 && isPointInCropArea(boundedX, boundedY)) {
+      // Moving/resizing existing crop area
+      e.preventDefault();
+      e.stopPropagation();
+      setIsMovingCrop(true);
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+    } else if (!cropArea || cropArea.width === 0) {
+      // Creating new crop area only if none exists
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      setDragStart({ x: boundedX, y: boundedY });
+      setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
+    }
+    // If touching outside existing crop area, allow normal scrolling (don't prevent default)
+  }, [getEventCoordinates, cropArea, isPointInCropArea]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current || e.touches.length !== 1) return;
@@ -173,28 +223,47 @@ const ImageCrop = () => {
     const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
     const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
     
-    const width = boundedCurrentX - dragStart.x;
-    const height = boundedCurrentY - dragStart.y;
-    
-    // Calculate proper crop area (handle negative width/height)
-    const cropX = width < 0 ? boundedCurrentX : dragStart.x;
-    const cropY = height < 0 ? boundedCurrentY : dragStart.y;
-    const cropWidth = Math.abs(width);
-    const cropHeight = Math.abs(height);
-    
-    setCropArea({
-      x: cropX,
-      y: cropY,
-      width: cropWidth,
-      height: cropHeight
-    });
-  }, [isDragging, dragStart, getEventCoordinates]);
+    if (isMovingCrop && cropArea) {
+      // Move existing crop area
+      const deltaX = boundedCurrentX - dragStart.x;
+      const deltaY = boundedCurrentY - dragStart.y;
+      
+      const newX = Math.max(0, Math.min(cropArea.x + deltaX, canvasRef.current.width - cropArea.width));
+      const newY = Math.max(0, Math.min(cropArea.y + deltaY, canvasRef.current.height - cropArea.height));
+      
+      setCropArea({
+        ...cropArea,
+        x: newX,
+        y: newY
+      });
+      
+      setDragStart({ x: boundedCurrentX, y: boundedCurrentY });
+    } else {
+      // Create new crop area
+      const width = boundedCurrentX - dragStart.x;
+      const height = boundedCurrentY - dragStart.y;
+      
+      // Calculate proper crop area (handle negative width/height)
+      const cropX = width < 0 ? boundedCurrentX : dragStart.x;
+      const cropY = height < 0 ? boundedCurrentY : dragStart.y;
+      const cropWidth = Math.abs(width);
+      const cropHeight = Math.abs(height);
+      
+      setCropArea({
+        x: cropX,
+        y: cropY,
+        width: cropWidth,
+        height: cropHeight
+      });
+    }
+  }, [isDragging, dragStart, getEventCoordinates, isMovingCrop, cropArea]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     e.stopPropagation();
     
     setIsDragging(false);
+    setIsMovingCrop(false);
     setDragStart(null);
   }, []);
 
