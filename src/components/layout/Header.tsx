@@ -12,6 +12,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/useLanguage";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { searchServices, SearchResult } from "@/data/search";
 
 const Header = () => {
@@ -22,6 +25,8 @@ const Header = () => {
   const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
 
   // Handle search input changes
   useEffect(() => {
@@ -50,7 +55,8 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+      const searchPath = currentLanguage === 'en' ? '/en/search' : '/de/suche';
+      navigate(`${searchPath}?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowResults(false);
     }
   };
