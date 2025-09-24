@@ -110,7 +110,7 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {popularTools.map((tool) => (
-              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
+              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col hover:border-primary/20">
                 <CardHeader className="pb-3 flex-1">
                   <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <tool.icon className="h-6 w-6 text-primary" />
@@ -148,7 +148,7 @@ const Home = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {categories.map((category) => (
-              <div key={category.title} className="text-center p-6 bg-card border rounded-lg hover:shadow-sm transition-shadow h-full flex flex-col">
+              <div key={category.title} className="text-center p-6 bg-card border rounded-lg hover:shadow-sm hover:border-primary/20 transition-all h-full flex flex-col">
                 <div className="text-4xl mb-4">{category.emoji}</div>
                 <h3 className="text-xl font-semibold mb-3">{category.title}</h3>
                 <p className="text-muted-foreground leading-relaxed mb-6 flex-1">
