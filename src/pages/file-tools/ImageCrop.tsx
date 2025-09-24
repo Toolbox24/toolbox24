@@ -51,42 +51,67 @@ const ImageCrop = () => {
     }
   };
 
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!canvasRef.current || !imageRef.current) return;
+  const getEventCoordinates = useCallback((e: React.PointerEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement> | React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current) return { x: 0, y: 0 };
     
-    e.preventDefault();
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    let clientX: number, clientY: number;
+    
+    if ('touches' in e && e.touches.length > 0) {
+      // Touch event
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else if ('changedTouches' in e && e.changedTouches.length > 0) {
+      // Touch end event
+      clientX = e.changedTouches[0].clientX;
+      clientY = e.changedTouches[0].clientY;
+    } else {
+      // Mouse/Pointer event
+      clientX = (e as React.MouseEvent | React.PointerEvent).clientX;
+      clientY = (e as React.MouseEvent | React.PointerEvent).clientY;
+    }
+    
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    
+    return { x, y };
+  }, []);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !imageRef.current) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const { x, y } = getEventCoordinates(e);
     
     // Ensure coordinates are within image bounds
-    const boundedX = Math.max(0, Math.min(x, canvas.width));
-    const boundedY = Math.max(0, Math.min(y, canvas.height));
+    const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
+    const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
     
     setIsDragging(true);
     setDragStart({ x: boundedX, y: boundedY });
     setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
-  }, []);
+    
+    // Capture pointer for consistent tracking
+    canvasRef.current.setPointerCapture(e.pointerId);
+  }, [getEventCoordinates]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDragging || !dragStart || !canvasRef.current) return;
     
     e.preventDefault();
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
+    e.stopPropagation();
     
-    const currentX = (e.clientX - rect.left) * scaleX;
-    const currentY = (e.clientY - rect.top) * scaleY;
+    const { x: currentX, y: currentY } = getEventCoordinates(e);
     
     // Ensure coordinates are within image bounds
-    const boundedCurrentX = Math.max(0, Math.min(currentX, canvas.width));
-    const boundedCurrentY = Math.max(0, Math.min(currentY, canvas.height));
+    const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
+    const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
     
     const width = boundedCurrentX - dragStart.x;
     const height = boundedCurrentY - dragStart.y;
@@ -103,9 +128,72 @@ const ImageCrop = () => {
       width: cropWidth,
       height: cropHeight
     });
-  }, [isDragging, dragStart]);
+  }, [isDragging, dragStart, getEventCoordinates]);
 
-  const handleMouseUp = useCallback(() => {
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsDragging(false);
+    setDragStart(null);
+    
+    // Release pointer capture
+    canvasRef.current.releasePointerCapture(e.pointerId);
+  }, []);
+
+  // Touch event handlers as fallback for iOS Safari
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!canvasRef.current || !imageRef.current || e.touches.length !== 1) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const { x, y } = getEventCoordinates(e);
+    
+    // Ensure coordinates are within image bounds
+    const boundedX = Math.max(0, Math.min(x, canvasRef.current.width));
+    const boundedY = Math.max(0, Math.min(y, canvasRef.current.height));
+    
+    setIsDragging(true);
+    setDragStart({ x: boundedX, y: boundedY });
+    setCropArea({ x: boundedX, y: boundedY, width: 0, height: 0 });
+  }, [getEventCoordinates]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDragging || !dragStart || !canvasRef.current || e.touches.length !== 1) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const { x: currentX, y: currentY } = getEventCoordinates(e);
+    
+    // Ensure coordinates are within image bounds
+    const boundedCurrentX = Math.max(0, Math.min(currentX, canvasRef.current.width));
+    const boundedCurrentY = Math.max(0, Math.min(currentY, canvasRef.current.height));
+    
+    const width = boundedCurrentX - dragStart.x;
+    const height = boundedCurrentY - dragStart.y;
+    
+    // Calculate proper crop area (handle negative width/height)
+    const cropX = width < 0 ? boundedCurrentX : dragStart.x;
+    const cropY = height < 0 ? boundedCurrentY : dragStart.y;
+    const cropWidth = Math.abs(width);
+    const cropHeight = Math.abs(height);
+    
+    setCropArea({
+      x: cropX,
+      y: cropY,
+      width: cropWidth,
+      height: cropHeight
+    });
+  }, [isDragging, dragStart, getEventCoordinates]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     setIsDragging(false);
     setDragStart(null);
   }, []);
@@ -150,8 +238,8 @@ const ImageCrop = () => {
       ctx.lineWidth = 3;
       ctx.strokeRect(cropArea.x, cropArea.y, cropArea.width, cropArea.height);
       
-      // Add corner handles for better UX
-      const handleSize = 8;
+      // Add corner handles for better UX (larger for mobile)
+      const handleSize = window.innerWidth <= 768 ? 16 : 12;
       ctx.fillStyle = '#3b82f6';
       // Top-left
       ctx.fillRect(cropArea.x - handleSize/2, cropArea.y - handleSize/2, handleSize, handleSize);
@@ -295,12 +383,8 @@ const ImageCrop = () => {
           {previewUrl && (
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
+                <CardTitle>
                   Ausschnitt wählen
-                  <Button variant="outline" onClick={resetCrop} size="sm">
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    Zurücksetzen
-                  </Button>
                 </CardTitle>
                 <CardDescription>
                   Ziehen Sie mit der Maus einen Bereich zum Zuschneiden aus
@@ -320,22 +404,27 @@ const ImageCrop = () => {
                   />
                   <canvas
                     ref={canvasRef}
-                    onMouseDown={handleMouseDown}
-                    onMouseMove={handleMouseMove}
-                    onMouseUp={handleMouseUp}
-                    onMouseLeave={handleMouseUp}
-                    className="max-w-full cursor-crosshair block"
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                    onPointerLeave={handlePointerUp}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                    className="max-w-full cursor-crosshair block touch-none"
                     style={{ 
                       imageRendering: 'pixelated',
                       width: '100%',
-                      height: 'auto'
+                      height: 'auto',
+                      touchAction: 'none'
                     }}
                   />
                    {(!cropArea || cropArea.width === 0) && (
-                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 text-white pointer-events-none">
-                       <div className="text-center">
+                     <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white pointer-events-none">
+                       <div className="text-center px-4">
                          <Crop className="h-8 w-8 mx-auto mb-2" />
-                         <p>Ziehen Sie einen Bereich zum Zuschneiden aus</p>
+                         <p className="text-sm md:text-base">Ziehen Sie einen Bereich zum Zuschneiden aus</p>
+                         <p className="text-xs md:text-sm opacity-80 mt-1">Auf Mobile: Mit dem Finger ziehen</p>
                        </div>
                      </div>
                    )}
@@ -349,24 +438,37 @@ const ImageCrop = () => {
                   </div>
                 )}
 
-                <Button 
-                  onClick={cropImage} 
-                  disabled={isProcessing || !cropArea || cropArea.width < 10 || cropArea.height < 10}
-                  className="w-full"
-                  size="lg"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Crop className="mr-2 h-4 w-4 animate-pulse" />
-                      Schneide zu...
-                    </>
-                  ) : (
-                    <>
-                      <Crop className="mr-2 h-4 w-4" />
-                      Bild zuschneiden
-                    </>
-                  )}
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button 
+                    onClick={cropImage} 
+                    disabled={isProcessing || !cropArea || cropArea.width < 10 || cropArea.height < 10}
+                    className="flex-1"
+                    size="lg"
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Crop className="mr-2 h-4 w-4 animate-pulse" />
+                        Schneide zu...
+                      </>
+                    ) : (
+                      <>
+                        <Crop className="mr-2 h-4 w-4" />
+                        Bild zuschneiden
+                      </>
+                    )}
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    onClick={resetCrop} 
+                    disabled={isProcessing}
+                    className="sm:w-auto"
+                    size="lg"
+                  >
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    Zurücksetzen
+                  </Button>
+                </div>
 
                 {isProcessing && (
                   <div className="space-y-2">
