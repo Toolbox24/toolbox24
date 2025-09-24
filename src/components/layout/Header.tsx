@@ -361,29 +361,9 @@ const Header = () => {
           onClick={() => setIsMobileMenuOpen(false)}
         />
         <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
-          <div className="p-6 space-y-6">
-            {/* Mobile Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-              <Input
-                type="text"
-                placeholder="Services durchsuchen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (searchQuery.trim()) {
-                      handleMobileNavigation(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
-                    }
-                  }
-                }}
-              />
-            </div>
-
+          <div className="p-6 h-full flex flex-col">
             {/* Mobile Navigation */}
-            <nav className="space-y-2">
+            <nav className="space-y-2 flex-1 overflow-y-auto">
               {/* Vorlagen */}
               <div>
                 <button
@@ -556,6 +536,28 @@ const Header = () => {
                 </button>
               </div>
             </nav>
+
+            {/* Mobile Search - positioned at bottom */}
+            <div className="border-t pt-4 mt-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  type="text"
+                  placeholder="Services durchsuchen..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 pr-4"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (searchQuery.trim()) {
+                        handleMobileNavigation(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
