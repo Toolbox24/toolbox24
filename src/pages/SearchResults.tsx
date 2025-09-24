@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { searchTemplates } from "@/data/templates";
-import TemplateCard from "@/components/ui/template-card";
+import { searchServices } from "@/data/search";
+import SearchResultCard from "@/components/ui/search-result-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowLeft } from "lucide-react";
@@ -12,7 +12,7 @@ const SearchResults = () => {
   const query = searchParams.get('q') || '';
   const [searchQuery, setSearchQuery] = useState(query);
   
-  const results = searchTemplates(query);
+  const results = searchServices(query);
 
   useEffect(() => {
     setSearchQuery(query);
@@ -21,7 +21,7 @@ const SearchResults = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/suche?q=${encodeURIComponent(searchQuery.trim())}`);
+      navigate(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
 
@@ -48,7 +48,7 @@ const SearchResults = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
               <Input
                 type="text"
-                placeholder="Nach Vorlagen suchen..."
+                placeholder="Services durchsuchen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-20"
@@ -73,17 +73,17 @@ const SearchResults = () => {
         {/* Results */}
         {results.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {results.map((template) => (
-              <TemplateCard key={template.id} template={template} />
+            {results.map((result) => (
+              <SearchResultCard key={result.id} result={result} />
             ))}
           </div>
         ) : query ? (
           <div className="text-center py-16">
             <p className="text-xl text-muted-foreground mb-4">
-              Keine Vorlagen für "{query}" gefunden.
+              Keine Services für "{query}" gefunden.
             </p>
             <p className="text-muted-foreground mb-6">
-              Versuchen Sie es mit anderen Suchbegriffen oder durchstöbern Sie unsere Kategorien.
+              Versuchen Sie es mit anderen Suchbegriffen oder durchstöbern Sie unsere Services.
             </p>
             <Button onClick={() => navigate("/")}>
               Zur Startseite
@@ -92,7 +92,7 @@ const SearchResults = () => {
         ) : (
           <div className="text-center py-16">
             <p className="text-xl text-muted-foreground">
-              Geben Sie einen Suchbegriff ein, um Vorlagen zu finden.
+              Geben Sie einen Suchbegriff ein, um Services zu finden.
             </p>
           </div>
         )}
