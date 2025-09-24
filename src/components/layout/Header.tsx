@@ -362,8 +362,14 @@ const Header = () => {
         />
         <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
           <div className="p-4 pt-4 h-full flex flex-col">
-            {/* Close Button */}
-            <div className="flex justify-end mb-4">
+            {/* Header with Logo and Close Button */}
+            <div className="flex items-center justify-between mb-6">
+              <h1 
+                className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
+                onClick={() => handleMobileNavigation("/de/")}
+              >
+                Toolbox24
+              </h1>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="p-2 rounded-md hover:bg-muted transition-colors"
