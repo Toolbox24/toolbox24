@@ -98,12 +98,12 @@ const PDFToWord = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-4 flex items-center justify-center gap-2">
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
             <FileText className="h-8 w-8 text-primary" />
             PDF zu Word konvertieren
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="page-description">
             Konvertieren Sie PDF-Dateien in bearbeitbare Word-Dokumente
           </p>
         </div>

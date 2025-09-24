@@ -175,8 +175,8 @@ const ImageResize = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
         <div className="page-header">
           <h1 className="page-title flex items-center justify-center gap-2">
             <RefreshCw className="h-8 w-8 text-primary" />

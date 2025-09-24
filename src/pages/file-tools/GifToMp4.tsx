@@ -154,14 +154,14 @@ const GifToMp4 = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
-            <Film className="h-10 w-10 text-primary" />
+    <div className="min-h-screen py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
+            <Film className="h-8 w-8 text-primary" />
             GIF → Video Konverter
           </h1>
-          <p className="text-xl text-muted-foreground">
+          <p className="page-description">
             Konvertieren Sie animierte GIFs in effizientere Video-Formate
           </p>
         </div>
