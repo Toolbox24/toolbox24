@@ -8,11 +8,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import * as pdfjsLib from 'pdfjs-dist';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, ImageRun, PageBreak, AlignmentType } from 'docx';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, PageBreak, AlignmentType } from 'docx';
 
-// Configure PDF.js worker - use CDN for reliable loading
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+// Configure PDF.js worker - use CDN as fallback for reliability
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 interface ExtractedContent {
   text: string;
@@ -156,16 +156,16 @@ const PDFToWord = () => {
   };
 
   const repairHyphenation = (text: string): string => {
-    // Fix hyphenated words at line breaks with comprehensive patterns
+    // Fix hyphenated words at line breaks - comprehensive implementation
     return text
-      // Remove hyphen + line break + word continuation
+      // Primary pattern: word-\n word -> wordword
       .replace(/(\w+)-\s*[\r\n]+\s*(\w+)/g, '$1$2')
-      // Join words split across lines (when second part starts lowercase)
+      // Secondary pattern: word \n lowercase-word -> wordword (split words)
       .replace(/(\w+)\s*[\r\n]+\s*([a-zäöüß]\w*)/g, '$1$2')
-      // Clean up multiple spaces and normalize line breaks
+      // Clean up excessive whitespace
       .replace(/[ \t]+/g, ' ')
       .replace(/[\r\n]+/g, '\n')
-      .replace(/\n\s*\n/g, '\n\n')
+      .replace(/\n\s*\n\s*\n/g, '\n\n') // Max 2 consecutive line breaks
       .trim();
   };
 
@@ -495,47 +495,44 @@ const PDFToWord = () => {
 
     setIsProcessing(true);
     setProgress(0);
+    setProcessStatus('PDF wird geladen...');
 
     try {
-      // Extract content from PDF
-      setProcessStatus('PDF wird analysiert...');
+      // Extract content from PDF with proper error handling
       const content = await extractTextFromPDF(file);
       
-      // Check if we have sufficient text content
+      // Count total text items across all pages
       const totalTextItems = content.pages.reduce((sum, page) => sum + page.textItems.length, 0);
+      console.log(`Total text items extracted: ${totalTextItems}`);
       
-      if (totalTextItems < 10) {
-        // Likely a scan or image-based PDF
+      // Check if this appears to be a scan/image-based PDF
+      if (totalTextItems === 0) {
         if (ocrEnabled) {
-          setProcessStatus('Wenig Text gefunden, OCR wird gestartet...');
+          setProcessStatus('Kein Text gefunden - OCR wird gestartet...');
           const ocrContent = await performOCR(content);
           setExtractedContent(ocrContent);
         } else {
           toast({
             title: "Scan-PDF erkannt",
-            description: "Das PDF scheint ein Scan zu sein. Aktivieren Sie OCR für bessere Ergebnisse.",
+            description: "Das PDF scheint ein Scan zu sein (kein Text gefunden). Aktivieren Sie OCR für Texterkennung.",
             variant: "destructive"
           });
           setIsProcessing(false);
           return;
         }
-      } else {
-        setExtractedContent(content);
-      }
-      
-      if (!content.text.trim() && totalTextItems === 0) {
+      } else if (totalTextItems < 20 && content.text.trim().length < 100) {
+        // Very little text found - suggest OCR
         toast({
-          title: "Keine Inhalte gefunden",
-          description: "Das PDF enthält keinen erkennbaren Text oder Bilder.",
-          variant: "destructive"
+          title: "Wenig Text gefunden",
+          description: `Nur ${totalTextItems} Textblöcke erkannt. Dies könnte ein teilweise gescanntes PDF sein. Versuchen Sie OCR für bessere Ergebnisse.`,
         });
-        setIsProcessing(false);
-        return;
       }
       
+      setExtractedContent(content);
       setProgress(50);
       
-      // Create DOCX document
+      // Create DOCX document with real content
+      setProcessStatus('DOCX-Dokument wird erstellt...');
       const docxBuffer = await createDocxDocument(content);
       
       const blob = new Blob([docxBuffer], { 
@@ -548,22 +545,15 @@ const PDFToWord = () => {
 
       toast({
         title: "Konvertierung erfolgreich!",
-        description: `PDF wurde zu DOCX konvertiert (${content.totalPages} Seiten, ${totalTextItems} Textblöcke, ${Math.round(content.text.length / 1000)}k Zeichen)`
+        description: `PDF wurde zu DOCX konvertiert: ${content.totalPages} Seiten, ${totalTextItems} Textblöcke, ${Math.round(content.text.length / 1000)}k Zeichen`
       });
+      
     } catch (error) {
-      console.error('Error converting PDF to Word:', error);
+      console.error('PDF to Word conversion failed:', error);
       let errorMessage = "Unbekannter Fehler bei der Konvertierung.";
       
       if (error instanceof Error) {
-        if (error.message.includes('passwort') || error.message.includes('password')) {
-          errorMessage = "Das PDF ist passwortgeschützt. Bitte verwenden Sie ein ungeschütztes PDF.";
-        } else if (error.message.includes('Invalid PDF') || error.message.includes('corrupt')) {
-          errorMessage = "Die Datei scheint beschädigt oder kein gültiges PDF zu sein.";
-        } else if (error.message.includes('Worker')) {
-          errorMessage = "PDF.js Worker konnte nicht geladen werden. Überprüfen Sie Ihre Internetverbindung.";
-        } else {
-          errorMessage = error.message;
-        }
+        errorMessage = error.message;
       }
       
       toast({

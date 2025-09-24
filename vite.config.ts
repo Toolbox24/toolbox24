@@ -15,4 +15,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  optimizeDeps: {
+    include: ['pdfjs-dist/legacy/build/pdf'],
+  },
+  worker: {
+    format: 'es',
+  },
 }));
