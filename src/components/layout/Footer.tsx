@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-muted mt-20">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Tools Section */}
           <div>
             <h4 className="font-semibold mb-4 text-foreground">Tools</h4>
@@ -38,9 +38,9 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal Section */}
+          {/* Resources Section */}
           <div>
-            <h4 className="font-semibold mb-4 text-foreground">Rechtliches</h4>
+            <h4 className="font-semibold mb-4 text-foreground">Ressourcen</h4>
             <ul className="space-y-2">
               <li>
                 <button
@@ -50,6 +50,13 @@ const Footer = () => {
                   Blog
                 </button>
               </li>
+            </ul>
+          </div>
+
+          {/* Legal Section */}
+          <div>
+            <h4 className="font-semibold mb-4 text-foreground">Rechtliches</h4>
+            <ul className="space-y-2">
               <li>
                 <button
                   onClick={() => navigate("/rechtliches")}
