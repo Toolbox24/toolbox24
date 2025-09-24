@@ -355,13 +355,13 @@ const Header = () => {
 
     {/* Mobile Menu Overlay */}
     {isMobileMenuOpen && (
-      <div className="fixed inset-0 z-40 lg:hidden">
+      <div className="fixed inset-0 z-50 lg:hidden">
         <div 
           className="fixed inset-0 bg-black/50" 
           onClick={() => setIsMobileMenuOpen(false)}
         />
         <div className="fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-background border-l shadow-xl animate-slide-in-right">
-          <div className="p-6 h-full flex flex-col">
+          <div className="p-4 pt-20 h-full flex flex-col">
             {/* Mobile Navigation */}
             <nav className="space-y-2 flex-1 overflow-y-auto">
               {/* Vorlagen */}
