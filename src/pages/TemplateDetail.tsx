@@ -23,10 +23,23 @@ const TemplateDetail = () => {
   const category = getCategoryBySlug(template.category);
 
   const handleDownload = (format: 'word' | 'pdf') => {
-    // For now, both formats point to the same test file
+    let downloadUrl = template.downloadUrl;
+    let fileName = `${template.slug}.docx`;
+    
+    // Handle Google Drive links - modify format for PDF
+    if (template.downloadUrl.includes('docs.google.com/document')) {
+      if (format === 'pdf') {
+        downloadUrl = template.downloadUrl.replace('export?format=docx', 'export?format=pdf');
+        fileName = `${template.slug}.pdf`;
+      }
+    } else {
+      // For regular file URLs, keep the original logic
+      fileName = format === 'pdf' ? `${template.slug}.pdf` : `${template.slug}.docx`;
+    }
+    
     const link = document.createElement('a');
-    link.href = template.downloadUrl;
-    link.download = `${template.slug}.docx`;
+    link.href = downloadUrl;
+    link.download = fileName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

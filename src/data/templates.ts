@@ -77,7 +77,7 @@ export const templates: Template[] = [
     category: "kuendigung",
     keywords: ["kündigung", "fitnessstudio", "vertrag", "sport"],
     slug: "kuendigung-fitnessstudio",
-    downloadUrl: "/assets/test-vorlage.docx"
+    downloadUrl: "https://docs.google.com/document/d/1tOvXdDRkLfB72i01bg3RUFhiIg9t4WyU/export?format=docx"
   },
   {
     id: "kuendigung-mietvertrag",
