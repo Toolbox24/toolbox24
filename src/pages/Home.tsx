@@ -68,11 +68,6 @@ const Home = () => {
       description: "Keine Installation erforderlich"
     },
     {
-      icon: Clock,
-      title: "Schnell & unkompliziert",
-      description: "Ergebnisse in wenigen Sekunden"
-    },
-    {
       icon: Smartphone,
       title: "Mobilfreundlich",
       description: "Funktioniert auf allen Geräten"
@@ -197,10 +192,10 @@ const Home = () => {
       </section>
 
       {/* Advantages */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-black">
               Ihre Vorteile
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -208,7 +203,7 @@ const Home = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {advantages.map((advantage) => (
               <div key={advantage.title} className="text-center group">
                 <div className="bg-white/70 backdrop-blur-sm border border-primary/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/10 group-hover:border-primary/30 transition-all duration-300 shadow-lg">
