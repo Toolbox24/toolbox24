@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone } from "lucide-react";
+import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -66,6 +66,11 @@ const Home = () => {
       icon: Zap,
       title: "Sofort einsatzbereit",
       description: "Keine Installation erforderlich"
+    },
+    {
+      icon: Clock,
+      title: "Schnell & unkompliziert",
+      description: "Ergebnisse in wenigen Sekunden"
     },
     {
       icon: Smartphone,
@@ -192,18 +197,25 @@ const Home = () => {
       </section>
 
       {/* Advantages */}
-      <section className="py-16">
+      <section className="py-16 bg-gradient-to-br from-primary/5 via-primary/10 to-accent/5">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center mb-12">Ihre Vorteile</h2>
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Ihre Vorteile
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Entdecken Sie, warum Millionen von Nutzern Toolbox24 für ihre digitalen Aufgaben vertrauen
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
             {advantages.map((advantage) => (
-              <div key={advantage.title} className="text-center">
-                <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <advantage.icon className="h-6 w-6 text-primary" />
+              <div key={advantage.title} className="text-center group">
+                <div className="bg-white/70 backdrop-blur-sm border border-primary/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/10 group-hover:border-primary/30 transition-all duration-300 shadow-lg">
+                  <advantage.icon className="h-7 w-7 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <h3 className="font-semibold mb-2">{advantage.title}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-semibold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">{advantage.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {advantage.description}
                 </p>
               </div>
