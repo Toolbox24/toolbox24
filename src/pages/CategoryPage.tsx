@@ -29,7 +29,7 @@ const CategoryPage = () => {
             <IconComponent className="h-10 w-10 text-primary" />
           </div>
           <h1 className="page-title">{category.name}</h1>
-          <p className="page-description mb-6">{category.description}</p>
+          <p className="page-description">{category.description}</p>
           <Badge variant="secondary" className="text-sm">
             {templates.length} Vorlagen verfügbar
           </Badge>
