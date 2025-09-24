@@ -19,6 +19,18 @@ const PDFSplit = () => {
   const { toast } = useToast();
 
   const handleFileSelect = async (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setFile(null);
+      setPageCount(0);
+      setStartPage(1);
+      setEndPage(1);
+      setDownloadUrl(null);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     if (selectedFiles.length > 0) {
       const selectedFile = selectedFiles[0];
       setFile(selectedFile);

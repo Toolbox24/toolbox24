@@ -14,6 +14,15 @@ const PDFMerge = () => {
   const { toast } = useToast();
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when files are removed
+      setFiles([]);
+      setDownloadUrl(null);
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     setFiles(selectedFiles);
     setDownloadUrl(null);
   };

@@ -15,6 +15,16 @@ const PDFToWord = () => {
   const { toast } = useToast();
 
   const handleFileSelect = (selectedFiles: File[]) => {
+    if (selectedFiles.length === 0) {
+      // Reset all states when file is removed
+      setFile(null);
+      setDownloadUrl(null);
+      setExtractedText('');
+      setProgress(0);
+      setIsProcessing(false);
+      return;
+    }
+    
     if (selectedFiles.length > 0) {
       setFile(selectedFiles[0]);
       setDownloadUrl(null);
