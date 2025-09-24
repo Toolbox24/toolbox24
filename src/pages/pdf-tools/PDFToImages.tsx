@@ -234,7 +234,7 @@ const PDFToImages = () => {
 
   return (
     <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <div className="container mx-auto px-4 max-w-4xl">
         <div className="page-header">
           <h1 className="page-title flex items-center justify-center gap-2">
             <Image className="h-8 w-8 text-primary" />
