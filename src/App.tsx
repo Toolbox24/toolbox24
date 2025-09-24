@@ -1,4 +1,3 @@
-import './i18n';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -133,63 +132,6 @@ const App = () => (
               <Route path="/de/rechtliches" element={<Rechtliches />} />
               <Route path="/de/impressum" element={<Impressum />} />
               <Route path="/de/kontakt" element={<Kontakt />} />
-
-              {/* English Routes */}
-              <Route path="/en" element={<Home />} />
-              <Route path="/en/" element={<Home />} />
-              <Route path="/en/category/:slug" element={<CategoryPage />} />
-              <Route path="/en/template/:slug" element={<TemplateDetail />} />
-              <Route path="/en/search" element={<SearchResults />} />
-              <Route path="/en/all-templates" element={<AllTemplates />} />
-              <Route path="/en/all-tools" element={<AlleTools />} />
-              
-              {/* English PDF Tools */}
-              <Route path="/en/pdf-tools/all" element={<AllPDFTools />} />
-              <Route path="/en/pdf-tools/merge-pdf" element={<PDFMerge />} />
-              <Route path="/en/pdf-tools/compress-pdf" element={<PDFCompress />} />
-              <Route path="/en/pdf-tools/split-pdf" element={<PDFSplit />} />
-              <Route path="/en/pdf-tools/pdf-to-word" element={<PDFToWord />} />
-              <Route path="/en/pdf-tools/word-to-pdf" element={<WordToPDF />} />
-              <Route path="/en/pdf-tools/pdf-to-images" element={<PDFToImages />} />
-              <Route path="/en/pdf-tools/images-to-pdf" element={<ImagesToPDF />} />
-              <Route path="/en/pdf-tools/delete-pages" element={<PDFDeletePages />} />
-              
-              {/* English File Tools */}
-              <Route path="/en/file-tools/all" element={<AllFileTools />} />
-              <Route path="/en/file-tools/compress-image" element={<ImageCompress />} />
-              <Route path="/en/file-tools/resize-image" element={<ImageResize />} />
-              <Route path="/en/file-tools/crop-image" element={<ImageCrop />} />
-              <Route path="/en/file-tools/rotate-image" element={<ImageRotate />} />
-              <Route path="/en/file-tools/remove-background" element={<RemoveBackground />} />
-              <Route path="/en/file-tools/convert-image" element={<ImageConverter />} />
-              <Route path="/en/file-tools/webp-converter" element={<WebPConverter />} />
-              <Route path="/en/file-tools/heic-to-jpg" element={<HEICToJPG />} />
-              <Route path="/en/file-tools/gif-to-mp4" element={<GifToMp4 />} />
-              <Route path="/en/file-tools/converter" element={<ImageConverterHub />} />
-              
-              {/* English converter landing pages */}
-              <Route path="/en/image/png-to-jpg" element={<PngToJpg />} />
-              <Route path="/en/image/jpg-to-png" element={<JpgToPng />} />
-              <Route path="/en/image/webp-to-jpg" element={<WebpToJpg />} />
-              <Route path="/en/image/webp-to-png" element={<WebpToPng />} />
-              <Route path="/en/image/heic-to-jpg" element={<HeicToJpg />} />
-              <Route path="/en/image/avif-to-jpg" element={<AvifToJpg />} />
-              <Route path="/en/gif-to-mp4" element={<GifToMp4Landing />} />
-              
-              {/* English compression pages */}
-              <Route path="/en/image/compress-jpeg" element={<JpegCompress />} />
-              <Route path="/en/image/compress-png" element={<PngCompress />} />
-              <Route path="/en/image/compress-svg" element={<SvgCompress />} />
-              <Route path="/en/image/compress-gif" element={<GifCompress />} />
-              
-              {/* English Blog Pages */}
-              <Route path="/en/blog" element={<Blog />} />
-              <Route path="/en/blog/:slug" element={<BlogPost />} />
-              
-              {/* English Legal Pages */}
-              <Route path="/en/legal" element={<Rechtliches />} />
-              <Route path="/en/imprint" element={<Impressum />} />
-              <Route path="/en/contact" element={<Kontakt />} />
               
               {/* Legacy routes - redirect to German versions */}
               <Route path="/kategorie/:slug" element={<CategoryPage />} />

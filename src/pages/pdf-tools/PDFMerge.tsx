@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Download, Merge } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
 
 const PDFMerge = () => {
   const [files, setFiles] = useState<File[]>([]);
@@ -14,7 +12,6 @@ const PDFMerge = () => {
   const [progress, setProgress] = useState(0);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const { toast } = useToast();
-  const { t } = useTranslation();
 
   const handleFileSelect = (selectedFiles: File[]) => {
     if (selectedFiles.length === 0) {
@@ -33,8 +30,8 @@ const PDFMerge = () => {
   const mergePDFs = async () => {
     if (files.length < 2) {
       toast({
-        title: t('common.error'),
-        description: t('tools.pdfMerge.errors.minFiles'),
+        title: "Fehler",
+        description: "Bitte wählen Sie mindestens 2 PDF-Dateien aus.",
         variant: "destructive"
       });
       return;
@@ -62,14 +59,14 @@ const PDFMerge = () => {
       setDownloadUrl(url);
 
       toast({
-        title: t('common.success'),
-        description: t('tools.pdfMerge.success')
+        title: "Erfolgreich",
+        description: "PDFs wurden erfolgreich zusammengefügt!"
       });
     } catch (error) {
       console.error('Error merging PDFs:', error);
       toast({
-        title: t('common.error'),
-        description: t('tools.pdfMerge.errors.mergeError'),
+        title: "Fehler",
+        description: "Fehler beim Zusammenfügen der PDFs.",
         variant: "destructive"
       });
     } finally {
@@ -90,18 +87,14 @@ const PDFMerge = () => {
 
   return (
     <div className="min-h-screen py-8">
-      <Helmet>
-        <title>{t('tools.pdfMerge.title')} - Toolbox24</title>
-        <meta name="description" content={t('tools.pdfMerge.description')} />
-      </Helmet>
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="page-header">
           <h1 className="page-title flex items-center justify-center gap-2">
             <Merge className="h-8 w-8 text-primary" />
-            {t('tools.pdfMerge.title')}
+            PDF zusammenfügen
           </h1>
           <p className="page-description">
-            {t('tools.pdfMerge.description')}
+            Fügen Sie mehrere PDF-Dateien zu einem einzigen Dokument zusammen
           </p>
         </div>
 
@@ -121,7 +114,7 @@ const PDFMerge = () => {
                 size="lg"
                 className="w-full max-w-md"
               >
-                {isProcessing ? t('common.processing') : t('tools.pdfMerge.button')}
+                {isProcessing ? 'Verarbeitung...' : 'PDFs zusammenfügen'}
               </Button>
             </div>
           )}
@@ -129,7 +122,7 @@ const PDFMerge = () => {
           {isProcessing && (
             <div className="space-y-2">
               <div className="text-center text-sm text-muted-foreground">
-                {t('common.processing')} {progress}%
+                Verarbeitung läuft... {progress}%
               </div>
               <Progress value={progress} className="w-full" />
             </div>
@@ -138,7 +131,7 @@ const PDFMerge = () => {
           {downloadUrl && (
             <div className="text-center p-6 bg-muted/50 rounded-lg border">
               <h3 className="text-lg font-semibold mb-4 text-green-600">
-                {t('tools.pdfMerge.success')}
+                PDF erfolgreich zusammengefügt!
               </h3>
               <Button
                 onClick={downloadMergedPDF}
@@ -146,21 +139,23 @@ const PDFMerge = () => {
                 className="w-full max-w-md"
               >
                 <Download className="mr-2 h-4 w-4" />
-                {t('tools.pdfMerge.downloadButton')}
+                Zusammengefügte PDF herunterladen
               </Button>
             </div>
           )}
         </div>
 
         <div className="mt-12 p-6 bg-muted/30 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">{t('common.howItWorks')}</h2>
+          <h2 className="text-xl font-semibold mb-4">So funktioniert's:</h2>
           <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-            {(t('tools.pdfMerge.instructions', { returnObjects: true }) as string[]).map((instruction: string, index: number) => (
-              <li key={index}>{instruction}</li>
-            ))}
+            <li>Wählen Sie mindestens 2 PDF-Dateien aus (bis zu 50MB pro Datei)</li>
+            <li>Die Dateien werden in der Reihenfolge zusammengefügt, wie Sie sie ausgewählt haben</li>
+            <li>Klicken Sie auf "PDFs zusammenfügen"</li>
+            <li>Laden Sie die zusammengefügte PDF-Datei herunter</li>
           </ol>
           <p className="text-sm text-muted-foreground mt-4">
-            <strong>{t('common.privacy')}</strong>
+            <strong>Datenschutz:</strong> Alle Verarbeitungen erfolgen lokal in Ihrem Browser. 
+            Ihre Dateien werden nicht an externe Server übertragen.
           </p>
         </div>
       </div>

@@ -13,9 +13,6 @@ import { cn } from "@/lib/utils";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { searchServices, SearchResult } from "@/data/search";
-import LanguageDropdown from "@/components/LanguageDropdown";
-import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/hooks/useLanguage";
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -25,8 +22,6 @@ const Header = () => {
   const [expandedSubmenu, setExpandedSubmenu] = useState<string | null>(null);
   const navigate = useNavigate();
   const searchRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation();
-  const { getLocalizedPath } = useLanguage();
 
   // Handle search input changes
   useEffect(() => {
@@ -55,7 +50,7 @@ const Header = () => {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(getLocalizedPath(`/suche?q=${encodeURIComponent(searchQuery.trim())}`));
+      navigate(`/de/suche?q=${encodeURIComponent(searchQuery.trim())}`);
       setShowResults(false);
     }
   };
@@ -120,7 +115,7 @@ const Header = () => {
             <div className="flex items-center gap-8">
               <h1 
                 className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
-                onClick={() => navigate(getLocalizedPath("/"))}
+                onClick={() => navigate("/de/")}
               >
                 Toolbox24
               </h1>
@@ -129,17 +124,17 @@ const Header = () => {
               <NavigationMenu className="hidden lg:flex">
               <NavigationMenuList>
                 <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-transparent">
-                        {t('nav.templates')}
-                      </NavigationMenuTrigger>
+                  <NavigationMenuTrigger className="bg-transparent">
+                    Vorlagen
+                  </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
                       <NavigationMenuLink asChild>
                         <Link
-                          to={getLocalizedPath("/kategorie/kuendigung")}
+                          to="/de/kategorie/kuendigung"
                           className="block p-2 rounded hover:bg-muted hover:text-foreground transition-colors"
                         >
-                          {t('nav.categories.termination')}
+                          Kündigungen
                         </Link>
                       </NavigationMenuLink>
                       <NavigationMenuLink asChild>
@@ -181,7 +176,7 @@ const Header = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent">
-                    {t('nav.pdfTools')}
+                    PDF Tools
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
@@ -232,7 +227,7 @@ const Header = () => {
 
                 <NavigationMenuItem>
                   <NavigationMenuTrigger className="bg-transparent">
-                    {t('nav.fileTools')}
+                    Datei-Tools
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
                     <div className="w-64 p-4 space-y-2">
@@ -291,7 +286,7 @@ const Header = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <Input
                   type="text"
-                  placeholder={t('nav.search')}
+                  placeholder="Services durchsuchen..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.trim() && setShowResults(true)}
@@ -302,7 +297,7 @@ const Header = () => {
                   size="sm" 
                   className="absolute right-1 top-1/2 transform -translate-y-1/2"
                 >
-                  {t('nav.searchButton')}
+                  Suchen
                 </Button>
               </div>
             </form>
@@ -340,11 +335,6 @@ const Header = () => {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Language Dropdown */}
-          <div className="hidden lg:block">
-            <LanguageDropdown />
           </div>
 
           {/* Mobile Menu Button */}

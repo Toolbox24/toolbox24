@@ -2,79 +2,75 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock, Star, Globe, Users } from "lucide-react";
-import { useTranslation } from "react-i18next";
-import { useLanguage } from "@/hooks/useLanguage";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { getLocalizedPath } = useLanguage();
 
   const popularTools = [
     {
-      title: t('home.popularTools.pdfMerge.title'),
-      description: t('home.popularTools.pdfMerge.description'),
+      title: "PDF zusammenfügen",
+      description: "Mehrere PDFs zu einem Dokument vereinen",
       icon: Merge,
-      path: getLocalizedPath("/pdf-tools/pdf-zusammenfuegen")
+      path: "/de/pdf-tools/pdf-zusammenfuegen"
     },
     {
-      title: t('home.popularTools.removeBackground.title'),
-      description: t('home.popularTools.removeBackground.description'),
+      title: "Hintergrund entfernen",
+      description: "KI-basierte Hintergrundentfernung für Bilder",
       icon: Trash2,
-      path: getLocalizedPath("/datei-tools/hintergrund-entfernen")
+      path: "/de/datei-tools/hintergrund-entfernen"
     },
     {
-      title: t('home.popularTools.cancellationTemplate.title'),
-      description: t('home.popularTools.cancellationTemplate.description'),
+      title: "Kündigungsvorlage",
+      description: "Rechtssichere Vorlagen für alle Kündigungen",
       icon: FileX,
-      path: getLocalizedPath("/kategorie/kuendigung")
+      path: "/de/kategorie/kuendigung"
     }
   ];
 
   const categories = [
     {
-      title: t('home.services.templates.title'),
+      title: "Vorlagen",
       emoji: "📄",
-      description: t('home.services.templates.description'),
-      buttonText: t('home.services.templates.button'),
-      path: getLocalizedPath("/alle-vorlagen")
+      description: "Rechtssichere Muster für Kündigungen, Bewerbungen und Verträge",
+      buttonText: "Alle Vorlagen anzeigen",
+      path: "/de/alle-vorlagen"
     },
     {
-      title: t('home.services.pdfTools.title'),
+      title: "PDF Tools",
       emoji: "📋",
-      description: t('home.services.pdfTools.description'),
-      buttonText: t('home.services.pdfTools.button'),
-      path: getLocalizedPath("/pdf-tools/alle")
+      description: "PDF bearbeiten: Zusammenfügen, Teilen, Komprimieren",
+      buttonText: "Alle PDF Tools anzeigen",
+      path: "/de/pdf-tools/alle"
     },
     {
-      title: t('home.services.fileTools.title'),
+      title: "Datei Tools",
       emoji: "🖼️",
-      description: t('home.services.fileTools.description'),
-      buttonText: t('home.services.fileTools.button'),
-      path: getLocalizedPath("/datei-tools/alle")
+      description: "Bilder bearbeiten: Komprimieren, Konvertieren, Zuschneiden",
+      buttonText: "Alle Datei Tools anzeigen",
+      path: "/de/datei-tools/alle"
     }
   ];
 
   const advantages = [
     {
       icon: CheckCircle,
-      title: t('home.advantages.free.title'),
-      description: t('home.advantages.free.description')
+      title: "Kostenlos nutzbar",
+      description: "Alle Tools ohne Gebühren"
     },
     {
       icon: Shield,
-      title: t('home.advantages.privacy.title'),
-      description: t('home.advantages.privacy.description')
+      title: "Datenschutz garantiert",
+      description: "Lokale Verarbeitung im Browser"
     },
     {
       icon: Zap,
-      title: t('home.advantages.instant.title'),
-      description: t('home.advantages.instant.description')
+      title: "Sofort einsatzbereit",
+      description: "Keine Installation erforderlich"
     },
     {
       icon: Smartphone,
-      title: t('home.advantages.mobile.title'),
-      description: t('home.advantages.mobile.description')
+      title: "Mobilfreundlich",
+      description: "Funktioniert auf allen Geräten"
     }
   ];
 
