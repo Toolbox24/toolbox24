@@ -222,17 +222,17 @@ const RemoveBackground = () => {
       
       const getOptimalModel = () => {
         if (selectedModel === 'auto') {
-          if (processingMode === 'sky') return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Sky-optimiert)' };
-          if (processingMode === 'portrait') return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Portrait-optimiert)' };
+          if (processingMode === 'sky') return { model: 'Xenova/detr-resnet-50-panoptic', name: 'DETR (Sky-optimiert)' };
+          if (processingMode === 'portrait') return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Portrait-optimiert)' };
           if (processingMode === 'product') return { model: 'Xenova/u2net', name: 'U²-Net (Produkt-optimiert)' };
-          return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Automatisch)' };
+          return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Automatisch)' };
         }
         
         switch (selectedModel) {
-          case 'rmbg-2': return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Neueste Version)' };
+          case 'rmbg-2': return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Bewährt)' };
           case 'u2net': return { model: 'Xenova/u2net', name: 'U²-Net (Bewährt)' };
-          case 'sky-removal': return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Himmel-Spezialist)' };
-          default: return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Standard)' };
+          case 'sky-removal': return { model: 'Xenova/detr-resnet-50-panoptic', name: 'DETR (Himmel-Spezialist)' };
+          default: return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Standard)' };
         }
       };
       
@@ -249,31 +249,30 @@ const RemoveBackground = () => {
             );
             modelUsed = `${name} (WebGPU)`;
           } catch (error) {
-            console.log('WebGPU failed, trying CPU...');
+            console.log('WebGPU failed, trying WASM...');
             backgroundRemover = await pipeline(
               'image-segmentation', 
-              model,
-              { device: 'cpu' }
+              'Xenova/u2net',
+              { device: 'wasm' }
             );
-            modelUsed = `${name} (CPU)`;
+            modelUsed = `U²-Net (WASM)`;
           }
         } else {
-          // Mobile: CPU with optimized models
-          const mobileModel = processingMode === 'sky' ? 'Xenova/detr-resnet-50-panoptic' : 'Xenova/u2net';
+          // Mobile: WASM with optimized models
           try {
             backgroundRemover = await pipeline(
               'image-segmentation', 
-              mobileModel,
-              { device: 'cpu' }
+              'Xenova/u2net',
+              { device: 'wasm' }
             );
-            modelUsed = `Mobile-optimiert (${processingMode})`;
+            modelUsed = `Mobile U²-Net (WASM)`;
           } catch (error) {
             backgroundRemover = await pipeline(
               'image-segmentation', 
               'Xenova/detr-resnet-50-panoptic',
-              { device: 'cpu' }
+              { device: 'wasm' }
             );
-            modelUsed = 'Mobile Fallback (CPU)';
+            modelUsed = 'Mobile DETR (WASM)';
           }
         }
         
@@ -285,10 +284,10 @@ const RemoveBackground = () => {
         console.log('All models failed, using universal fallback...');
         backgroundRemover = await pipeline(
           'image-segmentation', 
-          'Xenova/detr-resnet-50-panoptic',
-          { device: 'cpu' }
+          'Xenova/u2net',
+          { device: 'wasm' }
         );
-        modelUsed = 'Universelles Modell (CPU)';
+        modelUsed = 'U²-Net Fallback (WASM)';
       }
       setProgress(60);
 
@@ -514,7 +513,7 @@ const RemoveBackground = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="auto">🤖 Automatisch (empfohlen)</SelectItem>
-                        <SelectItem value="rmbg-2">🚀 RMBG-2.0 (Neueste KI)</SelectItem>
+                        <SelectItem value="rmbg-2">🚀 RMBG-1.4 (Bewährt)</SelectItem>
                         <SelectItem value="u2net">⚡ U²-Net (Schnell)</SelectItem>
                         <SelectItem value="sky-removal">☁️ Himmel-Spezialist</SelectItem>
                       </SelectContent>
