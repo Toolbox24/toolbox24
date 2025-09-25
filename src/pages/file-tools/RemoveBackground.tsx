@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Download, ImageIcon } from 'lucide-react';
+import { Download, ImageIcon, Scissors } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
 import heic2any from 'heic2any';
@@ -272,49 +272,40 @@ const RemoveBackground = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <div className="page-header">
+            <h1 className="page-title flex items-center justify-center gap-2">
+              <Scissors className="h-8 w-8 text-primary" />
               Hintergrund entfernen
             </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="page-description">
               Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit KI. 
               Einfach Bild hochladen und sofort herunterladen.
             </p>
           </div>
 
-          {/* Main Tool */}
-          <div className="bg-card rounded-xl shadow-lg border p-6">
-            {/* File Upload */}
-            <div className="mb-6">
-              <FileUpload 
-                onFileSelect={handleFileSelect}
-                accept={{
-                  'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.heic']
-                }}
-                className="border-2 border-dashed border-border hover:border-primary/50 transition-colors"
-              >
-                <div className="text-center p-8">
-                  <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-lg font-medium mb-2">Bild hier ablegen oder klicken</p>
-                  <p className="text-muted-foreground">
-                    Unterstützt JPG, PNG, WebP und HEIC (max. 20MB)
-                  </p>
+          <div className="space-y-6">
+            <FileUpload 
+              onFileSelect={handleFileSelect}
+              accept={{
+                'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.heic']
+              }}
+              multiple={false}
+              maxSize={20 * 1024 * 1024} // 20MB
+            />
+
+            
+            {isConverting && (
+              <div className="text-center">
+                <div className="inline-flex items-center gap-2 text-muted-foreground">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  iPhone-Bild wird konvertiert...
                 </div>
-              </FileUpload>
-              
-              {isConverting && (
-                <div className="mt-4 text-center">
-                  <div className="inline-flex items-center gap-2 text-muted-foreground">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-                    iPhone-Bild wird konvertiert...
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Process Button */}
             {file && !isProcessing && !downloadUrl && (
-              <div className="text-center mb-6">
+              <div className="text-center">
                 <Button 
                   onClick={removeBackground}
                   size="lg"
@@ -327,7 +318,7 @@ const RemoveBackground = () => {
 
             {/* Progress */}
             {isProcessing && (
-              <div className="mb-6">
+              <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Verarbeitung läuft...</span>
                   <span className="text-sm text-muted-foreground">{progress}%</span>
@@ -338,37 +329,35 @@ const RemoveBackground = () => {
 
             {/* Image Preview */}
             {(previewUrl || resultPreviewUrl) && (
-              <div className="mb-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Original Image */}
-                  {previewUrl && (
-                    <div>
-                      <h3 className="text-sm font-medium mb-2 text-center">Original</h3>
-                      <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted">
-                        <img 
-                          src={previewUrl} 
-                          alt="Original" 
-                          className="w-full h-auto max-h-96 object-contain"
-                        />
-                      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Original Image */}
+                {previewUrl && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2 text-center">Original</h3>
+                    <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted">
+                      <img 
+                        src={previewUrl} 
+                        alt="Original" 
+                        className="w-full h-auto max-h-96 object-contain"
+                      />
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  {/* Result Image */}
-                  {resultPreviewUrl && (
-                    <div>
-                      <h3 className="text-sm font-medium mb-2 text-center">Ergebnis</h3>
-                      <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted" 
-                           style={{ backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' }}>
-                        <img 
-                          src={resultPreviewUrl} 
-                          alt="Ohne Hintergrund" 
-                          className="w-full h-auto max-h-96 object-contain"
-                        />
-                      </div>
+                {/* Result Image */}
+                {resultPreviewUrl && (
+                  <div>
+                    <h3 className="text-sm font-medium mb-2 text-center">Ergebnis</h3>
+                    <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted" 
+                         style={{ backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' }}>
+                      <img 
+                        src={resultPreviewUrl} 
+                        alt="Ohne Hintergrund" 
+                        className="w-full h-auto max-h-96 object-contain"
+                      />
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -387,26 +376,27 @@ const RemoveBackground = () => {
             )}
           </div>
 
-          {/* SEO Content */}
-          <div className="mt-12 space-y-8">
-            <div className="prose prose-gray max-w-none">
-              <h2 className="text-2xl font-bold">Automatische Hintergrundentfernung mit KI</h2>
-              <p>
-                Unser KI-Tool entfernt automatisch den Hintergrund von Ihren Bildern. 
-                Einfach Bild hochladen, wenige Sekunden warten und das Ergebnis mit transparentem 
-                Hintergrund herunterladen. Perfekt für Produktfotos, Portraits und Social Media.
-              </p>
-              
-              <h3 className="text-xl font-semibold mt-6">Funktionen</h3>
-              <ul className="list-disc list-inside space-y-2">
-                <li>Automatische KI-Hintergrundentfernung</li>
-                <li>Unterstützt JPG, PNG, WebP und HEIC</li>
-                <li>Hochqualitative Ergebnisse</li>
-                <li>100% kostenlos und sicher</li>
-                <li>Keine Registrierung erforderlich</li>
-                <li>Funktioniert direkt im Browser</li>
-              </ul>
-            </div>
+          </div>
+        
+        {/* SEO Content */}
+        <div className="mt-12 space-y-8">
+          <div className="prose prose-gray max-w-none">
+            <h2 className="text-2xl font-bold">Automatische Hintergrundentfernung mit KI</h2>
+            <p>
+              Unser KI-Tool entfernt automatisch den Hintergrund von Ihren Bildern. 
+              Einfach Bild hochladen, wenige Sekunden warten und das Ergebnis mit transparentem 
+              Hintergrund herunterladen. Perfekt für Produktfotos, Portraits und Social Media.
+            </p>
+            
+            <h3 className="text-xl font-semibold mt-6">Funktionen</h3>
+            <ul className="list-disc list-inside space-y-2">
+              <li>Automatische KI-Hintergrundentfernung</li>
+              <li>Unterstützt JPG, PNG, WebP und HEIC</li>
+              <li>Hochqualitative Ergebnisse</li>
+              <li>100% kostenlos und sicher</li>
+              <li>Keine Registrierung erforderlich</li>
+              <li>Funktioniert direkt im Browser</li>
+            </ul>
           </div>
         </div>
       </div>
