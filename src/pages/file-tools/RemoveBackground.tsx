@@ -411,38 +411,100 @@ const RemoveBackground = () => {
             // Edge pixel - apply color spill removal
             const alphaRatio = alpha / 255;
             
-            // Boost saturation slightly to counteract color bleeding
+            // Aggressive desaturation for edge pixels to remove color fringing
             const r = outputData[i];
             const g = outputData[i + 1];
             const b = outputData[i + 2];
             
-            // Convert to HSL for saturation boost
+            // Convert to HSL for saturation manipulation
+            const max = Math.max(r, g, b) / 255;
+            const min = Math.min(r, g, b) / 255;
+            const delta = max - min;
+            const lightness = (max + min) / 2;
+            
+            if (delta > 0) {
+              // Strong desaturation for very edge pixels
+              const desaturationFactor = alphaRatio < 0.3 ? 0.2 : 0.7;
+              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+              const newSaturation = saturation * desaturationFactor;
+              
+              // Apply enhanced contrast for better color neutralization
+              const contrastBoost = alphaRatio < 0.5 ? 1.15 : 1.05;
+              
+              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
+              const hue = max === r ? ((g - b) / delta + (g < b ? 6 : 0)) / 6 :
+                         max === g ? ((b - r) / delta + 2) / 6 :
+                         ((r - g) / delta + 4) / 6;
+              const x = c * (1 - Math.abs((hue * 6) % 2 - 1));
+              const m = lightness - c / 2;
+              
+              let newR, newG, newB;
+              if (hue < 1/6) {
+                [newR, newG, newB] = [c + m, x + m, 0 + m];
+              } else if (hue < 2/6) {
+                [newR, newG, newB] = [x + m, c + m, 0 + m];
+              } else if (hue < 3/6) {
+                [newR, newG, newB] = [0 + m, c + m, x + m];
+              } else if (hue < 4/6) {
+                [newR, newG, newB] = [0 + m, x + m, c + m];
+              } else if (hue < 5/6) {
+                [newR, newG, newB] = [x + m, 0 + m, c + m];
+              } else {
+                [newR, newG, newB] = [c + m, 0 + m, x + m];
+              }
+              
+              // Apply contrast and final color correction
+              outputData[i] = Math.min(255, Math.max(0, Math.round(((newR * 255 - 128) * contrastBoost) + 128)));
+              outputData[i + 1] = Math.min(255, Math.max(0, Math.round(((newG * 255 - 128) * contrastBoost) + 128)));
+              outputData[i + 2] = Math.min(255, Math.max(0, Math.round(((newB * 255 - 128) * contrastBoost) + 128)));
+            }
+          } else if (alpha > 0) {
+            // Semi-transparent areas - boost saturation slightly for better color preservation
+            const r = outputData[i];
+            const g = outputData[i + 1];
+            const b = outputData[i + 2];
+            
             const max = Math.max(r, g, b) / 255;
             const min = Math.min(r, g, b) / 255;
             const delta = max - min;
             
             if (delta > 0) {
-              const saturationBoost = 1.1; // Subtle saturation increase
+              const saturationBoost = 1.08; // Subtle saturation increase for non-edge areas
               const lightness = (max + min) / 2;
               const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
               
               const newSaturation = Math.min(1, saturation * saturationBoost);
               const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
-              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
+              const hue = max === r ? ((g - b) / delta + (g < b ? 6 : 0)) / 6 :
+                         max === g ? ((b - r) / delta + 2) / 6 :
+                         ((r - g) / delta + 4) / 6;
+              const x = c * (1 - Math.abs((hue * 6) % 2 - 1));
               const m = lightness - c / 2;
               
-              if (max === r) {
+              if (hue < 1/6) {
                 outputData[i] = Math.round((c + m) * 255);
                 outputData[i + 1] = Math.round((x + m) * 255);
                 outputData[i + 2] = Math.round((0 + m) * 255);
-              } else if (max === g) {
+              } else if (hue < 2/6) {
                 outputData[i] = Math.round((x + m) * 255);
                 outputData[i + 1] = Math.round((c + m) * 255);
                 outputData[i + 2] = Math.round((0 + m) * 255);
-              } else {
+              } else if (hue < 3/6) {
+                outputData[i] = Math.round((0 + m) * 255);
+                outputData[i + 1] = Math.round((c + m) * 255);
+                outputData[i + 2] = Math.round((x + m) * 255);
+              } else if (hue < 4/6) {
                 outputData[i] = Math.round((0 + m) * 255);
                 outputData[i + 1] = Math.round((x + m) * 255);
                 outputData[i + 2] = Math.round((c + m) * 255);
+              } else if (hue < 5/6) {
+                outputData[i] = Math.round((x + m) * 255);
+                outputData[i + 1] = Math.round((0 + m) * 255);
+                outputData[i + 2] = Math.round((c + m) * 255);
+              } else {
+                outputData[i] = Math.round((c + m) * 255);
+                outputData[i + 1] = Math.round((0 + m) * 255);
+                outputData[i + 2] = Math.round((x + m) * 255);
               }
             }
           }
