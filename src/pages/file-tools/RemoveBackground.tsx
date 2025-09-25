@@ -305,7 +305,7 @@ const RemoveBackground = () => {
       outputCtx.imageSmoothingQuality = 'high';
       outputCtx.drawImage(canvas, 0, 0);
       
-      // Enhanced mask processing
+      // Enhanced mask processing with professional post-processing
       const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const outputData = outputImageData.data;
       
@@ -316,10 +316,9 @@ const RemoveBackground = () => {
         const maskData = mask.mask.data;
         const { threshold, edgeLimit } = getEdgeParams();
         
-        // Professional-grade alpha processing with Gaussian-like smoothing
-        const smoothedAlpha = new Uint8Array(maskData.length);
+        // Step 1: Initial alpha processing
+        const initialAlpha = new Uint8Array(maskData.length);
         
-        // First pass: Enhanced edge detection and smoothing
         for (let i = 0; i < maskData.length; i++) {
           const maskValue = maskData[i];
           let alpha;
@@ -338,12 +337,88 @@ const RemoveBackground = () => {
             alpha = Math.round(smoothedValue * 255);
           }
           
-          smoothedAlpha[i] = alpha;
+          initialAlpha[i] = alpha;
         }
 
-        // Second pass: Gaussian blur for natural edges
-        const blurRadius = 1.5;
-        const sigma = 0.7;
+        // Step 2: Mask Erosion (1-2 pixels) to remove background color spill
+        const erodedAlpha = new Uint8Array(maskData.length);
+        const erosionRadius = 1.5; // 1-2 pixel erosion
+        
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const centerIndex = y * width + x;
+            let minAlpha = 255;
+
+            // Find minimum alpha in neighborhood (erosion)
+            for (let dy = -Math.ceil(erosionRadius); dy <= Math.ceil(erosionRadius); dy++) {
+              for (let dx = -Math.ceil(erosionRadius); dx <= Math.ceil(erosionRadius); dx++) {
+                const nx = x + dx;
+                const ny = y + dy;
+                
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                  const distance = Math.sqrt(dx * dx + dy * dy);
+                  if (distance <= erosionRadius) {
+                    const sampleIndex = ny * width + nx;
+                    minAlpha = Math.min(minAlpha, initialAlpha[sampleIndex]);
+                  }
+                }
+              }
+            }
+            
+            erodedAlpha[centerIndex] = minAlpha;
+          }
+        }
+
+        // Step 3: Color Spill Removal - reduce background color bleeding
+        for (let i = 0; i < outputData.length; i += 4) {
+          const pixelIndex = Math.floor(i / 4);
+          const alpha = erodedAlpha[pixelIndex];
+          
+          if (alpha > 0 && alpha < 255) {
+            // Edge pixel - apply color spill removal
+            const alphaRatio = alpha / 255;
+            
+            // Boost saturation slightly to counteract color bleeding
+            const r = outputData[i];
+            const g = outputData[i + 1];
+            const b = outputData[i + 2];
+            
+            // Convert to HSL for saturation boost
+            const max = Math.max(r, g, b) / 255;
+            const min = Math.min(r, g, b) / 255;
+            const delta = max - min;
+            
+            if (delta > 0) {
+              const saturationBoost = 1.1; // Subtle saturation increase
+              const lightness = (max + min) / 2;
+              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+              
+              const newSaturation = Math.min(1, saturation * saturationBoost);
+              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
+              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
+              const m = lightness - c / 2;
+              
+              if (max === r) {
+                outputData[i] = Math.round((c + m) * 255);
+                outputData[i + 1] = Math.round((x + m) * 255);
+                outputData[i + 2] = Math.round((0 + m) * 255);
+              } else if (max === g) {
+                outputData[i] = Math.round((x + m) * 255);
+                outputData[i + 1] = Math.round((c + m) * 255);
+                outputData[i + 2] = Math.round((0 + m) * 255);
+              } else {
+                outputData[i] = Math.round((0 + m) * 255);
+                outputData[i + 1] = Math.round((x + m) * 255);
+                outputData[i + 2] = Math.round((c + m) * 255);
+              }
+            }
+          }
+        }
+
+        // Step 4: Final Feathering (Gaussian blur for natural edges)
+        const finalAlpha = new Uint8Array(maskData.length);
+        const featherRadius = 2.0; // Slightly more feathering after erosion
+        const sigma = 0.8;
         
         for (let y = 0; y < height; y++) {
           for (let x = 0; x < width; x++) {
@@ -351,9 +426,9 @@ const RemoveBackground = () => {
             let totalAlpha = 0;
             let totalWeight = 0;
 
-            // Sample surrounding pixels with Gaussian weights
-            for (let dy = -Math.ceil(blurRadius); dy <= Math.ceil(blurRadius); dy++) {
-              for (let dx = -Math.ceil(blurRadius); dx <= Math.ceil(blurRadius); dx++) {
+            // Gaussian feathering for smooth transitions
+            for (let dy = -Math.ceil(featherRadius); dy <= Math.ceil(featherRadius); dy++) {
+              for (let dx = -Math.ceil(featherRadius); dx <= Math.ceil(featherRadius); dx++) {
                 const nx = x + dx;
                 const ny = y + dy;
                 
@@ -361,9 +436,9 @@ const RemoveBackground = () => {
                   const sampleIndex = ny * width + nx;
                   const distance = Math.sqrt(dx * dx + dy * dy);
                   
-                  if (distance <= blurRadius) {
+                  if (distance <= featherRadius) {
                     const weight = Math.exp(-(distance * distance) / (2 * sigma * sigma));
-                    totalAlpha += smoothedAlpha[sampleIndex] * weight;
+                    totalAlpha += erodedAlpha[sampleIndex] * weight;
                     totalWeight += weight;
                   }
                 }
@@ -371,11 +446,16 @@ const RemoveBackground = () => {
             }
 
             if (totalWeight > 0) {
-              outputData[centerIndex * 4 + 3] = Math.round(totalAlpha / totalWeight);
+              finalAlpha[centerIndex] = Math.round(totalAlpha / totalWeight);
             } else {
-              outputData[centerIndex * 4 + 3] = smoothedAlpha[centerIndex];
+              finalAlpha[centerIndex] = erodedAlpha[centerIndex];
             }
           }
+        }
+
+        // Apply final alpha channel
+        for (let i = 0; i < finalAlpha.length; i++) {
+          outputData[i * 4 + 3] = finalAlpha[i];
         }
       }
 
