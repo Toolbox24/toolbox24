@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Slider } from '@/components/ui/slider';
+
 import { Label } from '@/components/ui/label';
 import { Download, ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -24,18 +24,14 @@ const RemoveBackground = () => {
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [progressMessage, setProgressMessage] = useState<string>('');
-  const [edgeSharpness, setEdgeSharpness] = useState<number>(70); // 0-100%
+  
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
   // Edge parameter mapping based on percentage (0-100%)
+  // Fixed optimal values for perfect soft edges
   const getEdgeParams = () => {
-    // Convert 0-100% to threshold and edgeLimit values
-    // 0% = very soft, 100% = very sharp
-    const normalizedValue = edgeSharpness / 100;
-    const threshold = 0.15 + (normalizedValue * 0.55); // Range: 0.15 to 0.70
-    const edgeLimit = 0.5 + (normalizedValue * 0.45); // Range: 0.5 to 0.95
-    return { threshold, edgeLimit };
+    return { threshold: 0.3, edgeLimit: 0.7 };
   };
 
   // HEIC conversion function
@@ -391,31 +387,6 @@ const RemoveBackground = () => {
               maxSize={20 * 1024 * 1024} // 20MB
             />
 
-            {/* Edge Sharpness Selection */}
-            {file && !isProcessing && !downloadUrl && (
-              <div className="p-4 bg-muted/30 rounded-lg">
-                <div className="flex items-center justify-between mb-3">
-                  <Label className="text-sm font-medium">Kanten-Schärfe:</Label>
-                  <span className="text-sm font-medium text-primary">{edgeSharpness}%</span>
-                </div>
-                <Slider
-                  value={[edgeSharpness]}
-                  onValueChange={(value) => setEdgeSharpness(value[0])}
-                  max={100}
-                  min={0}
-                  step={5}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-muted-foreground mt-2">
-                  <span>0% - Sehr weich</span>
-                  <span>50% - Ausgewogen</span>
-                  <span>100% - Sehr scharf</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Niedrige Werte: Natürliche Haare/Details • Hohe Werte: Präzise Konturen für Logos/Objekte
-                </p>
-              </div>
-            )}
             
             {isConverting && (
               <div className="text-center">
