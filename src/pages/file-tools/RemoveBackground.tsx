@@ -486,31 +486,74 @@ const RemoveBackground = () => {
           
           const pixelIndex = (y * originalWidth + x) * 4;
           
-          // Color decontamination for semi-transparent pixels
-          const alphaRatio = finalAlpha / 255;
-          if (alphaRatio > 0.1 && alphaRatio < 0.9) {
-            const r = finalData[pixelIndex];
-            const g = finalData[pixelIndex + 1];
-            const b = finalData[pixelIndex + 2];
-            
-            // Remove background color contamination by desaturating towards gray
-            const gray = r * 0.299 + g * 0.587 + b * 0.114;
-            const decontamination = 1 - alphaRatio; // Stronger effect for more transparent pixels
-            
-            finalData[pixelIndex] = Math.round(r * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
-            finalData[pixelIndex + 1] = Math.round(g * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
-            finalData[pixelIndex + 2] = Math.round(b * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
-          }
+           // Enhanced color decontamination for semi-transparent pixels
+           const alphaRatio = finalAlpha / 255;
+           if (alphaRatio > 0.1 && alphaRatio < 0.9) {
+             const r = finalData[pixelIndex];
+             const g = finalData[pixelIndex + 1];
+             const b = finalData[pixelIndex + 2];
+             
+             // Calculate grayscale value for neutralization
+             const gray = r * 0.299 + g * 0.587 + b * 0.114;
+             
+             // Stronger decontamination effect - more aggressive neutralization
+             const decontamination = (1 - alphaRatio) * 1.8; // Increased from 1.0 to 1.8
+             const neutralizationStrength = Math.min(0.9, decontamination); // Cap at 90%
+             
+             // Reduce saturation and shift towards foreground tone
+             const desaturated_r = r * (1 - neutralizationStrength) + gray * neutralizationStrength;
+             const desaturated_g = g * (1 - neutralizationStrength) + gray * neutralizationStrength;
+             const desaturated_b = b * (1 - neutralizationStrength) + gray * neutralizationStrength;
+             
+             // Additional foreground tone shifting for very transparent pixels
+             if (alphaRatio < 0.4) {
+               const foregroundShift = 0.3; // Shift towards more neutral foreground tone
+               const avgForeground = (desaturated_r + desaturated_g + desaturated_b) / 3;
+               
+               finalData[pixelIndex] = Math.round(desaturated_r * (1 - foregroundShift) + avgForeground * foregroundShift);
+               finalData[pixelIndex + 1] = Math.round(desaturated_g * (1 - foregroundShift) + avgForeground * foregroundShift);
+               finalData[pixelIndex + 2] = Math.round(desaturated_b * (1 - foregroundShift) + avgForeground * foregroundShift);
+             } else {
+               finalData[pixelIndex] = Math.round(desaturated_r);
+               finalData[pixelIndex + 1] = Math.round(desaturated_g);
+               finalData[pixelIndex + 2] = Math.round(desaturated_b);
+             }
+           }
           
           // Preserve semi-transparency for natural edges
           finalData[pixelIndex + 3] = Math.round(finalAlpha);
         }
       }
 
-      finalCtx.putImageData(finalImageData, 0, 0);
-      
-      setProgress(95);
-      setProgressMessage('Finalisiere professionelle Qualität...');
+       finalCtx.putImageData(finalImageData, 0, 0);
+       
+       // Step 7: Ultra-light second feather (0.5px) for ultra-smooth transitions
+       const ultraFinalImageData = finalCtx.getImageData(0, 0, originalWidth, originalHeight);
+       const ultraFinalData = ultraFinalImageData.data;
+       
+       for (let y = 1; y < originalHeight - 1; y++) {
+         for (let x = 1; x < originalWidth - 1; x++) {
+           const centerIndex = (y * originalWidth + x) * 4 + 3; // Alpha channel
+           const currentAlpha = ultraFinalData[centerIndex];
+           
+           // Only apply ultra-light feather to edge pixels
+           if (currentAlpha > 10 && currentAlpha < 245) {
+             const topAlpha = ultraFinalData[((y - 1) * originalWidth + x) * 4 + 3];
+             const bottomAlpha = ultraFinalData[((y + 1) * originalWidth + x) * 4 + 3];
+             const leftAlpha = ultraFinalData[(y * originalWidth + (x - 1)) * 4 + 3];
+             const rightAlpha = ultraFinalData[(y * originalWidth + (x + 1)) * 4 + 3];
+             
+             // Very light averaging (0.5px equivalent)
+             const avgAlpha = (currentAlpha * 0.7 + (topAlpha + bottomAlpha + leftAlpha + rightAlpha) * 0.075);
+             ultraFinalData[centerIndex] = Math.round(avgAlpha);
+           }
+         }
+       }
+       
+       finalCtx.putImageData(ultraFinalImageData, 0, 0);
+       
+       setProgress(95);
+       setProgressMessage('Finalisiere professionelle Qualität...');
 
       // Create high-quality output at original resolution
       const blob = await new Promise<Blob>((resolve, reject) => {
