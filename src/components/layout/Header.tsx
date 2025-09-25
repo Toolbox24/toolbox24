@@ -113,12 +113,12 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-8">
-              <h1 
+              <div 
                 className="text-xl font-bold text-primary cursor-pointer hover:text-primary-hover transition-colors"
                 onClick={() => navigate("/de/")}
               >
                 Toolbox24
-              </h1>
+              </div>
               
               {/* Desktop Navigation Menu */}
               <NavigationMenu className="hidden lg:flex">

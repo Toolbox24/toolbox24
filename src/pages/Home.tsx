@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Merge, Trash2, FileX, CheckCircle, Shield, Zap, Smartphone, Clock, Star, Globe, Users } from "lucide-react";
 
 const Home = () => {
@@ -75,7 +76,13 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen">
+    <>
+      <Helmet>
+        <title>Toolbox24 - Kostenlose Tools für PDF, Bilder & Vorlagen</title>
+        <meta name="description" content="Kostenlose Online-Tools für PDF-Bearbeitung, Bildkonvertierung und professionelle Vorlagen. Direkt im Browser, ohne Upload - sicher und effizient." />
+        <meta name="keywords" content="PDF Tools, Bildbearbeitung, Vorlagen, Kündigung, Bewerbung, kostenlos, Online-Tools" />
+      </Helmet>
+      <div className="min-h-screen">
       {/* Hero Section */}
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
@@ -256,6 +263,7 @@ const Home = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { 
   Merge, 
   FileText, 
@@ -104,7 +105,13 @@ const AllPDFTools = () => {
   ];
 
   return (
-    <div className="min-h-screen py-8">
+    <>
+      <Helmet>
+        <title>Alle PDF-Tools - Kostenlose PDF-Bearbeitung | Toolbox24</title>
+        <meta name="description" content="Professionelle PDF-Tools: Zusammenfügen, Komprimieren, Teilen, PDF zu Word/Bild konvertieren. Datenschutz garantiert - lokale Verarbeitung im Browser." />
+        <meta name="keywords" content="PDF Tools, PDF zusammenfügen, PDF komprimieren, PDF teilen, PDF zu Word, PDF Bearbeitung" />
+      </Helmet>
+      <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         <div className="page-header">
           <h1 className="page-title">
@@ -138,6 +145,7 @@ const AllPDFTools = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

@@ -2,6 +2,7 @@ import { useParams, Navigate } from "react-router-dom";
 import { getCategoryBySlug, getTemplatesByCategory } from "@/data/templates";
 import TemplateCard from "@/components/ui/template-card";
 import { Badge } from "@/components/ui/badge";
+import { Helmet } from "react-helmet-async";
 import * as Icons from "lucide-react";
 
 const CategoryPage = () => {
@@ -21,7 +22,13 @@ const CategoryPage = () => {
   const IconComponent = Icons[category.icon as keyof typeof Icons] as React.ComponentType<any>;
 
   return (
-    <div className="min-h-screen py-8">
+    <>
+      <Helmet>
+        <title>{category.name} Vorlagen - Kostenlose Muster & Templates | Toolbox24</title>
+        <meta name="description" content={`${category.description} Über ${templates.length} kostenlose Vorlagen zum Download verfügbar.`} />
+        <meta name="keywords" content={`${category.name}, Vorlage, Muster, Template, kostenlos, Download`} />
+      </Helmet>
+      <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-6xl">
         {/* Category Header */}
         <div className="page-header">
@@ -63,6 +70,7 @@ const CategoryPage = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 
