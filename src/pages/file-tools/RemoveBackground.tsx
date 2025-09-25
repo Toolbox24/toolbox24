@@ -212,77 +212,64 @@ const RemoveBackground = () => {
       if (mask && mask.mask) {
         const maskData = mask.mask.data;
         
-        // Create enhanced mask with edge feathering
-        const enhancedMask = new Float32Array(maskData.length);
+        // Apply precise mask with minimal edge smoothing
+        const threshold = 0.5; // Clear separation threshold
+        const featherRadius = 1; // Minimal 1-pixel feathering for natural edges
         
-        // Step 1: Apply morphological operations to clean up mask
+        // Create edge detection mask
+        const edges = new Uint8Array(maskData.length);
         for (let y = 1; y < height - 1; y++) {
           for (let x = 1; x < width - 1; x++) {
             const idx = y * width + x;
-            let sum = 0;
-            let count = 0;
+            const current = maskData[idx];
             
-            // 3x3 kernel for morphological smoothing
-            for (let dy = -1; dy <= 1; dy++) {
-              for (let dx = -1; dx <= 1; dx++) {
+            // Check if this pixel is on an edge (has neighbors with different values)
+            let isEdge = false;
+            for (let dy = -1; dy <= 1 && !isEdge; dy++) {
+              for (let dx = -1; dx <= 1 && !isEdge; dx++) {
+                if (dx === 0 && dy === 0) continue;
                 const neighIdx = (y + dy) * width + (x + dx);
                 if (neighIdx >= 0 && neighIdx < maskData.length) {
+                  const diff = Math.abs(current - maskData[neighIdx]);
+                  if (diff > 0.3) isEdge = true;
+                }
+              }
+            }
+            edges[idx] = isEdge ? 1 : 0;
+          }
+        }
+        
+        // Apply mask with minimal edge smoothing only
+        for (let i = 0; i < maskData.length; i++) {
+          let alpha = 0;
+          
+          if (maskData[i] >= threshold) {
+            // Object pixel - fully opaque
+            alpha = 255;
+          } else if (edges[i] === 1) {
+            // Edge pixel - apply minimal smoothing for 1-pixel feathering
+            let sum = 0;
+            let count = 0;
+            const y = Math.floor(i / width);
+            const x = i % width;
+            
+            for (let dy = -featherRadius; dy <= featherRadius; dy++) {
+              for (let dx = -featherRadius; dx <= featherRadius; dx++) {
+                const ny = y + dy;
+                const nx = x + dx;
+                if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                  const neighIdx = ny * width + nx;
                   sum += maskData[neighIdx];
                   count++;
                 }
               }
             }
             
-            enhancedMask[idx] = sum / count;
+            const smoothValue = count > 0 ? sum / count : maskData[i];
+            alpha = Math.round(smoothValue * 255);
           }
-        }
-        
-        // Step 2: Edge feathering with Gaussian-like blur for smooth transitions
-        const featheredMask = new Float32Array(maskData.length);
-        const featherRadius = Math.max(1, Math.floor(Math.min(width, height) / 200)); // Adaptive feathering
-        
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const idx = y * width + x;
-            let weightedSum = 0;
-            let totalWeight = 0;
-            
-            // Apply Gaussian-like blur for edge feathering
-            for (let dy = -featherRadius; dy <= featherRadius; dy++) {
-              for (let dx = -featherRadius; dx <= featherRadius; dx++) {
-                const ny = y + dy;
-                const nx = x + dx;
-                
-                if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
-                  const neighIdx = ny * width + nx;
-                  const distance = Math.sqrt(dx * dx + dy * dy);
-                  const weight = Math.exp(-(distance * distance) / (2 * featherRadius * featherRadius));
-                  
-                  weightedSum += enhancedMask[neighIdx] * weight;
-                  totalWeight += weight;
-                }
-              }
-            }
-            
-            featheredMask[idx] = totalWeight > 0 ? weightedSum / totalWeight : enhancedMask[idx];
-          }
-        }
-        
-        // Step 3: Apply enhanced mask with soft edges
-        for (let i = 0; i < maskData.length; i++) {
-          let maskValue = featheredMask[i];
+          // Background pixels remain alpha = 0
           
-          // Apply smooth curve for more natural transitions
-          maskValue = Math.pow(maskValue, 0.8); // Slightly soften the curve
-          
-          // Anti-aliasing for ultra-smooth edges
-          if (maskValue > 0.1 && maskValue < 0.9) {
-            // Enhance intermediate values for smoother transitions
-            maskValue = 0.5 + 0.5 * Math.sin((maskValue - 0.5) * Math.PI);
-          }
-          
-          // Convert to alpha (0-255) with enhanced precision
-          const alpha = Math.max(0, Math.min(255, Math.round(maskValue * 255)));
           data[i * 4 + 3] = alpha;
         }
       }
