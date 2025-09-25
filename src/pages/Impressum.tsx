@@ -23,7 +23,7 @@ const Impressum = () => {
           <p>
             E-Mail: [Ihre E-Mail-Adresse]<br/>
             Telefon: [Ihre Telefonnummer]<br/>
-            Website: toolbox24.de
+            Website: www.toolbox24.ch
           </p>
 
           <h3>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>

@@ -62,7 +62,7 @@ const Kontakt = () => {
                 </div>
                 <div>
                   <h3 className="font-medium mb-1">E-Mail</h3>
-                  <p className="text-muted-foreground">info@toolbox24.de</p>
+                  <p className="text-muted-foreground">info@toolbox24.ch</p>
                 </div>
               </div>
 
