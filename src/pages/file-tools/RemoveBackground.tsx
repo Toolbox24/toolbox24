@@ -437,36 +437,6 @@ const RemoveBackground = () => {
         }
       }
 
-      // Step 5: Second ultra-light feather (0.5px) for ultra-smooth transitions
-      const ultraSmoothAlpha = new Uint8Array(maskData.length);
-      
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const centerIndex = y * width + x;
-          let totalAlpha = 0;
-          let totalWeight = 0;
-
-          // Ultra-light Gaussian blur
-          for (let dy = -1; dy <= 1; dy++) {
-            for (let dx = -1; dx <= 1; dx++) {
-              const nx = x + dx;
-              const ny = y + dy;
-              
-              if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                const sampleIndex = ny * width + nx;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                const weight = Math.exp(-(distance * distance) * 2); // Very light blur
-                
-                totalAlpha += smoothedAlpha[sampleIndex] * weight;
-                totalWeight += weight;
-              }
-            }
-          }
-
-          ultraSmoothAlpha[centerIndex] = totalWeight > 0 ? Math.round(totalAlpha / totalWeight) : smoothedAlpha[centerIndex];
-        }
-      }
-
       setProgress(88);
       setProgressMessage('Skaliere Maske auf Originalauflösung...');
 
@@ -503,11 +473,11 @@ const RemoveBackground = () => {
           const dx = srcX - x1;
           const dy = srcY - y1;
           
-          // Get alpha values from ultra-smooth mask
-          const alpha11 = ultraSmoothAlpha[y1 * width + x1];
-          const alpha12 = ultraSmoothAlpha[y2 * width + x1];
-          const alpha21 = ultraSmoothAlpha[y1 * width + x2];
-          const alpha22 = ultraSmoothAlpha[y2 * width + x2];
+          // Get alpha values from smoothed mask
+          const alpha11 = smoothedAlpha[y1 * width + x1];
+          const alpha12 = smoothedAlpha[y2 * width + x1];
+          const alpha21 = smoothedAlpha[y1 * width + x2];
+          const alpha22 = smoothedAlpha[y2 * width + x2];
           
           // Bilinear interpolation
           const alpha1 = alpha11 * (1 - dx) + alpha21 * dx;
@@ -516,32 +486,20 @@ const RemoveBackground = () => {
           
           const pixelIndex = (y * originalWidth + x) * 4;
           
-          // Strengthened color decontamination for semi-transparent pixels
+          // Color decontamination for semi-transparent pixels
           const alphaRatio = finalAlpha / 255;
           if (alphaRatio > 0.1 && alphaRatio < 0.9) {
             const r = finalData[pixelIndex];
             const g = finalData[pixelIndex + 1];
             const b = finalData[pixelIndex + 2];
             
-            // Stronger neutralization - remove background color contamination
+            // Remove background color contamination by desaturating towards gray
             const gray = r * 0.299 + g * 0.587 + b * 0.114;
+            const decontamination = 1 - alphaRatio; // Stronger effect for more transparent pixels
             
-            // More aggressive decontamination based on transparency
-            const contamination = 1 - alphaRatio;
-            const neutralization = Math.min(0.85, contamination * 1.2); // Up to 85% neutralization
-            
-            // Reduce saturation and shift towards neutral tone
-            const neutralR = r * (1 - neutralization) + gray * neutralization;
-            const neutralG = g * (1 - neutralization) + gray * neutralization;
-            const neutralB = b * (1 - neutralization) + gray * neutralization;
-            
-            // Additional saturation reduction for edge pixels
-            const satReduction = alphaRatio < 0.5 ? 0.7 : 0.85;
-            const avgColor = (neutralR + neutralG + neutralB) / 3;
-            
-            finalData[pixelIndex] = Math.round(neutralR * satReduction + avgColor * (1 - satReduction));
-            finalData[pixelIndex + 1] = Math.round(neutralG * satReduction + avgColor * (1 - satReduction));
-            finalData[pixelIndex + 2] = Math.round(neutralB * satReduction + avgColor * (1 - satReduction));
+            finalData[pixelIndex] = Math.round(r * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
+            finalData[pixelIndex + 1] = Math.round(g * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
+            finalData[pixelIndex + 2] = Math.round(b * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
           }
           
           // Preserve semi-transparency for natural edges
