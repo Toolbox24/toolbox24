@@ -486,19 +486,20 @@ const RemoveBackground = () => {
           
           const pixelIndex = (y * originalWidth + x) * 4;
           
-          // Simple color spill removal for edge pixels
-          if (finalAlpha > 0 && finalAlpha < 240) {
+          // Color decontamination for semi-transparent pixels
+          const alphaRatio = finalAlpha / 255;
+          if (alphaRatio > 0.1 && alphaRatio < 0.9) {
             const r = finalData[pixelIndex];
             const g = finalData[pixelIndex + 1];
             const b = finalData[pixelIndex + 2];
             
-            // Subtle desaturation for smoother edges
+            // Remove background color contamination by desaturating towards gray
             const gray = r * 0.299 + g * 0.587 + b * 0.114;
-            const desaturation = 0.9;
+            const decontamination = 1 - alphaRatio; // Stronger effect for more transparent pixels
             
-            finalData[pixelIndex] = Math.round(r * desaturation + gray * (1 - desaturation));
-            finalData[pixelIndex + 1] = Math.round(g * desaturation + gray * (1 - desaturation));
-            finalData[pixelIndex + 2] = Math.round(b * desaturation + gray * (1 - desaturation));
+            finalData[pixelIndex] = Math.round(r * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
+            finalData[pixelIndex + 1] = Math.round(g * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
+            finalData[pixelIndex + 2] = Math.round(b * (1 - decontamination * 0.7) + gray * (decontamination * 0.7));
           }
           
           // Preserve semi-transparency for natural edges
