@@ -21,6 +21,7 @@ const RemoveBackground = () => {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
+  const [progressMessage, setProgressMessage] = useState<string>('');
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
@@ -115,6 +116,7 @@ const RemoveBackground = () => {
 
     setIsProcessing(true);
     setProgress(10);
+    setProgressMessage('Bild wird vorbereitet...');
 
     try {
       toast({
@@ -123,10 +125,33 @@ const RemoveBackground = () => {
       });
 
       setProgress(20);
+      setProgressMessage('Bild wird geladen...');
       
       // Load the image
       const imageElement = await loadImage(file);
       setProgress(30);
+      setProgressMessage('KI-Modell wird geladen...');
+
+      // Create smooth progress animation during model loading (mobile optimization)
+      let progressInterval: NodeJS.Timeout | null = null;
+      if (isMobile) {
+        let currentProgress = 30;
+        progressInterval = setInterval(() => {
+          if (currentProgress < 48) {
+            currentProgress += 2;
+            setProgress(currentProgress);
+            
+            // Update messages for mobile users
+            if (currentProgress <= 35) {
+              setProgressMessage('Modell wird heruntergeladen...');
+            } else if (currentProgress <= 42) {
+              setProgressMessage('Modell wird initialisiert...');
+            } else {
+              setProgressMessage('Fast bereit...');
+            }
+          }
+        }, 800);
+      }
 
       // Load proven RMBG-1.4 model for reliable background removal
       let backgroundRemover;
@@ -170,7 +195,13 @@ const RemoveBackground = () => {
         }
       }
       
+      // Clear the mobile progress interval
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
+      
       setProgress(50);
+      setProgressMessage('Modell ist bereit! Bild wird verarbeitet...');
 
       // Convert image to canvas for processing
       const canvas = document.createElement('canvas');
@@ -195,7 +226,8 @@ const RemoveBackground = () => {
       canvas.height = height;
       ctx.drawImage(imageElement, 0, 0, width, height);
 
-      setProgress(70);
+      setProgress(65);
+      setProgressMessage('Hintergrund wird analysiert...');
 
       // Process with background removal model
       const result = await backgroundRemover(canvas);
@@ -204,7 +236,8 @@ const RemoveBackground = () => {
         throw new Error('Background removal failed');
       }
 
-      setProgress(85);
+      setProgress(80);
+      setProgressMessage('Bild wird optimiert...');
 
       // Create output canvas with transparency
       const outputCanvas = document.createElement('canvas');
@@ -250,7 +283,8 @@ const RemoveBackground = () => {
       }
 
       outputCtx.putImageData(outputImageData, 0, 0);
-      setProgress(95);
+      setProgress(90);
+      setProgressMessage('Bild wird finalisiert...');
 
       // Convert to blob and create download URL
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -264,6 +298,7 @@ const RemoveBackground = () => {
       setDownloadUrl(url);
       setResultPreviewUrl(url);
       setProgress(100);
+      setProgressMessage('Fertig!');
 
       toast({
         title: "Erfolgreich!",
@@ -279,6 +314,7 @@ const RemoveBackground = () => {
       });
       
       setProgress(0);
+      setProgressMessage('');
     } finally {
       setIsProcessing(false);
     }
@@ -348,10 +384,18 @@ const RemoveBackground = () => {
             {isProcessing && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Verarbeitung läuft...</span>
+                  <span className="text-sm font-medium">
+                    {progressMessage || 'Verarbeitung läuft...'}
+                  </span>
                   <span className="text-sm text-muted-foreground">{progress}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
+                {isMobile && progress > 25 && progress < 50 && (
+                  <div className="flex items-center justify-center mt-2 text-xs text-muted-foreground">
+                    <div className="h-3 w-3 animate-spin rounded-full border-2 border-primary border-t-transparent mr-2"></div>
+                    Modell wird geladen, bitte warten...
+                  </div>
+                )}
               </div>
             )}
 
