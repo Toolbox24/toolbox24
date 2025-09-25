@@ -12,9 +12,10 @@ import { pipeline, env } from '@huggingface/transformers';
 import heic2any from 'heic2any';
 import { useIsMobile } from '@/hooks/use-mobile';
 
-// Configure transformers.js
+// Configure transformers.js for optimal performance
 env.allowLocalModels = false;
 env.useBrowserCache = true;
+env.backends.onnx.wasm.numThreads = 1;
 
 const RemoveBackground = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -28,8 +29,8 @@ const RemoveBackground = () => {
   const [edgeSmoothing, setEdgeSmoothing] = useState([3]);
   const [feathering, setFeathering] = useState([2]);
   const [showComparison, setShowComparison] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'auto' | 'rmbg-2' | 'u2net' | 'sky-removal'>('auto');
-  const [processingMode, setProcessingMode] = useState<'general' | 'sky' | 'portrait' | 'product'>('general');
+  const [selectedModel, setSelectedModel] = useState<'auto' | 'modnet' | 'rmbg-2' | 'u2net' | 'sky-removal'>('auto');
+  const [processingMode, setProcessingMode] = useState<'auto' | 'general' | 'sky' | 'portrait' | 'product'>('auto');
   const [isConverting, setIsConverting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -105,6 +106,49 @@ const RemoveBackground = () => {
       const url = URL.createObjectURL(selectedFile);
       setPreviewUrl(url);
     }
+  };
+
+  // Image analysis for intelligent model selection
+  const analyzeImage = (image: HTMLImageElement) => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return { type: 'general', confidence: 0.5 };
+    
+    canvas.width = Math.min(image.width, 224);
+    canvas.height = Math.min(image.height, 224);
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    let skyPixels = 0;
+    let skinPixels = 0;
+    let totalPixels = data.length / 4;
+    
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      
+      // Sky detection (blue-ish, bright pixels in upper portion)
+      const y = Math.floor((i / 4) / canvas.width);
+      if (y < canvas.height * 0.6 && b > r && b > g && (r + g + b) > 300) {
+        skyPixels++;
+      }
+      
+      // Skin tone detection
+      if (r > 95 && g > 40 && b > 20 && r > g && r > b && 
+          r - g > 15 && Math.abs(r - g) > Math.abs(g - b)) {
+        skinPixels++;
+      }
+    }
+    
+    const skyRatio = skyPixels / totalPixels;
+    const skinRatio = skinPixels / totalPixels;
+    
+    if (skyRatio > 0.3) return { type: 'sky' as const, confidence: Math.min(skyRatio * 2, 1) };
+    if (skinRatio > 0.05) return { type: 'portrait' as const, confidence: Math.min(skinRatio * 10, 1) };
+    return { type: 'general' as const, confidence: 0.7 };
   };
 
   // Advanced post-processing functions
@@ -220,19 +264,69 @@ const RemoveBackground = () => {
       let backgroundRemover;
       let modelUsed = '';
       
+      // Intelligent model selection based on image analysis
+      const imageAnalysis = analyzeImage(imageElement);
+      
       const getOptimalModel = () => {
         if (selectedModel === 'auto') {
-          if (processingMode === 'sky') return { model: 'Xenova/detr-resnet-50-panoptic', name: 'DETR (Sky-optimiert)' };
-          if (processingMode === 'portrait') return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Portrait-optimiert)' };
-          if (processingMode === 'product') return { model: 'Xenova/u2net', name: 'U²-Net (Produkt-optimiert)' };
-          return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Automatisch)' };
+          // Use image analysis for automatic selection
+          const mode = processingMode !== 'auto' ? processingMode : imageAnalysis.type;
+          
+          switch (mode) {
+            case 'sky':
+              return { 
+                model: 'Xenova/detr-resnet-50-panoptic', 
+                name: `Sky-Spezialist (${Math.round(imageAnalysis.confidence * 100)}% Vertrauen)`,
+                pipeline: 'object-detection'
+              };
+            case 'portrait':
+              return { 
+                model: 'Xenova/modnet', 
+                name: `MODNet Portrait (${Math.round(imageAnalysis.confidence * 100)}% Vertrauen)`,
+                pipeline: 'image-segmentation'
+              };
+            case 'product':
+            case 'general':
+            default:
+              return { 
+                model: 'briaai/RMBG-1.4', 
+                name: 'RMBG-1.4 (Universal)',
+                pipeline: 'image-segmentation'
+              };
+          }
         }
         
         switch (selectedModel) {
-          case 'rmbg-2': return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Bewährt)' };
-          case 'u2net': return { model: 'Xenova/u2net', name: 'U²-Net (Bewährt)' };
-          case 'sky-removal': return { model: 'Xenova/detr-resnet-50-panoptic', name: 'DETR (Himmel-Spezialist)' };
-          default: return { model: 'briaai/RMBG-1.4', name: 'RMBG-1.4 (Standard)' };
+          case 'modnet':
+            return { 
+              model: 'Xenova/modnet', 
+              name: 'MODNet (Portrait-Spezialist)',
+              pipeline: 'image-segmentation'
+            };
+          case 'rmbg-2': 
+            return { 
+              model: 'briaai/RMBG-1.4', 
+              name: 'RMBG-1.4 (Bewährt)',
+              pipeline: 'image-segmentation'
+            };
+          case 'u2net': 
+            return { 
+              model: 'Xenova/u2net', 
+              name: 'U²-Net (Schnell)',
+              pipeline: 'image-segmentation'
+            };
+          case 'sky-removal': 
+            return { 
+              model: 'Xenova/detr-resnet-50-panoptic', 
+              name: 'DETR (Himmel-Spezialist)',
+              pipeline: 'object-detection'
+            };
+          default: 
+            return { 
+              model: 'briaai/RMBG-1.4', 
+              name: 'RMBG-1.4 (Standard)',
+              pipeline: 'image-segmentation'
+            };
         }
       };
       
@@ -512,8 +606,9 @@ const RemoveBackground = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="auto">🤖 Automatisch (empfohlen)</SelectItem>
-                        <SelectItem value="rmbg-2">🚀 RMBG-1.4 (Bewährt)</SelectItem>
+                        <SelectItem value="auto">🤖 Automatisch (KI-Analyse)</SelectItem>
+                        <SelectItem value="modnet">👤 MODNet (Portrait-Spezialist)</SelectItem>
+                        <SelectItem value="rmbg-2">🚀 RMBG-1.4 (Universal)</SelectItem>
                         <SelectItem value="u2net">⚡ U²-Net (Schnell)</SelectItem>
                         <SelectItem value="sky-removal">☁️ Himmel-Spezialist</SelectItem>
                       </SelectContent>
