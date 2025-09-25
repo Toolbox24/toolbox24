@@ -6,9 +6,11 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Download, ImageIcon, Eye, EyeOff } from 'lucide-react';
+import { Download, ImageIcon, Eye, EyeOff, Smartphone } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
+import heic2any from 'heic2any';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Configure transformers.js
 env.allowLocalModels = false;
@@ -26,9 +28,37 @@ const RemoveBackground = () => {
   const [edgeSmoothing, setEdgeSmoothing] = useState([3]);
   const [feathering, setFeathering] = useState([2]);
   const [showComparison, setShowComparison] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
-  const handleFileSelect = (selectedFiles: File[]) => {
+  // HEIC conversion function
+  const convertHEICToJPEG = async (heicFile: File): Promise<File> => {
+    try {
+      setIsConverting(true);
+      toast({
+        title: "HEIC wird konvertiert",
+        description: "iPhone-Bild wird für Verarbeitung vorbereitet..."
+      });
+
+      const jpegBlob = await heic2any({
+        blob: heicFile,
+        toType: "image/jpeg",
+        quality: 0.9
+      }) as Blob;
+
+      return new File([jpegBlob], heicFile.name.replace(/\.[^/.]+$/, '.jpg'), {
+        type: 'image/jpeg'
+      });
+    } catch (error) {
+      console.error('HEIC conversion failed:', error);
+      throw new Error('HEIC-Konvertierung fehlgeschlagen');
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
+  const handleFileSelect = async (selectedFiles: File[]) => {
     if (selectedFiles.length === 0) {
       // Reset all states when file is removed
       setFile(null);
@@ -42,7 +72,26 @@ const RemoveBackground = () => {
     }
     
     if (selectedFiles.length > 0) {
-      const selectedFile = selectedFiles[0];
+      let selectedFile = selectedFiles[0];
+      
+      // Check if it's HEIC and convert if needed
+      if (selectedFile.type === 'image/heic' || selectedFile.name.toLowerCase().endsWith('.heic')) {
+        try {
+          selectedFile = await convertHEICToJPEG(selectedFile);
+          toast({
+            title: "HEIC konvertiert",
+            description: "iPhone-Bild erfolgreich zu JPEG konvertiert"
+          });
+        } catch (error) {
+          toast({
+            title: "Konvertierungsfehler",
+            description: "HEIC-Bild konnte nicht konvertiert werden. Versuchen Sie es mit einem JPEG/PNG.",
+            variant: "destructive"
+          });
+          return;
+        }
+      }
+      
       setFile(selectedFile);
       setDownloadUrl(null);
       setResultPreviewUrl(null);
@@ -150,9 +199,13 @@ const RemoveBackground = () => {
     setProgress(10);
 
     try {
+      // Mobile-specific optimizations
+      const deviceInfo = isMobile ? "Mobile-optimiert" : "Desktop-optimiert";
       toast({
-        title: "Lädt High-Quality Modell",
-        description: "Das spezialisierte U²-Net Hintergrund-Entfernungsmodell wird geladen..."
+        title: `Lädt ${deviceInfo} Modell`,
+        description: isMobile 
+          ? "Lädt mobile-optimiertes KI-Modell für Ihr Gerät..."
+          : "Das spezialisierte U²-Net Hintergrund-Entfernungsmodell wird geladen..."
       });
 
       setProgress(20);
@@ -161,39 +214,59 @@ const RemoveBackground = () => {
       const imageElement = await loadImage(file);
       setProgress(40);
 
-      // Try high-quality background removal models
+      // Try high-quality background removal models with mobile fallbacks
       let backgroundRemover;
+      let modelUsed = '';
+      
       try {
-        // Try RMBG (high quality background removal)
-        backgroundRemover = await pipeline(
-          'image-segmentation', 
-          'briaai/RMBG-1.4',
-          { device: 'webgpu' }
-        );
+        if (!isMobile) {
+          // Desktop: Try high-quality models first
+          try {
+            backgroundRemover = await pipeline(
+              'image-segmentation', 
+              'briaai/RMBG-1.4',
+              { device: 'webgpu' }
+            );
+            modelUsed = 'RMBG-1.4 (Höchste Qualität)';
+          } catch (error) {
+            backgroundRemover = await pipeline(
+              'image-segmentation', 
+              'Xenova/u2net',
+              { device: 'webgpu' }
+            );
+            modelUsed = 'U²-Net (Hohe Qualität)';
+          }
+        } else {
+          // Mobile: Use lighter models with CPU fallback
+          try {
+            backgroundRemover = await pipeline(
+              'image-segmentation', 
+              'Xenova/detr-resnet-50-panoptic',
+              { device: 'cpu' }
+            );
+            modelUsed = 'Mobile-optimiert (CPU)';
+          } catch (error) {
+            backgroundRemover = await pipeline(
+              'image-segmentation', 
+              'Xenova/u2net',
+              { device: 'cpu' }
+            );
+            modelUsed = 'Mobile U²-Net (CPU)';
+          }
+        }
+        
         toast({
-          title: "High-Quality Modell geladen",
-          description: "Verwende RMBG-1.4 für beste Qualität"
+          title: "Modell geladen",
+          description: `Verwende ${modelUsed}`
         });
       } catch (error) {
-        console.log('RMBG model not available, trying alternative...');
-        try {
-          backgroundRemover = await pipeline(
-            'image-segmentation', 
-            'Xenova/u2net',
-            { device: 'webgpu' }
-          );
-          toast({
-            title: "U²-Net Modell geladen", 
-            description: "Verwende U²-Net für hohe Qualität"
-          });
-        } catch (error2) {
-          console.log('U2Net not available, using fallback...');
-          backgroundRemover = await pipeline(
-            'image-segmentation', 
-            'Xenova/detr-resnet-50-panoptic',
-            { device: 'webgpu' }
-          );
-        }
+        console.log('Primary models not available, using universal fallback...');
+        backgroundRemover = await pipeline(
+          'image-segmentation', 
+          'Xenova/detr-resnet-50-panoptic',
+          { device: 'cpu' }
+        );
+        modelUsed = 'Universelles Modell (CPU)';
       }
       setProgress(60);
 
@@ -202,12 +275,21 @@ const RemoveBackground = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Could not get canvas context');
 
-      // Use higher resolution for better quality (max 2048px)
-      const maxSize = 2048;
+      // Mobile-optimized image sizing
+      const maxSize = isMobile ? 1024 : 2048; // Smaller max size for mobile
       let { width, height } = imageElement;
       
-      // Only resize if image is extremely large
-      if (width > maxSize || height > maxSize) {
+      // More aggressive resizing for mobile to improve performance
+      if (isMobile && (width > maxSize || height > maxSize)) {
+        if (width > height) {
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        } else {
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+      } else if (!isMobile && (width > maxSize || height > maxSize)) {
+        // Desktop: Only resize extremely large images
         if (width > height) {
           height = Math.round((height * maxSize) / width);
           width = maxSize;
@@ -299,9 +381,25 @@ const RemoveBackground = () => {
       });
     } catch (error) {
       console.error('Error removing background:', error);
+      
+      // More specific error messages
+      let errorMessage = "Fehler beim Entfernen des Hintergrunds.";
+      let suggestions = "";
+      
+      if (isMobile) {
+        errorMessage = "Mobile Verarbeitung fehlgeschlagen.";
+        suggestions = " Versuchen Sie: kleineres Bild, JPEG-Format, oder nutzen Sie ein Desktop-Gerät für beste Ergebnisse.";
+      } else if (error instanceof Error && error.message.includes('WebGPU')) {
+        errorMessage = "WebGPU nicht verfügbar.";
+        suggestions = " Versuchen Sie einen moderneren Browser oder reduzieren Sie die Bildgröße.";
+      } else if (error instanceof Error && error.message.includes('memory')) {
+        errorMessage = "Nicht genügend Speicher.";
+        suggestions = " Versuchen Sie ein kleineres Bild oder schließen Sie andere Browser-Tabs.";
+      }
+      
       toast({
         title: "Fehler",
-        description: "Fehler beim Entfernen des Hintergrunds. Versuchen Sie es mit einem anderen Bild.",
+        description: errorMessage + suggestions,
         variant: "destructive"
       });
     } finally {
@@ -334,15 +432,33 @@ const RemoveBackground = () => {
         </div>
 
         <div className="space-y-6">
+          {/* Mobile compatibility info */}
+          {isMobile && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="flex items-start space-x-3">
+                <Smartphone className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h3 className="text-sm font-medium text-blue-800">Mobile-optimiert</h3>
+                  <p className="text-sm text-blue-700 mt-1">
+                    HEIC-Dateien von iPhone werden automatisch konvertiert. 
+                    Für beste Ergebnisse verwenden Sie Bilder unter 5MB.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <FileUpload
             onFileSelect={handleFileSelect}
             accept={{ 
               'image/jpeg': ['.jpg', '.jpeg'],
               'image/png': ['.png'],
-              'image/webp': ['.webp']
+              'image/webp': ['.webp'],
+              'image/heic': ['.heic'],
+              'image/heif': ['.heif']
             }}
             multiple={false}
-            maxSize={20 * 1024 * 1024} // 20MB
+            maxSize={isMobile ? 10 * 1024 * 1024 : 20 * 1024 * 1024} // 10MB mobile, 20MB desktop
           />
 
           {file && (
@@ -407,22 +523,24 @@ const RemoveBackground = () => {
               <div className="text-center">
                 <Button
                   onClick={removeBackground}
-                  disabled={isProcessing}
+                  disabled={isProcessing || isConverting}
                   size="lg"
                   className="w-full max-w-md"
                 >
-                  {isProcessing ? 'Verarbeitung...' : 'Hintergrund entfernen'}
+                  {isConverting ? 'HEIC wird konvertiert...' : 
+                   isProcessing ? 'Verarbeitung...' : 
+                   'Hintergrund entfernen'}
                 </Button>
               </div>
             </div>
           )}
 
-          {isProcessing && (
+          {(isProcessing || isConverting) && (
             <div className="space-y-2">
               <div className="text-center text-sm text-muted-foreground">
-                Verarbeitung läuft... {progress}%
+                {isConverting ? 'HEIC-Konvertierung läuft...' : `Verarbeitung läuft... ${progress}%`}
               </div>
-              <Progress value={progress} className="w-full" />
+              <Progress value={isConverting ? 50 : progress} className="w-full" />
             </div>
           )}
 
