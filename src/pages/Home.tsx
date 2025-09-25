@@ -156,6 +156,7 @@ const Home = () => {
                 </p>
                 <Button 
                   variant="outline"
+                  className="hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors"
                   onClick={() => navigate(category.path)}
                 >
                   {category.buttonText}
