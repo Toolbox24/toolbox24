@@ -305,167 +305,182 @@ const RemoveBackground = () => {
       outputCtx.imageSmoothingQuality = 'high';
       outputCtx.drawImage(canvas, 0, 0);
       
-      // Enhanced mask processing with professional post-processing
-      const outputImageData = outputCtx.getImageData(0, 0, width, height);
-      const outputData = outputImageData.data;
-      
-      // Select best mask (usually first for RMBG-1.4)
+      // Step 1: Process mask at AI resolution first (better quality post-processing)
       const mask = result[0];
+      if (!mask || !mask.mask) {
+        throw new Error('Keine gültige Maske erhalten');
+      }
 
-      if (mask && mask.mask) {
-        const maskData = mask.mask.data;
-        const { threshold, edgeLimit } = getEdgeParams();
+      const maskData = mask.mask.data;
+      const { threshold, edgeLimit } = getEdgeParams();
+      
+      // Initial alpha processing at AI resolution
+      const initialAlpha = new Uint8Array(maskData.length);
+      
+      for (let i = 0; i < maskData.length; i++) {
+        const maskValue = maskData[i];
+        let alpha;
         
-        // Step 1: Initial alpha processing
-        const initialAlpha = new Uint8Array(maskData.length);
-        
-        for (let i = 0; i < maskData.length; i++) {
-          const maskValue = maskData[i];
-          let alpha;
+        if (maskValue < threshold) {
+          alpha = 0; // Background
+        } else if (maskValue > edgeLimit) {
+          alpha = 255; // Foreground
+        } else {
+          // Professional edge smoothing with cubic interpolation
+          const edgeRange = edgeLimit - threshold;
+          const normalizedValue = (maskValue - threshold) / edgeRange;
           
-          if (maskValue < threshold) {
-            alpha = 0; // Background
-          } else if (maskValue > edgeLimit) {
-            alpha = 255; // Foreground
-          } else {
-            // Professional edge smoothing with cubic interpolation
-            const edgeRange = edgeLimit - threshold;
-            const normalizedValue = (maskValue - threshold) / edgeRange;
-            
-            // Hermite interpolation for ultra-smooth transitions
-            const smoothedValue = normalizedValue * normalizedValue * (3 - 2 * normalizedValue);
-            alpha = Math.round(smoothedValue * 255);
-          }
-          
-          initialAlpha[i] = alpha;
+          // Hermite interpolation for ultra-smooth transitions
+          const smoothedValue = normalizedValue * normalizedValue * (3 - 2 * normalizedValue);
+          alpha = Math.round(smoothedValue * 255);
         }
-
-        // Step 2: Mask Erosion (1-2 pixels) to remove background color spill
-        const erodedAlpha = new Uint8Array(maskData.length);
-        const erosionRadius = 1.5; // 1-2 pixel erosion
         
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const centerIndex = y * width + x;
-            let minAlpha = 255;
+        initialAlpha[i] = alpha;
+      }
 
-            // Find minimum alpha in neighborhood (erosion)
-            for (let dy = -Math.ceil(erosionRadius); dy <= Math.ceil(erosionRadius); dy++) {
-              for (let dx = -Math.ceil(erosionRadius); dx <= Math.ceil(erosionRadius); dx++) {
-                const nx = x + dx;
-                const ny = y + dy;
-                
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                  const distance = Math.sqrt(dx * dx + dy * dy);
-                  if (distance <= erosionRadius) {
-                    const sampleIndex = ny * width + nx;
-                    minAlpha = Math.min(minAlpha, initialAlpha[sampleIndex]);
-                  }
-                }
-              }
-            }
-            
-            erodedAlpha[centerIndex] = minAlpha;
-          }
-        }
+      // Step 2: Mask Erosion (1-2 pixels) at AI resolution
+      const erodedAlpha = new Uint8Array(maskData.length);
+      const erosionRadius = 1.5; // 1-2 pixel erosion
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const centerIndex = y * width + x;
+          let minAlpha = 255;
 
-        // Step 3: Color Spill Removal - reduce background color bleeding
-        for (let i = 0; i < outputData.length; i += 4) {
-          const pixelIndex = Math.floor(i / 4);
-          const alpha = erodedAlpha[pixelIndex];
-          
-          if (alpha > 0 && alpha < 255) {
-            // Edge pixel - apply color spill removal
-            const alphaRatio = alpha / 255;
-            
-            // Boost saturation slightly to counteract color bleeding
-            const r = outputData[i];
-            const g = outputData[i + 1];
-            const b = outputData[i + 2];
-            
-            // Convert to HSL for saturation boost
-            const max = Math.max(r, g, b) / 255;
-            const min = Math.min(r, g, b) / 255;
-            const delta = max - min;
-            
-            if (delta > 0) {
-              const saturationBoost = 1.1; // Subtle saturation increase
-              const lightness = (max + min) / 2;
-              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+          // Find minimum alpha in neighborhood (erosion)
+          for (let dy = -Math.ceil(erosionRadius); dy <= Math.ceil(erosionRadius); dy++) {
+            for (let dx = -Math.ceil(erosionRadius); dx <= Math.ceil(erosionRadius); dx++) {
+              const nx = x + dx;
+              const ny = y + dy;
               
-              const newSaturation = Math.min(1, saturation * saturationBoost);
-              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
-              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
-              const m = lightness - c / 2;
-              
-              if (max === r) {
-                outputData[i] = Math.round((c + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else if (max === g) {
-                outputData[i] = Math.round((x + m) * 255);
-                outputData[i + 1] = Math.round((c + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else {
-                outputData[i] = Math.round((0 + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((c + m) * 255);
-              }
-            }
-          }
-        }
-
-        // Step 4: Final Feathering (Gaussian blur for natural edges)
-        const finalAlpha = new Uint8Array(maskData.length);
-        const featherRadius = 2.0; // Slightly more feathering after erosion
-        const sigma = 0.8;
-        
-        for (let y = 0; y < height; y++) {
-          for (let x = 0; x < width; x++) {
-            const centerIndex = y * width + x;
-            let totalAlpha = 0;
-            let totalWeight = 0;
-
-            // Gaussian feathering for smooth transitions
-            for (let dy = -Math.ceil(featherRadius); dy <= Math.ceil(featherRadius); dy++) {
-              for (let dx = -Math.ceil(featherRadius); dx <= Math.ceil(featherRadius); dx++) {
-                const nx = x + dx;
-                const ny = y + dy;
-                
-                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+              if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= erosionRadius) {
                   const sampleIndex = ny * width + nx;
-                  const distance = Math.sqrt(dx * dx + dy * dy);
-                  
-                  if (distance <= featherRadius) {
-                    const weight = Math.exp(-(distance * distance) / (2 * sigma * sigma));
-                    totalAlpha += erodedAlpha[sampleIndex] * weight;
-                    totalWeight += weight;
-                  }
+                  minAlpha = Math.min(minAlpha, initialAlpha[sampleIndex]);
                 }
               }
             }
-
-            if (totalWeight > 0) {
-              finalAlpha[centerIndex] = Math.round(totalAlpha / totalWeight);
-            } else {
-              finalAlpha[centerIndex] = erodedAlpha[centerIndex];
-            }
           }
-        }
-
-        // Apply final alpha channel
-        for (let i = 0; i < finalAlpha.length; i++) {
-          outputData[i * 4 + 3] = finalAlpha[i];
+          
+          erodedAlpha[centerIndex] = minAlpha;
         }
       }
 
-      outputCtx.putImageData(outputImageData, 0, 0);
+      // Step 3: Feathering at AI resolution
+      const featheredAlpha = new Uint8Array(maskData.length);
+      const featherRadius = 2.0;
+      const sigma = 0.8;
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const centerIndex = y * width + x;
+          let totalAlpha = 0;
+          let totalWeight = 0;
+
+          // Gaussian feathering for smooth transitions
+          for (let dy = -Math.ceil(featherRadius); dy <= Math.ceil(featherRadius); dy++) {
+            for (let dx = -Math.ceil(featherRadius); dx <= Math.ceil(featherRadius); dx++) {
+              const nx = x + dx;
+              const ny = y + dy;
+              
+              if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                const sampleIndex = ny * width + nx;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= featherRadius) {
+                  const weight = Math.exp(-(distance * distance) / (2 * sigma * sigma));
+                  totalAlpha += erodedAlpha[sampleIndex] * weight;
+                  totalWeight += weight;
+                }
+              }
+            }
+          }
+
+          if (totalWeight > 0) {
+            featheredAlpha[centerIndex] = Math.round(totalAlpha / totalWeight);
+          } else {
+            featheredAlpha[centerIndex] = erodedAlpha[centerIndex];
+          }
+        }
+      }
+
+      setProgress(88);
+      setProgressMessage('Skaliere Maske auf Originalauflösung...');
+
+      // Step 4: Create original resolution output canvas
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = originalWidth;
+      finalCanvas.height = originalHeight;
+      const finalCtx = finalCanvas.getContext('2d');
+      if (!finalCtx) throw new Error('Final Canvas nicht verfügbar');
+
+      // Draw original image at full resolution
+      finalCtx.imageSmoothingEnabled = true;
+      finalCtx.imageSmoothingQuality = 'high';
+      finalCtx.drawImage(imageElement, 0, 0, originalWidth, originalHeight);
+
+      // Step 5: Upscale processed mask to original resolution
+      const finalImageData = finalCtx.getImageData(0, 0, originalWidth, originalHeight);
+      const finalData = finalImageData.data;
+
+      const scaleX = originalWidth / width;
+      const scaleY = originalHeight / height;
+
+      // High-quality bilinear interpolation for mask upscaling
+      for (let y = 0; y < originalHeight; y++) {
+        for (let x = 0; x < originalWidth; x++) {
+          const srcX = x / scaleX;
+          const srcY = y / scaleY;
+          
+          const x1 = Math.floor(srcX);
+          const y1 = Math.floor(srcY);
+          const x2 = Math.min(x1 + 1, width - 1);
+          const y2 = Math.min(y1 + 1, height - 1);
+          
+          const dx = srcX - x1;
+          const dy = srcY - y1;
+          
+          // Get alpha values from feathered mask
+          const alpha11 = featheredAlpha[y1 * width + x1];
+          const alpha12 = featheredAlpha[y2 * width + x1];
+          const alpha21 = featheredAlpha[y1 * width + x2];
+          const alpha22 = featheredAlpha[y2 * width + x2];
+          
+          // Bilinear interpolation
+          const alpha1 = alpha11 * (1 - dx) + alpha21 * dx;
+          const alpha2 = alpha12 * (1 - dx) + alpha22 * dx;
+          const finalAlpha = alpha1 * (1 - dy) + alpha2 * dy;
+          
+          const pixelIndex = (y * originalWidth + x) * 4;
+          
+          // Apply color spill removal for edge pixels at original resolution
+          if (finalAlpha > 0 && finalAlpha < 255) {
+            const r = finalData[pixelIndex];
+            const g = finalData[pixelIndex + 1];
+            const b = finalData[pixelIndex + 2];
+            
+            // Subtle desaturation for edges to reduce color bleeding
+            const gray = r * 0.299 + g * 0.587 + b * 0.114;
+            const desaturation = 0.85; // 15% desaturation for edges
+            
+            finalData[pixelIndex] = Math.round(r * desaturation + gray * (1 - desaturation));
+            finalData[pixelIndex + 1] = Math.round(g * desaturation + gray * (1 - desaturation));
+            finalData[pixelIndex + 2] = Math.round(b * desaturation + gray * (1 - desaturation));
+          }
+          
+          finalData[pixelIndex + 3] = Math.round(finalAlpha);
+        }
+      }
+
+      finalCtx.putImageData(finalImageData, 0, 0);
+      
       setProgress(95);
       setProgressMessage('Finalisiere professionelle Qualität...');
 
-      // Create high-quality output
+      // Create high-quality output at original resolution
       const blob = await new Promise<Blob>((resolve, reject) => {
-        outputCanvas.toBlob((blob) => {
+        finalCanvas.toBlob((blob) => {
           if (blob) resolve(blob);
           else reject(new Error('Blob-Erstellung fehlgeschlagen'));
         }, 'image/png', 1.0);
