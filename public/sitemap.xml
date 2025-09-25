@@ -1,97 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://vorlagenhub.de/</loc>
+    <loc>https://toolbox24.de/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/alle-vorlagen</loc>
+    <loc>https://toolbox24.de/alle-tools</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/kategorie/kuendigung</loc>
+    <loc>https://toolbox24.de/pdf-tools</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/kategorie/bewerbung</loc>
+    <loc>https://toolbox24.de/bild-tools</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/kategorie/vertraege</loc>
+    <loc>https://toolbox24.de/datei-tools</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/kategorie/alltag</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vorlagenhub.de/kategorie/finanzen</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vorlagenhub.de/kategorie/schule</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vorlagenhub.de/kategorie/business</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://vorlagenhub.de/vorlage/kuendigung-fitnessstudio</loc>
+    <loc>https://toolbox24.de/pdf-zusammenfuegen</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/kuendigung-mietvertrag</loc>
+    <loc>https://toolbox24.de/pdf-komprimieren</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/kuendigung-handyvertrag</loc>
+    <loc>https://toolbox24.de/pdf-teilen</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/bewerbungsschreiben-vorlage</loc>
+    <loc>https://toolbox24.de/jpg-komprimieren</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/lebenslauf-vorlage</loc>
+    <loc>https://toolbox24.de/png-komprimieren</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/absage-bewerbung</loc>
+    <loc>https://toolbox24.de/jpg-zu-png</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/arbeitsvertrag-kuendigung</loc>
+    <loc>https://toolbox24.de/png-zu-jpg</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/mahnung-vorlage</loc>
+    <loc>https://toolbox24.de/webp-zu-jpg</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/sepa-widerruf</loc>
+    <loc>https://toolbox24.de/heic-zu-jpg</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://vorlagenhub.de/vorlage/widerruf-vorlage</loc>
+    <loc>https://toolbox24.de/bilder-zu-pdf</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://toolbox24.de/gif-zu-mp4</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
