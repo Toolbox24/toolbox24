@@ -4,48 +4,41 @@ import path from 'path';
 
 const routes = [
   '/',
-  '/de',
-  '/de/pdf-tools',
-  '/de/pdf-tools/compress',
-  '/de/pdf-tools/split',
-  '/de/pdf-tools/merge',
-  '/de/pdf-tools/word-to-pdf',
-  '/de/pdf-tools/pdf-to-word',
-  '/de/pdf-tools/pdf-to-images',
-  '/de/pdf-tools/images-to-pdf',
-  '/de/pdf-tools/delete-pages',
-  '/de/datei-tools',
-  '/de/datei-tools/bild-komprimieren',
-  '/de/datei-tools/bild-konvertieren',
-  '/de/datei-tools/bild-zuschneiden',
-  '/de/datei-tools/bild-groesse-aendern',
-  '/de/datei-tools/bild-drehen',
-  '/de/datei-tools/hintergrund-entfernen',
-  '/de/datei-tools/webp-konverter',
-  '/de/datei-tools/heic-to-jpg',
-  '/de/datei-tools/gif-to-mp4',
-  '/de/bild/jpg-to-png',
-  '/de/bild/png-to-jpg',
-  '/de/bild/webp-to-jpg',
-  '/de/bild/webp-to-png',
-  '/de/bild/heic-to-jpg',
-  '/de/bild/avif-to-jpg',
-  '/de/bild/jpeg-compress',
-  '/de/bild/png-compress',
-  '/de/bild/gif-compress',
-  '/de/bild/svg-compress',
-  '/de/vorlagen',
-  '/de/blog',
-  '/de/alle-tools',
-  '/de/kontakt',
-  '/de/impressum',
-  '/de/rechtliches'
+  '/pdf-tools',
+  '/datei-tools', 
+  '/alle-tools',
+  '/pdf-zusammenfuegen',
+  '/pdf-komprimieren',
+  '/pdf-teilen',
+  '/jpg-komprimieren',
+  '/png-komprimieren',
+  '/jpg-zu-png',
+  '/png-zu-jpg',
+  '/webp-zu-jpg',
+  '/heic-zu-jpg',
+  '/bilder-zu-pdf',
+  '/gif-zu-mp4',
+  '/kontakt',
+  '/impressum',
+  '/rechtliches'
 ];
 
 async function prerender() {
-  const browser = await puppeteer.launch();
+  // Check if dist directory exists
+  try {
+    await fs.access('dist');
+  } catch {
+    console.error('Error: dist directory not found. Please run "npm run build" first.');
+    process.exit(1);
+  }
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   const page = await browser.newPage();
 
+  // Serve the dist directory using a local server
   const baseUrl = 'http://localhost:8080';
   
   for (const route of routes) {
@@ -57,8 +50,11 @@ async function prerender() {
         timeout: 30000 
       });
       
-      // Wait for React to render
-      await page.waitForSelector('h1', { timeout: 10000 });
+      // Wait for React to render and ensure content is loaded
+      await page.waitForSelector('h1', { timeout: 15000 });
+      
+      // Additional wait for dynamic content
+      await page.waitForTimeout(2000);
       
       const html = await page.content();
       
@@ -67,7 +63,13 @@ async function prerender() {
       const dir = path.dirname(filePath);
       
       await fs.mkdir(dir, { recursive: true });
-      await fs.writeFile(filePath, html);
+      
+      // Clean up the HTML for better SEO
+      const cleanedHtml = html
+        .replace(/data-reactroot=""/g, '')
+        .replace(/data-react-helmet="true"/g, '');
+      
+      await fs.writeFile(filePath, cleanedHtml);
       
       console.log(`✓ Prerendered ${route} -> ${filePath}`);
     } catch (error) {
@@ -76,7 +78,7 @@ async function prerender() {
   }
 
   await browser.close();
-  console.log('Prerendering complete!');
+  console.log('Prerendering complete! Static HTML files generated for SEO.');
 }
 
 prerender().catch(console.error);
