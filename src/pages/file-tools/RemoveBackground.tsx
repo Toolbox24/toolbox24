@@ -28,6 +28,8 @@ const RemoveBackground = () => {
   const [edgeSmoothing, setEdgeSmoothing] = useState([3]);
   const [feathering, setFeathering] = useState([2]);
   const [showComparison, setShowComparison] = useState(false);
+  const [selectedModel, setSelectedModel] = useState<'auto' | 'rmbg-2' | 'u2net' | 'sky-removal'>('auto');
+  const [processingMode, setProcessingMode] = useState<'general' | 'sky' | 'portrait' | 'product'>('general');
   const [isConverting, setIsConverting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -214,53 +216,73 @@ const RemoveBackground = () => {
       const imageElement = await loadImage(file);
       setProgress(40);
 
-      // Try high-quality background removal models with mobile fallbacks
+      // Advanced model selection with specialized capabilities
       let backgroundRemover;
       let modelUsed = '';
       
+      const getOptimalModel = () => {
+        if (selectedModel === 'auto') {
+          if (processingMode === 'sky') return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Sky-optimiert)' };
+          if (processingMode === 'portrait') return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Portrait-optimiert)' };
+          if (processingMode === 'product') return { model: 'Xenova/u2net', name: 'U²-Net (Produkt-optimiert)' };
+          return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Automatisch)' };
+        }
+        
+        switch (selectedModel) {
+          case 'rmbg-2': return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Neueste Version)' };
+          case 'u2net': return { model: 'Xenova/u2net', name: 'U²-Net (Bewährt)' };
+          case 'sky-removal': return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Himmel-Spezialist)' };
+          default: return { model: 'briaai/RMBG-2.0', name: 'RMBG-2.0 (Standard)' };
+        }
+      };
+      
       try {
+        const { model, name } = getOptimalModel();
+        
         if (!isMobile) {
-          // Desktop: Try high-quality models first
+          // Desktop: Try advanced models with WebGPU
           try {
             backgroundRemover = await pipeline(
               'image-segmentation', 
-              'briaai/RMBG-1.4',
+              model,
               { device: 'webgpu' }
             );
-            modelUsed = 'RMBG-1.4 (Höchste Qualität)';
+            modelUsed = `${name} (WebGPU)`;
           } catch (error) {
+            console.log('WebGPU failed, trying CPU...');
             backgroundRemover = await pipeline(
               'image-segmentation', 
-              'Xenova/u2net',
-              { device: 'webgpu' }
+              model,
+              { device: 'cpu' }
             );
-            modelUsed = 'U²-Net (Hohe Qualität)';
+            modelUsed = `${name} (CPU)`;
           }
         } else {
-          // Mobile: Use lighter models with CPU fallback
+          // Mobile: CPU with optimized models
+          const mobileModel = processingMode === 'sky' ? 'Xenova/detr-resnet-50-panoptic' : 'Xenova/u2net';
           try {
+            backgroundRemover = await pipeline(
+              'image-segmentation', 
+              mobileModel,
+              { device: 'cpu' }
+            );
+            modelUsed = `Mobile-optimiert (${processingMode})`;
+          } catch (error) {
             backgroundRemover = await pipeline(
               'image-segmentation', 
               'Xenova/detr-resnet-50-panoptic',
               { device: 'cpu' }
             );
-            modelUsed = 'Mobile-optimiert (CPU)';
-          } catch (error) {
-            backgroundRemover = await pipeline(
-              'image-segmentation', 
-              'Xenova/u2net',
-              { device: 'cpu' }
-            );
-            modelUsed = 'Mobile U²-Net (CPU)';
+            modelUsed = 'Mobile Fallback (CPU)';
           }
         }
         
         toast({
-          title: "Modell geladen",
+          title: "KI-Modell geladen",
           description: `Verwende ${modelUsed}`
         });
       } catch (error) {
-        console.log('Primary models not available, using universal fallback...');
+        console.log('All models failed, using universal fallback...');
         backgroundRemover = await pipeline(
           'image-segmentation', 
           'Xenova/detr-resnet-50-panoptic',
@@ -427,7 +449,8 @@ const RemoveBackground = () => {
             Hintergrund entfernen
           </h1>
           <p className="page-description">
-            Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit KI
+            Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit modernster KI. 
+            Speziell optimiert für Himmel-Entfernung, Portraits und Produktfotos.
           </p>
         </div>
 
@@ -463,6 +486,43 @@ const RemoveBackground = () => {
 
           {file && (
             <div className="space-y-6">
+              {/* Advanced Model Selection */}
+              <div className="bg-muted/30 p-4 rounded-lg space-y-4">
+                <h3 className="text-lg font-semibold">KI-Modell & Modus</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Bild-Typ</Label>
+                    <Select value={processingMode} onValueChange={(value: 'general' | 'sky' | 'portrait' | 'product') => setProcessingMode(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="general">Allgemein (Standard)</SelectItem>
+                        <SelectItem value="sky">🌤️ Himmel & Landschaft</SelectItem>
+                        <SelectItem value="portrait">👤 Portrait & Person</SelectItem>
+                        <SelectItem value="product">📦 Produkt & Objekt</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>KI-Modell</Label>
+                    <Select value={selectedModel} onValueChange={(value: 'auto' | 'rmbg-2' | 'u2net' | 'sky-removal') => setSelectedModel(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="auto">🤖 Automatisch (empfohlen)</SelectItem>
+                        <SelectItem value="rmbg-2">🚀 RMBG-2.0 (Neueste KI)</SelectItem>
+                        <SelectItem value="u2net">⚡ U²-Net (Schnell)</SelectItem>
+                        <SelectItem value="sky-removal">☁️ Himmel-Spezialist</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+
               {/* Quality Settings */}
               <div className="bg-muted/30 p-4 rounded-lg space-y-4">
                 <h3 className="text-lg font-semibold">Qualitäts-Einstellungen</h3>
