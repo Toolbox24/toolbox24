@@ -132,26 +132,46 @@ const RemoveBackground = () => {
       setProgress(30);
       setProgressMessage('KI-Modell wird geladen...');
 
-      // Create smooth progress animation during model loading (mobile optimization)
+      // Continuous progress timer - never stops until model is loaded
       let progressInterval: NodeJS.Timeout | null = null;
-      if (isMobile) {
-        let currentProgress = 30;
+      let currentProgress = 30;
+      
+      const startProgressTimer = () => {
         progressInterval = setInterval(() => {
-          if (currentProgress < 48) {
-            currentProgress += 2;
-            setProgress(currentProgress);
+          if (currentProgress < 95) {
+            // Variable speed: faster initially, then slower
+            let increment = 0.5;
+            let interval = 1000;
             
-            // Update messages for mobile users
-            if (currentProgress <= 35) {
+            if (currentProgress < 60) {
+              increment = 1.5; // Faster in first phase
+              interval = 800;
+            } else if (currentProgress < 85) {
+              increment = 0.8; // Medium speed in second phase
+              interval = 1200;
+            } else {
+              increment = 0.3; // Very slow in final phase
+              interval = 2000;
+            }
+            
+            currentProgress = Math.min(95, currentProgress + increment);
+            setProgress(Math.floor(currentProgress));
+            
+            // Update messages based on progress
+            if (currentProgress <= 40) {
               setProgressMessage('Modell wird heruntergeladen...');
-            } else if (currentProgress <= 42) {
+            } else if (currentProgress <= 60) {
               setProgressMessage('Modell wird initialisiert...');
+            } else if (currentProgress <= 80) {
+              setProgressMessage('Modell wird optimiert...');
             } else {
               setProgressMessage('Fast bereit...');
             }
           }
-        }, 800);
-      }
+        }, 1000);
+      };
+      
+      startProgressTimer();
 
       // Load proven RMBG-1.4 model for reliable background removal
       let backgroundRemover;
