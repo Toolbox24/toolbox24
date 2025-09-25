@@ -366,16 +366,16 @@ const RemoveBackground = () => {
           initialAlpha[i] = alpha;
         }
 
-        // Step 2: Mask Erosion (1-2 pixels) to remove background color spill
+        // Step 2: AGGRESSIVE Mask Erosion (1-2 pixels) to eliminate color spill
         const erodedAlpha = new Uint8Array(originalMaskData.length);
-        const erosionRadius = 1.5; // 1-2 pixel erosion
+        const erosionRadius = 2.0; // More aggressive 2-pixel erosion for better color spill removal
         
         for (let y = 0; y < originalHeight; y++) {
           for (let x = 0; x < originalWidth; x++) {
             const centerIndex = y * originalWidth + x;
             let minAlpha = 255;
 
-            // Find minimum alpha in neighborhood (erosion)
+            // Find minimum alpha in neighborhood (erosion) - removes edge pixels completely
             for (let dy = -Math.ceil(erosionRadius); dy <= Math.ceil(erosionRadius); dy++) {
               for (let dx = -Math.ceil(erosionRadius); dx <= Math.ceil(erosionRadius); dx++) {
                 const nx = x + dx;
@@ -395,56 +395,80 @@ const RemoveBackground = () => {
           }
         }
 
-        // Step 3: Color Spill Removal - reduce background color bleeding
+        // Step 3: ADVANCED Color Spill Removal - eliminate all background color bleeding
         for (let i = 0; i < outputData.length; i += 4) {
           const pixelIndex = Math.floor(i / 4);
           const alpha = erodedAlpha[pixelIndex];
           
-          if (alpha > 0 && alpha < 255) {
-            // Edge pixel - apply color spill removal
-            const alphaRatio = alpha / 255;
-            
-            // Boost saturation slightly to counteract color bleeding
+          if (alpha > 0 && alpha < 240) { // Process edge and semi-transparent pixels more aggressively
             const r = outputData[i];
             const g = outputData[i + 1];
             const b = outputData[i + 2];
             
-            // Convert to HSL for saturation boost
-            const max = Math.max(r, g, b) / 255;
-            const min = Math.min(r, g, b) / 255;
-            const delta = max - min;
+            // Advanced color spill removal algorithm
+            const alphaRatio = alpha / 255;
             
-            if (delta > 0) {
-              const saturationBoost = 1.1; // Subtle saturation increase
-              const lightness = (max + min) / 2;
-              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+            // Method 1: Aggressive desaturation at edges to remove color cast
+            if (alpha < 128) {
+              // Very edge pixels - strong desaturation and contrast boost
+              const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+              const desaturationFactor = 0.7; // Strong desaturation
               
-              const newSaturation = Math.min(1, saturation * saturationBoost);
-              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
-              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
-              const m = lightness - c / 2;
+              outputData[i] = Math.round(r * desaturationFactor + gray * (1 - desaturationFactor));
+              outputData[i + 1] = Math.round(g * desaturationFactor + gray * (1 - desaturationFactor));
+              outputData[i + 2] = Math.round(b * desaturationFactor + gray * (1 - desaturationFactor));
               
-              if (max === r) {
-                outputData[i] = Math.round((c + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else if (max === g) {
-                outputData[i] = Math.round((x + m) * 255);
-                outputData[i + 1] = Math.round((c + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else {
-                outputData[i] = Math.round((0 + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((c + m) * 255);
+              // Boost contrast to make remaining color more vivid
+              const contrast = 1.15;
+              outputData[i] = Math.min(255, Math.max(0, ((outputData[i] - 128) * contrast) + 128));
+              outputData[i + 1] = Math.min(255, Math.max(0, ((outputData[i + 1] - 128) * contrast) + 128));
+              outputData[i + 2] = Math.min(255, Math.max(0, ((outputData[i + 2] - 128) * contrast) + 128));
+            } else {
+              // Semi-transparent pixels - moderate color enhancement
+              const saturationBoost = 1.08;
+              
+              // Convert to HSL for better color control
+              const max = Math.max(r, g, b) / 255;
+              const min = Math.min(r, g, b) / 255;
+              const delta = max - min;
+              
+              if (delta > 0.01) { // Only process if there's actual color
+                const lightness = (max + min) / 2;
+                const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+                
+                // Enhance saturation to counteract color bleeding
+                const newSaturation = Math.min(1, saturation * saturationBoost);
+                const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
+                
+                let hue = 0;
+                if (max === r / 255) hue = ((g - b) / 255) / delta;
+                else if (max === g / 255) hue = 2 + ((b - r) / 255) / delta;
+                else hue = 4 + ((r - g) / 255) / delta;
+                hue = (hue * 60 + 360) % 360;
+                
+                const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+                const m = lightness - c / 2;
+                
+                let newR, newG, newB;
+                if (hue < 60) { newR = c; newG = x; newB = 0; }
+                else if (hue < 120) { newR = x; newG = c; newB = 0; }
+                else if (hue < 180) { newR = 0; newG = c; newB = x; }
+                else if (hue < 240) { newR = 0; newG = x; newB = c; }
+                else if (hue < 300) { newR = x; newG = 0; newB = c; }
+                else { newR = c; newG = 0; newB = x; }
+                
+                outputData[i] = Math.round((newR + m) * 255);
+                outputData[i + 1] = Math.round((newG + m) * 255);
+                outputData[i + 2] = Math.round((newB + m) * 255);
               }
             }
           }
         }
 
-        // Step 4: Final Feathering (Gaussian blur for natural edges)
+        // Step 4: PROFESSIONAL Feathering - Natural edge transitions after color spill removal
         const finalAlpha = new Uint8Array(originalMaskData.length);
-        const featherRadius = 2.0; // Slightly more feathering after erosion
-        const sigma = 0.8;
+        const featherRadius = 1.5; // Balanced feathering to restore natural edges
+        const sigma = 0.6; // Tighter sigma for more controlled blur
         
         for (let y = 0; y < originalHeight; y++) {
           for (let x = 0; x < originalWidth; x++) {
@@ -452,7 +476,7 @@ const RemoveBackground = () => {
             let totalAlpha = 0;
             let totalWeight = 0;
 
-            // Gaussian feathering for smooth transitions
+            // Gaussian feathering for smooth, natural transitions
             for (let dy = -Math.ceil(featherRadius); dy <= Math.ceil(featherRadius); dy++) {
               for (let dx = -Math.ceil(featherRadius); dx <= Math.ceil(featherRadius); dx++) {
                 const nx = x + dx;
@@ -479,9 +503,32 @@ const RemoveBackground = () => {
           }
         }
 
-        // Apply final alpha channel
-        for (let i = 0; i < finalAlpha.length; i++) {
-          outputData[i * 4 + 3] = finalAlpha[i];
+        // Step 5: FINAL Edge Refinement - Additional pass to ensure no color artifacts
+        for (let i = 0; i < outputData.length; i += 4) {
+          const pixelIndex = Math.floor(i / 4);
+          const finalAlphaValue = finalAlpha[pixelIndex];
+          
+          // Apply final alpha and additional edge refinement
+          outputData[i * 4 + 3] = finalAlphaValue;
+          
+          // Extra color correction for very edge pixels
+          if (finalAlphaValue > 0 && finalAlphaValue < 64) {
+            // Apply additional desaturation to remove any remaining color spill
+            const r = outputData[i];
+            const g = outputData[i + 1];
+            const b = outputData[i + 2];
+            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+            const mixFactor = 0.3; // Blend with gray to remove color cast
+            
+            outputData[i] = Math.round(r * (1 - mixFactor) + gray * mixFactor);
+            outputData[i + 1] = Math.round(g * (1 - mixFactor) + gray * mixFactor);
+            outputData[i + 2] = Math.round(b * (1 - mixFactor) + gray * mixFactor);
+          }
+        }
+      } else {
+        // Fallback: Apply final alpha directly if no mask processing
+        for (let i = 0; i < outputData.length; i += 4) {
+          outputData[i + 3] = 255; // Keep fully opaque
         }
       }
 
