@@ -124,7 +124,7 @@ const Home = () => {
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors"
                     onClick={() => navigate(tool.path)}
                   >
                     Jetzt nutzen
