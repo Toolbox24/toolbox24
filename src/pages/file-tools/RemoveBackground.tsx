@@ -2,11 +2,7 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Download, ImageIcon, Eye, EyeOff, Smartphone } from 'lucide-react';
+import { Download, ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
 import heic2any from 'heic2any';
@@ -24,13 +20,6 @@ const RemoveBackground = () => {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
-  const [invertMask, setInvertMask] = useState(false);
-  const [qualityMode, setQualityMode] = useState<'soft' | 'hard'>('soft');
-  const [edgeSmoothing, setEdgeSmoothing] = useState([3]);
-  const [feathering, setFeathering] = useState([2]);
-  const [showComparison, setShowComparison] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<'auto' | 'modnet' | 'rmbg-2' | 'u2net' | 'sky-removal'>('auto');
-  const [processingMode, setProcessingMode] = useState<'auto' | 'general' | 'sky' | 'portrait' | 'product'>('auto');
   const [isConverting, setIsConverting] = useState(false);
   const { toast } = useToast();
   const isMobile = useIsMobile();
@@ -63,14 +52,12 @@ const RemoveBackground = () => {
 
   const handleFileSelect = async (selectedFiles: File[]) => {
     if (selectedFiles.length === 0) {
-      // Reset all states when file is removed
       setFile(null);
       setPreviewUrl(null);
       setResultPreviewUrl(null);
       setDownloadUrl(null);
       setProgress(0);
       setIsProcessing(false);
-      setShowComparison(false);
       return;
     }
     
@@ -100,126 +87,11 @@ const RemoveBackground = () => {
       setResultPreviewUrl(null);
       setProgress(0);
       setIsProcessing(false);
-      setShowComparison(false);
       
       // Create preview
       const url = URL.createObjectURL(selectedFile);
       setPreviewUrl(url);
     }
-  };
-
-  // Image analysis for intelligent model selection
-  const analyzeImage = (image: HTMLImageElement) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return { type: 'general', confidence: 0.5 };
-    
-    canvas.width = Math.min(image.width, 224);
-    canvas.height = Math.min(image.height, 224);
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-    
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    
-    let skyPixels = 0;
-    let skinPixels = 0;
-    let totalPixels = data.length / 4;
-    
-    for (let i = 0; i < data.length; i += 4) {
-      const r = data[i];
-      const g = data[i + 1];
-      const b = data[i + 2];
-      
-      // Sky detection (blue-ish, bright pixels in upper portion)
-      const y = Math.floor((i / 4) / canvas.width);
-      if (y < canvas.height * 0.6 && b > r && b > g && (r + g + b) > 300) {
-        skyPixels++;
-      }
-      
-      // Skin tone detection
-      if (r > 95 && g > 40 && b > 20 && r > g && r > b && 
-          r - g > 15 && Math.abs(r - g) > Math.abs(g - b)) {
-        skinPixels++;
-      }
-    }
-    
-    const skyRatio = skyPixels / totalPixels;
-    const skinRatio = skinPixels / totalPixels;
-    
-    if (skyRatio > 0.3) return { type: 'sky' as const, confidence: Math.min(skyRatio * 2, 1) };
-    if (skinRatio > 0.05) return { type: 'portrait' as const, confidence: Math.min(skinRatio * 10, 1) };
-    return { type: 'general' as const, confidence: 0.7 };
-  };
-
-  // Advanced post-processing functions
-  const applyEdgeSmoothing = (imageData: ImageData, radius: number): ImageData => {
-    const data = new Uint8ClampedArray(imageData.data);
-    const width = imageData.width;
-    const height = imageData.height;
-    
-    // Gaussian blur for alpha channel
-    for (let y = radius; y < height - radius; y++) {
-      for (let x = radius; x < width - radius; x++) {
-        let sum = 0;
-        let weightSum = 0;
-        
-        for (let dy = -radius; dy <= radius; dy++) {
-          for (let dx = -radius; dx <= radius; dx++) {
-            const nx = x + dx;
-            const ny = y + dy;
-            const weight = Math.exp(-(dx * dx + dy * dy) / (2 * radius * radius));
-            const index = (ny * width + nx) * 4 + 3; // Alpha channel
-            
-            sum += data[index] * weight;
-            weightSum += weight;
-          }
-        }
-        
-        const currentIndex = (y * width + x) * 4 + 3;
-        data[currentIndex] = sum / weightSum;
-      }
-    }
-    
-    return new ImageData(data, width, height);
-  };
-
-  const applyFeathering = (imageData: ImageData, featherRadius: number): ImageData => {
-    const data = new Uint8ClampedArray(imageData.data);
-    const width = imageData.width;
-    const height = imageData.height;
-    
-    // Create distance field for alpha edges
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const index = (y * width + x) * 4 + 3;
-        const alpha = data[index];
-        
-        if (alpha > 0 && alpha < 255) {
-          // Find distance to nearest opaque/transparent pixel
-          let minDist = featherRadius;
-          
-          for (let dy = -featherRadius; dy <= featherRadius; dy++) {
-            for (let dx = -featherRadius; dx <= featherRadius; dx++) {
-              const nx = Math.max(0, Math.min(width - 1, x + dx));
-              const ny = Math.max(0, Math.min(height - 1, y + dy));
-              const nIndex = (ny * width + nx) * 4 + 3;
-              const nAlpha = data[nIndex];
-              
-              if (nAlpha === 0 || nAlpha === 255) {
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                minDist = Math.min(minDist, dist);
-              }
-            }
-          }
-          
-          // Apply smooth falloff
-          const factor = Math.max(0, Math.min(1, minDist / featherRadius));
-          data[index] = alpha * factor;
-        }
-      }
-    }
-    
-    return new ImageData(data, width, height);
   };
 
   const loadImage = (file: File): Promise<HTMLImageElement> => {
@@ -245,166 +117,57 @@ const RemoveBackground = () => {
     setProgress(10);
 
     try {
-      // Mobile-specific optimizations
-      const deviceInfo = isMobile ? "Mobile-optimiert" : "Desktop-optimiert";
       toast({
-        title: `Lädt ${deviceInfo} Modell`,
-        description: isMobile 
-          ? "Lädt mobile-optimiertes KI-Modell für Ihr Gerät..."
-          : "Das spezialisierte U²-Net Hintergrund-Entfernungsmodell wird geladen..."
+        title: "KI-Modell wird geladen",
+        description: "Das beste verfügbare Modell wird geladen..."
       });
 
       setProgress(20);
       
       // Load the image
       const imageElement = await loadImage(file);
-      setProgress(40);
+      setProgress(30);
 
-      // Advanced model selection with specialized capabilities
+      // Load the best available background removal model
       let backgroundRemover;
-      let modelUsed = '';
-      
-      // Intelligent model selection based on image analysis
-      const imageAnalysis = analyzeImage(imageElement);
-      
-      const getOptimalModel = () => {
-        if (selectedModel === 'auto') {
-          // Use image analysis for automatic selection
-          const mode = processingMode !== 'auto' ? processingMode : imageAnalysis.type;
-          
-          switch (mode) {
-            case 'sky':
-              return { 
-                model: 'Xenova/detr-resnet-50-panoptic', 
-                name: `Sky-Spezialist (${Math.round(imageAnalysis.confidence * 100)}% Vertrauen)`,
-                pipeline: 'object-detection'
-              };
-            case 'portrait':
-              return { 
-                model: 'Xenova/modnet', 
-                name: `MODNet Portrait (${Math.round(imageAnalysis.confidence * 100)}% Vertrauen)`,
-                pipeline: 'image-segmentation'
-              };
-            case 'product':
-            case 'general':
-            default:
-              return { 
-                model: 'briaai/RMBG-1.4', 
-                name: 'RMBG-1.4 (Universal)',
-                pipeline: 'image-segmentation'
-              };
-          }
-        }
-        
-        switch (selectedModel) {
-          case 'modnet':
-            return { 
-              model: 'Xenova/modnet', 
-              name: 'MODNet (Portrait-Spezialist)',
-              pipeline: 'image-segmentation'
-            };
-          case 'rmbg-2': 
-            return { 
-              model: 'briaai/RMBG-1.4', 
-              name: 'RMBG-1.4 (Bewährt)',
-              pipeline: 'image-segmentation'
-            };
-          case 'u2net': 
-            return { 
-              model: 'Xenova/u2net', 
-              name: 'U²-Net (Schnell)',
-              pipeline: 'image-segmentation'
-            };
-          case 'sky-removal': 
-            return { 
-              model: 'Xenova/detr-resnet-50-panoptic', 
-              name: 'DETR (Himmel-Spezialist)',
-              pipeline: 'object-detection'
-            };
-          default: 
-            return { 
-              model: 'briaai/RMBG-1.4', 
-              name: 'RMBG-1.4 (Standard)',
-              pipeline: 'image-segmentation'
-            };
-        }
-      };
       
       try {
-        const { model, name } = getOptimalModel();
-        
-        if (!isMobile) {
-          // Desktop: Try advanced models with WebGPU
-          try {
-            backgroundRemover = await pipeline(
-              'image-segmentation', 
-              model,
-              { device: 'webgpu' }
-            );
-            modelUsed = `${name} (WebGPU)`;
-          } catch (error) {
-            console.log('WebGPU failed, trying WASM...');
-            backgroundRemover = await pipeline(
-              'image-segmentation', 
-              'Xenova/u2net',
-              { device: 'wasm' }
-            );
-            modelUsed = `U²-Net (WASM)`;
-          }
-        } else {
-          // Mobile: WASM with optimized models
-          try {
-            backgroundRemover = await pipeline(
-              'image-segmentation', 
-              'Xenova/u2net',
-              { device: 'wasm' }
-            );
-            modelUsed = `Mobile U²-Net (WASM)`;
-          } catch (error) {
-            backgroundRemover = await pipeline(
-              'image-segmentation', 
-              'Xenova/detr-resnet-50-panoptic',
-              { device: 'wasm' }
-            );
-            modelUsed = 'Mobile DETR (WASM)';
-          }
-        }
-        
+        // Try RMBG-1.4 first (best general model)
+        backgroundRemover = await pipeline(
+          'image-segmentation', 
+          'briaai/RMBG-1.4',
+          { device: isMobile ? 'wasm' : 'webgpu' }
+        );
         toast({
-          title: "KI-Modell geladen",
-          description: `Verwende ${modelUsed}`
+          title: "RMBG-1.4 geladen",
+          description: "Verwende das beste verfügbare Modell"
         });
       } catch (error) {
-        console.log('All models failed, using universal fallback...');
+        // Fallback to U²-Net if RMBG fails
+        console.log('RMBG failed, using U²-Net fallback...');
         backgroundRemover = await pipeline(
           'image-segmentation', 
           'Xenova/u2net',
           { device: 'wasm' }
         );
-        modelUsed = 'U²-Net Fallback (WASM)';
+        toast({
+          title: "U²-Net geladen",
+          description: "Verwende zuverlässiges Fallback-Modell"
+        });
       }
-      setProgress(60);
+      
+      setProgress(50);
 
-      // Convert image to canvas for processing with higher quality
+      // Convert image to canvas for processing
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Could not get canvas context');
 
-      // Mobile-optimized image sizing
-      const maxSize = isMobile ? 1024 : 2048; // Smaller max size for mobile
+      // Optimize image size for performance (max 1024px)
+      const maxSize = 1024;
       let { width, height } = imageElement;
       
-      // More aggressive resizing for mobile to improve performance
-      if (isMobile && (width > maxSize || height > maxSize)) {
-        if (width > height) {
-          height = Math.round((height * maxSize) / width);
-          width = maxSize;
-        } else {
-          width = Math.round((width * maxSize) / height);
-          height = maxSize;
-        }
-      } else if (!isMobile && (width > maxSize || height > maxSize)) {
-        // Desktop: Only resize extremely large images
+      if (width > maxSize || height > maxSize) {
         if (width > height) {
           height = Math.round((height * maxSize) / width);
           width = maxSize;
@@ -427,7 +190,7 @@ const RemoveBackground = () => {
         throw new Error('Background removal failed');
       }
 
-      setProgress(80);
+      setProgress(85);
 
       // Create output canvas with transparency
       const outputCanvas = document.createElement('canvas');
@@ -439,8 +202,8 @@ const RemoveBackground = () => {
       // Draw original image
       outputCtx.drawImage(canvas, 0, 0);
       
-      // Apply mask with advanced processing
-      let outputImageData = outputCtx.getImageData(0, 0, width, height);
+      // Apply mask
+      const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const data = outputImageData.data;
       
       // Get the mask from the result
@@ -449,40 +212,24 @@ const RemoveBackground = () => {
       if (mask && mask.mask) {
         const maskData = mask.mask.data;
         
-        // Apply mask based on quality mode
+        // Apply mask to create transparency
         for (let i = 0; i < maskData.length; i++) {
           const maskValue = maskData[i];
-          
-          let alpha;
-          if (invertMask) {
-            alpha = qualityMode === 'hard' 
-              ? (maskValue > 0.5 ? 0 : 255)
-              : Math.round((1 - maskValue) * 255);
-          } else {
-            alpha = qualityMode === 'hard'
-              ? (maskValue > 0.5 ? 255 : 0) 
-              : Math.round(maskValue * 255);
-          }
-          
+          // Convert mask value to alpha (0-255)
+          const alpha = Math.round(maskValue * 255);
           data[i * 4 + 3] = alpha;
-        }
-        
-        // Apply post-processing for soft mode
-        if (qualityMode === 'soft') {
-          outputImageData = applyEdgeSmoothing(outputImageData, edgeSmoothing[0]);
-          outputImageData = applyFeathering(outputImageData, feathering[0]);
         }
       }
 
       outputCtx.putImageData(outputImageData, 0, 0);
-      setProgress(90);
+      setProgress(95);
 
       // Convert to blob and create download URL
       const blob = await new Promise<Blob>((resolve, reject) => {
         outputCanvas.toBlob((blob) => {
           if (blob) resolve(blob);
           else reject(new Error('Failed to create blob'));
-        }, 'image/png', 1.0);
+        }, 'image/png');
       });
 
       const url = URL.createObjectURL(blob);
@@ -491,32 +238,19 @@ const RemoveBackground = () => {
       setProgress(100);
 
       toast({
-        title: "Erfolgreich",
-        description: "Hintergrund wurde erfolgreich entfernt!"
+        title: "Erfolgreich!",
+        description: "Hintergrund wurde entfernt!"
       });
     } catch (error) {
       console.error('Error removing background:', error);
       
-      // More specific error messages
-      let errorMessage = "Fehler beim Entfernen des Hintergrunds.";
-      let suggestions = "";
-      
-      if (isMobile) {
-        errorMessage = "Mobile Verarbeitung fehlgeschlagen.";
-        suggestions = " Versuchen Sie: kleineres Bild, JPEG-Format, oder nutzen Sie ein Desktop-Gerät für beste Ergebnisse.";
-      } else if (error instanceof Error && error.message.includes('WebGPU')) {
-        errorMessage = "WebGPU nicht verfügbar.";
-        suggestions = " Versuchen Sie einen moderneren Browser oder reduzieren Sie die Bildgröße.";
-      } else if (error instanceof Error && error.message.includes('memory')) {
-        errorMessage = "Nicht genügend Speicher.";
-        suggestions = " Versuchen Sie ein kleineres Bild oder schließen Sie andere Browser-Tabs.";
-      }
-      
       toast({
         title: "Fehler",
-        description: errorMessage + suggestions,
+        description: "Hintergrund konnte nicht entfernt werden. Versuchen Sie es mit einem anderen Bild.",
         variant: "destructive"
       });
+      
+      setProgress(0);
     } finally {
       setIsProcessing(false);
     }
@@ -526,7 +260,7 @@ const RemoveBackground = () => {
     if (downloadUrl && file) {
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = `no-background-${file.name.replace(/\.[^/.]+$/, '.png')}`;
+      link.download = `${file.name.split('.')[0]}_ohne_hintergrund.png`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -534,307 +268,146 @@ const RemoveBackground = () => {
   };
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="page-header">
-          <h1 className="page-title flex items-center justify-center gap-2">
-            <ImageIcon className="h-8 w-8 text-primary" />
-            Hintergrund entfernen
-          </h1>
-          <p className="page-description">
-            Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit modernster KI. 
-            Speziell optimiert für Himmel-Entfernung, Portraits und Produktfotos.
-          </p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              Hintergrund entfernen
+            </h1>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit KI. 
+              Einfach Bild hochladen und sofort herunterladen.
+            </p>
+          </div>
 
-        <div className="space-y-6">
-          {/* Mobile compatibility info */}
-          {isMobile && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <div className="flex items-start space-x-3">
-                <Smartphone className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h3 className="text-sm font-medium text-blue-800">Mobile-optimiert</h3>
-                  <p className="text-sm text-blue-700 mt-1">
-                    HEIC-Dateien von iPhone werden automatisch konvertiert. 
-                    Für beste Ergebnisse verwenden Sie Bilder unter 5MB.
+          {/* Main Tool */}
+          <div className="bg-card rounded-xl shadow-lg border p-6">
+            {/* File Upload */}
+            <div className="mb-6">
+              <FileUpload 
+                onFileSelect={handleFileSelect}
+                accept={{
+                  'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.heic']
+                }}
+                className="border-2 border-dashed border-border hover:border-primary/50 transition-colors"
+              >
+                <div className="text-center p-8">
+                  <ImageIcon className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-lg font-medium mb-2">Bild hier ablegen oder klicken</p>
+                  <p className="text-muted-foreground">
+                    Unterstützt JPG, PNG, WebP und HEIC (max. 20MB)
                   </p>
                 </div>
-              </div>
-            </div>
-          )}
-
-          <FileUpload
-            onFileSelect={handleFileSelect}
-            accept={{ 
-              'image/jpeg': ['.jpg', '.jpeg'],
-              'image/png': ['.png'],
-              'image/webp': ['.webp'],
-              'image/heic': ['.heic'],
-              'image/heif': ['.heif']
-            }}
-            multiple={false}
-            maxSize={isMobile ? 10 * 1024 * 1024 : 20 * 1024 * 1024} // 10MB mobile, 20MB desktop
-          />
-
-          {file && (
-            <div className="space-y-6">
-              {/* Advanced Model Selection */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-4">
-                <h3 className="text-lg font-semibold">KI-Modell & Modus</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Bild-Typ</Label>
-                    <Select value={processingMode} onValueChange={(value: 'general' | 'sky' | 'portrait' | 'product') => setProcessingMode(value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="general">Allgemein (Standard)</SelectItem>
-                        <SelectItem value="sky">🌤️ Himmel & Landschaft</SelectItem>
-                        <SelectItem value="portrait">👤 Portrait & Person</SelectItem>
-                        <SelectItem value="product">📦 Produkt & Objekt</SelectItem>
-                      </SelectContent>
-                    </Select>
+              </FileUpload>
+              
+              {isConverting && (
+                <div className="mt-4 text-center">
+                  <div className="inline-flex items-center gap-2 text-muted-foreground">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    iPhone-Bild wird konvertiert...
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>KI-Modell</Label>
-                    <Select value={selectedModel} onValueChange={(value: 'auto' | 'rmbg-2' | 'u2net' | 'sky-removal') => setSelectedModel(value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="auto">🤖 Automatisch (KI-Analyse)</SelectItem>
-                        <SelectItem value="modnet">👤 MODNet (Portrait-Spezialist)</SelectItem>
-                        <SelectItem value="rmbg-2">🚀 RMBG-1.4 (Universal)</SelectItem>
-                        <SelectItem value="u2net">⚡ U²-Net (Schnell)</SelectItem>
-                        <SelectItem value="sky-removal">☁️ Himmel-Spezialist</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quality Settings */}
-              <div className="bg-muted/30 p-4 rounded-lg space-y-4">
-                <h3 className="text-lg font-semibold">Qualitäts-Einstellungen</h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Entfernungs-Modus</Label>
-                    <Select value={qualityMode} onValueChange={(value: 'soft' | 'hard') => setQualityMode(value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="soft">Weich entfernen (empfohlen)</SelectItem>
-                        <SelectItem value="hard">Stark entfernen (harter Schnitt)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="invert-mask"
-                      checked={invertMask}
-                      onCheckedChange={setInvertMask}
-                    />
-                    <Label htmlFor="invert-mask">Maske invertieren</Label>
-                  </div>
-                </div>
-
-                {qualityMode === 'soft' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Kanten-Glättung: {edgeSmoothing[0]}</Label>
-                      <Slider
-                        value={edgeSmoothing}
-                        onValueChange={setEdgeSmoothing}
-                        min={1}
-                        max={8}
-                        step={1}
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label>Weiche Ränder: {feathering[0]}</Label>
-                      <Slider
-                        value={feathering}
-                        onValueChange={setFeathering}
-                        min={1}
-                        max={5}
-                        step={1}
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="text-center">
-                <Button
-                  onClick={removeBackground}
-                  disabled={isProcessing || isConverting}
-                  size="lg"
-                  className="w-full max-w-md"
-                >
-                  {isConverting ? 'HEIC wird konvertiert...' : 
-                   isProcessing ? 'Verarbeitung...' : 
-                   'Hintergrund entfernen'}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {(isProcessing || isConverting) && (
-            <div className="space-y-2">
-              <div className="text-center text-sm text-muted-foreground">
-                {isConverting ? 'HEIC-Konvertierung läuft...' : `Verarbeitung läuft... ${progress}%`}
-              </div>
-              <Progress value={isConverting ? 50 : progress} className="w-full" />
-            </div>
-          )}
-
-          {(previewUrl || resultPreviewUrl) && (
-            <div className="space-y-4">
-              {/* Toggle for comparison view */}
-              {previewUrl && resultPreviewUrl && (
-                <div className="flex items-center justify-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowComparison(!showComparison)}
-                  >
-                    {showComparison ? <EyeOff className="mr-2 h-4 w-4" /> : <Eye className="mr-2 h-4 w-4" />}
-                    {showComparison ? 'Getrennt anzeigen' : 'Vergleich anzeigen'}
-                  </Button>
                 </div>
               )}
+            </div>
 
-              {showComparison && previewUrl && resultPreviewUrl ? (
-                /* Comparison View */
-                <div className="relative w-full max-w-2xl mx-auto">
-                  <div className="relative h-80 rounded-lg overflow-hidden border">
-                    <img 
-                      src={previewUrl} 
-                      alt="Original" 
-                      className="absolute inset-0 w-full h-full object-contain"
-                    />
-                    <div 
-                      className="absolute inset-0 overflow-hidden"
-                      style={{ clipPath: 'inset(0 50% 0 0)' }}
-                    >
-                      <div 
-                        className="w-full h-full"
-                        style={{
-                          backgroundImage: `
-                            linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
-                            linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
-                            linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
-                            linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
-                          `,
-                          backgroundSize: '16px 16px',
-                          backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
-                        }}
-                      >
+            {/* Process Button */}
+            {file && !isProcessing && !downloadUrl && (
+              <div className="text-center mb-6">
+                <Button 
+                  onClick={removeBackground}
+                  size="lg"
+                  className="px-8 py-3 text-lg font-semibold"
+                >
+                  Hintergrund entfernen
+                </Button>
+              </div>
+            )}
+
+            {/* Progress */}
+            {isProcessing && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Verarbeitung läuft...</span>
+                  <span className="text-sm text-muted-foreground">{progress}%</span>
+                </div>
+                <Progress value={progress} className="h-2" />
+              </div>
+            )}
+
+            {/* Image Preview */}
+            {(previewUrl || resultPreviewUrl) && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Original Image */}
+                  {previewUrl && (
+                    <div>
+                      <h3 className="text-sm font-medium mb-2 text-center">Original</h3>
+                      <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted">
                         <img 
-                          src={resultPreviewUrl} 
-                          alt="Ohne Hintergrund" 
-                          className="w-full h-full object-contain"
+                          src={previewUrl} 
+                          alt="Original" 
+                          className="w-full h-auto max-h-96 object-contain"
                         />
                       </div>
                     </div>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1 h-full bg-white shadow-lg z-10"></div>
-                    <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm">Original</div>
-                    <div className="absolute top-2 right-2 bg-black/70 text-white px-2 py-1 rounded text-sm">Ohne Hintergrund</div>
-                  </div>
-                  <p className="text-center text-sm text-muted-foreground mt-2">
-                    Vor/Nach-Vergleich - Linke Hälfte: Original, Rechte Hälfte: Ohne Hintergrund
-                  </p>
-                </div>
-              ) : (
-                /* Separate View */
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {previewUrl && (
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold">Original</h3>
-                      <img 
-                        src={previewUrl} 
-                        alt="Original" 
-                        className="w-full h-64 object-cover rounded border"
-                      />
-                    </div>
                   )}
 
+                  {/* Result Image */}
                   {resultPreviewUrl && (
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold">Ohne Hintergrund</h3>
-                      <div className="relative bg-gradient-to-br from-gray-100 to-gray-200 p-4 rounded border">
-                        <div 
-                          className="relative w-full h-64 rounded overflow-hidden"
-                          style={{
-                            backgroundImage: `
-                              linear-gradient(45deg, #f0f0f0 25%, transparent 25%), 
-                              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), 
-                              linear-gradient(45deg, transparent 75%, #f0f0f0 75%), 
-                              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%)
-                            `,
-                            backgroundSize: '16px 16px',
-                            backgroundPosition: '0 0, 0 8px, 8px -8px, -8px 0px'
-                          }}
-                        >
-                          <img 
-                            src={resultPreviewUrl} 
-                            alt="Ohne Hintergrund" 
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground text-center mt-2">
-                          Transparente Bereiche werden durch das Schachbrettmuster dargestellt
-                        </p>
+                    <div>
+                      <h3 className="text-sm font-medium mb-2 text-center">Ergebnis</h3>
+                      <div className="relative border-2 border-border rounded-lg overflow-hidden bg-muted" 
+                           style={{ backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' }}>
+                        <img 
+                          src={resultPreviewUrl} 
+                          alt="Ohne Hintergrund" 
+                          className="w-full h-auto max-h-96 object-contain"
+                        />
                       </div>
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {downloadUrl && (
-            <div className="text-center p-6 bg-muted/50 rounded-lg border">
-              <h3 className="text-lg font-semibold mb-4 text-green-600">
-                Hintergrund erfolgreich entfernt!
-              </h3>
-              <Button
-                onClick={downloadImage}
-                size="lg"
-                className="w-full max-w-md"
-              >
-                <Download className="mr-2 h-4 w-4" />
-                PNG mit transparentem Hintergrund herunterladen
-              </Button>
-            </div>
-          )}
-        </div>
+            {/* Download Button */}
+            {downloadUrl && (
+              <div className="text-center">
+                <Button 
+                  onClick={downloadImage}
+                  size="lg"
+                  className="px-8 py-3 text-lg font-semibold"
+                >
+                  <Download className="h-5 w-5 mr-2" />
+                  Bild herunterladen
+                </Button>
+              </div>
+            )}
+          </div>
 
-        <div className="mt-12 p-6 bg-muted/30 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">So funktioniert's:</h2>
-          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
-            <li>Wählen Sie ein Bild mit einer Person oder einem Objekt aus (bis zu 20MB)</li>
-            <li>Klicken Sie auf "Hintergrund entfernen"</li>
-            <li>Die KI erkennt automatisch das Hauptmotiv und entfernt den Hintergrund</li>
-            <li>Laden Sie das Bild mit transparentem Hintergrund als PNG herunter</li>
-          </ol>
-          <p className="text-sm text-muted-foreground mt-4">
-            <strong>Hinweis:</strong> Diese Funktion verwendet KI und funktioniert am besten bei Bildern mit klaren Motiven vor kontrastreichem Hintergrund.
-          </p>
-          <p className="text-sm text-muted-foreground mt-2">
-            <strong>Datenschutz:</strong> Alle Verarbeitungen erfolgen lokal in Ihrem Browser. 
-            Ihre Bilder werden nicht an externe Server übertragen.
-          </p>
+          {/* SEO Content */}
+          <div className="mt-12 space-y-8">
+            <div className="prose prose-gray max-w-none">
+              <h2 className="text-2xl font-bold">Automatische Hintergrundentfernung mit KI</h2>
+              <p>
+                Unser KI-Tool entfernt automatisch den Hintergrund von Ihren Bildern. 
+                Einfach Bild hochladen, wenige Sekunden warten und das Ergebnis mit transparentem 
+                Hintergrund herunterladen. Perfekt für Produktfotos, Portraits und Social Media.
+              </p>
+              
+              <h3 className="text-xl font-semibold mt-6">Funktionen</h3>
+              <ul className="list-disc list-inside space-y-2">
+                <li>Automatische KI-Hintergrundentfernung</li>
+                <li>Unterstützt JPG, PNG, WebP und HEIC</li>
+                <li>Hochqualitative Ergebnisse</li>
+                <li>100% kostenlos und sicher</li>
+                <li>Keine Registrierung erforderlich</li>
+                <li>Funktioniert direkt im Browser</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
