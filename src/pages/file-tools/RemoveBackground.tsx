@@ -33,8 +33,8 @@ const RemoveBackground = () => {
     // Convert 0-100% to threshold and edgeLimit values
     // 0% = very soft, 100% = very sharp
     const normalizedValue = edgeSharpness / 100;
-    const threshold = 0.2 + (normalizedValue * 0.4); // Range: 0.2 to 0.6
-    const edgeLimit = 0.6 + (normalizedValue * 0.3); // Range: 0.6 to 0.9
+    const threshold = 0.15 + (normalizedValue * 0.55); // Range: 0.15 to 0.70
+    const edgeLimit = 0.5 + (normalizedValue * 0.45); // Range: 0.5 to 0.95
     return { threshold, edgeLimit };
   };
 
@@ -302,8 +302,10 @@ const RemoveBackground = () => {
           if (maskValue >= threshold) {
             // Object pixel - apply smoothing at edges based on selection
             if (maskValue < edgeLimit) {
-              // Edge pixel - smooth transition
-              data[i * 4 + 3] = Math.round(maskValue * 255);
+              // Edge pixel - smooth transition with improved feathering
+              const normalizedEdge = (maskValue - threshold) / (edgeLimit - threshold);
+              const alpha = Math.pow(normalizedEdge, 0.8) * 255;
+              data[i * 4 + 3] = Math.round(Math.min(255, Math.max(0, alpha)));
             } else {
               // Core object - fully opaque
               data[i * 4 + 3] = 255;
