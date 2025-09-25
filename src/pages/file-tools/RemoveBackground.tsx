@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
-import { Download, ImageIcon, Scissors, Circle, Waves } from 'lucide-react';
+import { Download, ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
 import heic2any from 'heic2any';
@@ -24,17 +24,18 @@ const RemoveBackground = () => {
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [progressMessage, setProgressMessage] = useState<string>('');
-  const [edgeStyle, setEdgeStyle] = useState<'sharp' | 'normal' | 'soft'>('normal');
+  const [edgeSharpness, setEdgeSharpness] = useState<number>(70); // 0-100%
   const { toast } = useToast();
   const isMobile = useIsMobile();
 
-  // Edge parameter mapping for different smoothness levels
+  // Edge parameter mapping based on percentage (0-100%)
   const getEdgeParams = () => {
-    switch(edgeStyle) {
-      case 'sharp': return { threshold: 0.6, edgeLimit: 0.9 };
-      case 'soft': return { threshold: 0.2, edgeLimit: 0.6 };
-      default: return { threshold: 0.4, edgeLimit: 0.8 }; // normal
-    }
+    // Convert 0-100% to threshold and edgeLimit values
+    // 0% = very soft, 100% = very sharp
+    const normalizedValue = edgeSharpness / 100;
+    const threshold = 0.2 + (normalizedValue * 0.4); // Range: 0.2 to 0.6
+    const edgeLimit = 0.6 + (normalizedValue * 0.3); // Range: 0.6 to 0.9
+    return { threshold, edgeLimit };
   };
 
   // HEIC conversion function
@@ -370,7 +371,7 @@ const RemoveBackground = () => {
           {/* Header */}
           <div className="page-header">
             <h1 className="page-title flex items-center justify-center gap-2">
-              <Scissors className="h-8 w-8 text-primary" />
+              <ImageIcon className="h-8 w-8 text-primary" />
               Hintergrund entfernen
             </h1>
             <p className="page-description">
@@ -389,39 +390,28 @@ const RemoveBackground = () => {
               maxSize={20 * 1024 * 1024} // 20MB
             />
 
-            {/* Edge Style Selection */}
+            {/* Edge Sharpness Selection */}
             {file && !isProcessing && !downloadUrl && (
               <div className="p-4 bg-muted/30 rounded-lg">
-                <h3 className="text-sm font-medium mb-3">Kanten-Qualität wählen:</h3>
-                <RadioGroup 
-                  value={edgeStyle} 
-                  onValueChange={(value: 'sharp' | 'normal' | 'soft') => setEdgeStyle(value)}
-                  className="flex flex-row gap-6"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="sharp" id="sharp" />
-                    <Label htmlFor="sharp" className="flex items-center gap-2 cursor-pointer">
-                      <Scissors className="h-4 w-4" />
-                      Scharf
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="normal" id="normal" />
-                    <Label htmlFor="normal" className="flex items-center gap-2 cursor-pointer">
-                      <Circle className="h-4 w-4" />
-                      Normal
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="soft" id="soft" />
-                    <Label htmlFor="soft" className="flex items-center gap-2 cursor-pointer">
-                      <Waves className="h-4 w-4" />
-                      Weich
-                    </Label>
-                  </div>
-                </RadioGroup>
+                <div className="flex items-center justify-between mb-3">
+                  <Label className="text-sm font-medium">Kanten-Schärfe:</Label>
+                  <span className="text-sm font-medium text-primary">{edgeSharpness}%</span>
+                </div>
+                <Slider
+                  value={[edgeSharpness]}
+                  onValueChange={(value) => setEdgeSharpness(value[0])}
+                  max={100}
+                  min={0}
+                  step={5}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                  <span>0% - Sehr weich</span>
+                  <span>50% - Ausgewogen</span>
+                  <span>100% - Sehr scharf</span>
+                </div>
                 <p className="text-xs text-muted-foreground mt-2">
-                  Scharf: Präzise Konturen • Normal: Ausgewogen • Weich: Natürliche Haare/Details
+                  Niedrige Werte: Natürliche Haare/Details • Hohe Werte: Präzise Konturen für Logos/Objekte
                 </p>
               </div>
             )}
