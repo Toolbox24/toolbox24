@@ -367,20 +367,19 @@ const RemoveBackground = () => {
   return (
     <div className="min-h-screen py-8">
       <div className="container mx-auto px-4 max-w-4xl">
-          <div className="page-header">
-          {/* Header */}
-          <div className="page-header">
-            <h1 className="page-title flex items-center justify-center gap-2">
-              <ImageIcon className="h-8 w-8 text-primary" />
-              Hintergrund entfernen
-            </h1>
-            <p className="page-description">
-              Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit KI. 
-              Einfach Bild hochladen und sofort herunterladen.
-            </p>
-          </div>
+        {/* Header */}
+        <div className="page-header">
+          <h1 className="page-title flex items-center justify-center gap-2">
+            <ImageIcon className="h-8 w-8 text-primary" />
+            Hintergrund entfernen
+          </h1>
+          <p className="page-description">
+            Entfernen Sie automatisch den Hintergrund von Ihren Bildern mit KI. 
+            Einfach Bild hochladen und sofort herunterladen.
+          </p>
+        </div>
 
-          <div className="space-y-6">
+        <div className="space-y-6">
             <FileUpload 
               onFileSelect={handleFileSelect}
               accept={{
@@ -504,8 +503,6 @@ const RemoveBackground = () => {
                 </Button>
               </div>
             )}
-          </div>
-
           </div>
         
         <div className="mt-12 p-6 bg-muted/30 rounded-lg">
