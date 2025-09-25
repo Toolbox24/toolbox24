@@ -128,36 +128,24 @@ const RemoveBackground = () => {
       const imageElement = await loadImage(file);
       setProgress(30);
 
-      // Load the most precise background removal model
+      // Load proven RMBG-1.4 model for reliable background removal
       let backgroundRemover;
       
       try {
-        // Try Segformer first (most precise for object segmentation)
+        // Primary: RMBG-1.4 (most reliable)
         backgroundRemover = await pipeline(
           'image-segmentation', 
-          'Xenova/segformer-b0-finetuned-ade-512-512',
+          'briaai/RMBG-1.4',
           { device: isMobile ? 'wasm' : 'webgpu' }
         );
         toast({
-          title: "Segformer geladen",
-          description: "Verwende das präziseste Modell"
+          title: "RMBG-1.4 geladen",
+          description: "Verwende bewährtes Modell"
         });
       } catch (error) {
         try {
-          // Fallback to RMBG-1.4
-          console.log('Segformer failed, trying RMBG-1.4...');
-          backgroundRemover = await pipeline(
-            'image-segmentation', 
-            'briaai/RMBG-1.4',
-            { device: isMobile ? 'wasm' : 'webgpu' }
-          );
-          toast({
-            title: "RMBG-1.4 geladen",
-            description: "Verwende zuverlässiges Modell"
-          });
-        } catch (error2) {
-          // Final fallback to U²-Net
-          console.log('RMBG failed, using U²-Net fallback...');
+          // Fallback to U²-Net
+          console.log('RMBG failed, trying U²-Net...');
           backgroundRemover = await pipeline(
             'image-segmentation', 
             'Xenova/u2net',
@@ -166,6 +154,18 @@ const RemoveBackground = () => {
           toast({
             title: "U²-Net geladen",
             description: "Verwende Fallback-Modell"
+          });
+        } catch (error2) {
+          // Final fallback
+          console.log('U²-Net failed, using Segformer fallback...');
+          backgroundRemover = await pipeline(
+            'image-segmentation', 
+            'Xenova/segformer-b0-finetuned-ade-512-512',
+            { device: 'wasm' }
+          );
+          toast({
+            title: "Segformer geladen",
+            description: "Verwende letztes verfügbares Modell"
           });
         }
       }
@@ -220,141 +220,31 @@ const RemoveBackground = () => {
       const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const data = outputImageData.data;
       
-      // Get the mask from the result
+      // Get the mask from the result  
       const mask = result[0];
 
       if (mask && mask.mask) {
         const maskData = mask.mask.data;
         
-        // AGGRESSIVE MASKING - Only keep main object, remove all background
-        const aggressiveThreshold = 0.7; // High threshold - only very confident object pixels
+        // Simple, gentle threshold for smooth edges
+        const threshold = 0.4; // Gentle threshold - keep more object details
         
-        // Step 1: Apply aggressive threshold
-        const binaryMask = new Uint8Array(maskData.length);
+        // Apply mask with smooth edge handling
         for (let i = 0; i < maskData.length; i++) {
-          binaryMask[i] = maskData[i] >= aggressiveThreshold ? 255 : 0;
-        }
-        
-        // Step 2: Morphological erosion to remove background remnants
-        const erodedMask = new Uint8Array(maskData.length);
-        for (let y = 1; y < height - 1; y++) {
-          for (let x = 1; x < width - 1; x++) {
-            const idx = y * width + x;
-            let minValue = 255;
-            
-            // Check 3x3 neighborhood - all must be object for pixel to remain
-            for (let dy = -1; dy <= 1; dy++) {
-              for (let dx = -1; dx <= 1; dx++) {
-                const neighIdx = (y + dy) * width + (x + dx);
-                if (neighIdx >= 0 && neighIdx < binaryMask.length) {
-                  minValue = Math.min(minValue, binaryMask[neighIdx]);
-                }
-              }
-            }
-            erodedMask[idx] = minValue;
-          }
-        }
-        
-        // Step 3: Connected components - keep only largest region
-        const visited = new Uint8Array(maskData.length);
-        let largestComponentSize = 0;
-        let largestComponent = new Set<number>();
-        
-        for (let i = 0; i < erodedMask.length; i++) {
-          if (erodedMask[i] > 0 && !visited[i]) {
-            const component = new Set<number>();
-            const stack = [i];
-            
-            while (stack.length > 0) {
-              const current = stack.pop()!;
-              if (visited[current] || erodedMask[current] === 0) continue;
-              
-              visited[current] = 1;
-              component.add(current);
-              
-              const y = Math.floor(current / width);
-              const x = current % width;
-              
-              // Add 4-connected neighbors
-              const neighbors = [
-                (y - 1) * width + x, // up
-                (y + 1) * width + x, // down
-                y * width + (x - 1), // left
-                y * width + (x + 1)  // right
-              ];
-              
-              for (const neighbor of neighbors) {
-                if (neighbor >= 0 && neighbor < erodedMask.length && 
-                    !visited[neighbor] && erodedMask[neighbor] > 0) {
-                  stack.push(neighbor);
-                }
-              }
-            }
-            
-            if (component.size > largestComponentSize) {
-              largestComponentSize = component.size;
-              largestComponent = component;
-            }
-          }
-        }
-        
-        // Step 4: Create final mask with only largest component
-        const finalMask = new Uint8Array(maskData.length);
-        for (const idx of largestComponent) {
-          finalMask[idx] = 255;
-        }
-        
-        // Step 5: Fill small holes in the main object
-        for (let y = 1; y < height - 1; y++) {
-          for (let x = 1; x < width - 1; x++) {
-            const idx = y * width + x;
-            if (finalMask[idx] === 0) {
-              // Count surrounding object pixels
-              let objectNeighbors = 0;
-              for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                  if (dx === 0 && dy === 0) continue;
-                  const neighIdx = (y + dy) * width + (x + dx);
-                  if (neighIdx >= 0 && neighIdx < finalMask.length && finalMask[neighIdx] > 0) {
-                    objectNeighbors++;
-                  }
-                }
-              }
-              // Fill holes (if surrounded by mostly object pixels)
-              if (objectNeighbors >= 6) {
-                finalMask[idx] = 255;
-              }
-            }
-          }
-        }
-        
-        // Step 6: Apply final mask with minimal edge smoothing
-        for (let i = 0; i < maskData.length; i++) {
-          if (finalMask[i] > 0) {
-            // Object pixel - check if on edge for minimal smoothing
-            const y = Math.floor(i / width);
-            const x = i % width;
-            let isEdge = false;
-            
-            // Check if neighboring pixels are background
-            for (let dy = -1; dy <= 1 && !isEdge; dy++) {
-              for (let dx = -1; dx <= 1 && !isEdge; dx++) {
-                if (dx === 0 && dy === 0) continue;
-                const neighIdx = (y + dy) * width + (x + dx);
-                if (neighIdx >= 0 && neighIdx < finalMask.length && finalMask[neighIdx] === 0) {
-                  isEdge = true;
-                }
-              }
-            }
-            
-            // Apply minimal edge smoothing for natural look
-            if (isEdge && maskData[i] < 0.9) {
-              data[i * 4 + 3] = Math.round(maskData[i] * 255);
+          const maskValue = maskData[i];
+          
+          if (maskValue >= threshold) {
+            // Object pixel - apply gentle smoothing at edges
+            if (maskValue < 0.8) {
+              // Edge pixel - smooth transition
+              data[i * 4 + 3] = Math.round(maskValue * 255);
             } else {
-              data[i * 4 + 3] = 255; // Fully opaque
+              // Core object - fully opaque
+              data[i * 4 + 3] = 255;
             }
           } else {
-            data[i * 4 + 3] = 0; // Completely transparent background
+            // Background - transparent
+            data[i * 4 + 3] = 0;
           }
         }
       }
