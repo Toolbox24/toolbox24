@@ -236,30 +236,36 @@ const RemoveBackground = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas context nicht verfügbar');
 
-      // PRESERVE ORIGINAL RESOLUTION - No downscaling for highest quality
-      const { width: originalWidth, height: originalHeight } = imageElement;
-      let processWidth = originalWidth;
-      let processHeight = originalHeight;
+      // Smart resolution optimization for best quality/performance balance
+      let { width, height } = imageElement;
+      const originalWidth = width;
+      const originalHeight = height;
       
-      // Only downscale for AI processing if absolutely necessary (very large images)
-      const maxProcessingSize = 2048; // Increased from 1024 for better quality
+      // Adaptive sizing based on image characteristics
+      const maxSize = 1024;
+      const minSize = 512;
       
-      if (originalWidth > maxProcessingSize || originalHeight > maxProcessingSize) {
-        const scale = maxProcessingSize / Math.max(originalWidth, originalHeight);
-        processWidth = Math.round(originalWidth * scale);
-        processHeight = Math.round(originalHeight * scale);
+      if (width > maxSize || height > maxSize) {
+        const scale = maxSize / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      } else if (width < minSize && height < minSize) {
+        // Upscale small images for better AI processing
+        const scale = minSize / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
       }
 
-      canvas.width = processWidth;
-      canvas.height = processHeight;
+      canvas.width = width;
+      canvas.height = height;
       
       // High-quality rendering with anti-aliasing
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(imageElement, 0, 0, processWidth, processHeight);
+      ctx.drawImage(imageElement, 0, 0, width, height);
 
       // Optional: Advanced preprocessing for edge enhancement
-      const imageData = ctx.getImageData(0, 0, processWidth, processHeight);
+      const imageData = ctx.getImageData(0, 0, width, height);
       const data = imageData.data;
       
       // Subtle contrast enhancement for better edge detection
@@ -287,20 +293,20 @@ const RemoveBackground = () => {
       setProgress(85);
       setProgressMessage('Erstelle perfekte weiche Kanten...');
 
-      // ORIGINAL RESOLUTION OUTPUT - Create output at original size
+      // Advanced Output Processing with Professional Quality
       const outputCanvas = document.createElement('canvas');
-      outputCanvas.width = originalWidth;
-      outputCanvas.height = originalHeight;
+      outputCanvas.width = width;
+      outputCanvas.height = height;
       const outputCtx = outputCanvas.getContext('2d');
       if (!outputCtx) throw new Error('Output Canvas nicht verfügbar');
 
-      // High-quality rendering at original resolution
+      // High-quality rendering
       outputCtx.imageSmoothingEnabled = true;
       outputCtx.imageSmoothingQuality = 'high';
-      outputCtx.drawImage(imageElement, 0, 0, originalWidth, originalHeight);
+      outputCtx.drawImage(canvas, 0, 0);
       
-      // UPSCALE MASK TO ORIGINAL RESOLUTION
-      const outputImageData = outputCtx.getImageData(0, 0, originalWidth, originalHeight);
+      // Enhanced mask processing with professional post-processing
+      const outputImageData = outputCtx.getImageData(0, 0, width, height);
       const outputData = outputImageData.data;
       
       // Select best mask (usually first for RMBG-1.4)
@@ -310,43 +316,11 @@ const RemoveBackground = () => {
         const maskData = mask.mask.data;
         const { threshold, edgeLimit } = getEdgeParams();
         
-        // Create mask at original resolution by upscaling
-        const originalMaskData = new Float32Array(originalWidth * originalHeight);
+        // Step 1: Initial alpha processing
+        const initialAlpha = new Uint8Array(maskData.length);
         
-        // High-quality mask upscaling using bilinear interpolation
-        for (let y = 0; y < originalHeight; y++) {
-          for (let x = 0; x < originalWidth; x++) {
-            const srcX = (x / originalWidth) * processWidth;
-            const srcY = (y / originalHeight) * processHeight;
-            
-            const x1 = Math.floor(srcX);
-            const y1 = Math.floor(srcY);
-            const x2 = Math.min(x1 + 1, processWidth - 1);
-            const y2 = Math.min(y1 + 1, processHeight - 1);
-            
-            const fx = srcX - x1;
-            const fy = srcY - y1;
-            
-            const p1 = maskData[y1 * processWidth + x1];
-            const p2 = maskData[y1 * processWidth + x2];
-            const p3 = maskData[y2 * processWidth + x1];
-            const p4 = maskData[y2 * processWidth + x2];
-            
-            const interpolated = 
-              p1 * (1 - fx) * (1 - fy) +
-              p2 * fx * (1 - fy) +
-              p3 * (1 - fx) * fy +
-              p4 * fx * fy;
-            
-            originalMaskData[y * originalWidth + x] = interpolated;
-          }
-        }
-        
-        // Step 1: Initial alpha processing at original resolution
-        const initialAlpha = new Uint8Array(originalMaskData.length);
-        
-        for (let i = 0; i < originalMaskData.length; i++) {
-          const maskValue = originalMaskData[i];
+        for (let i = 0; i < maskData.length; i++) {
+          const maskValue = maskData[i];
           let alpha;
           
           if (maskValue < threshold) {
@@ -366,13 +340,13 @@ const RemoveBackground = () => {
           initialAlpha[i] = alpha;
         }
 
-        // Step 2: Enhanced Mask Erosion (2 pixels) to eliminate color fringing
-        const erodedAlpha = new Uint8Array(originalMaskData.length);
-        const erosionRadius = 2.0; // More aggressive erosion for better edge cleanup
+        // Step 2: Mask Erosion (1-2 pixels) to remove background color spill
+        const erodedAlpha = new Uint8Array(maskData.length);
+        const erosionRadius = 1.5; // 1-2 pixel erosion
         
-        for (let y = 0; y < originalHeight; y++) {
-          for (let x = 0; x < originalWidth; x++) {
-            const centerIndex = y * originalWidth + x;
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const centerIndex = y * width + x;
             let minAlpha = 255;
 
             // Find minimum alpha in neighborhood (erosion)
@@ -381,10 +355,10 @@ const RemoveBackground = () => {
                 const nx = x + dx;
                 const ny = y + dy;
                 
-                if (nx >= 0 && nx < originalWidth && ny >= 0 && ny < originalHeight) {
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
                   const distance = Math.sqrt(dx * dx + dy * dy);
                   if (distance <= erosionRadius) {
-                    const sampleIndex = ny * originalWidth + nx;
+                    const sampleIndex = ny * width + nx;
                     minAlpha = Math.min(minAlpha, initialAlpha[sampleIndex]);
                   }
                 }
@@ -395,75 +369,60 @@ const RemoveBackground = () => {
           }
         }
 
-        // Step 3: Advanced Color Spill Removal - eliminate background color bleeding
+        // Step 3: Color Spill Removal - reduce background color bleeding
         for (let i = 0; i < outputData.length; i += 4) {
           const pixelIndex = Math.floor(i / 4);
           const alpha = erodedAlpha[pixelIndex];
           
           if (alpha > 0 && alpha < 255) {
-            // Edge pixel - apply aggressive color spill removal
+            // Edge pixel - apply color spill removal
             const alphaRatio = alpha / 255;
+            
+            // Boost saturation slightly to counteract color bleeding
             const r = outputData[i];
             const g = outputData[i + 1];
             const b = outputData[i + 2];
             
-            // Enhanced desaturation for very edge pixels (alpha < 128)
-            if (alpha < 128) {
-              // Strong desaturation to neutralize background colors
-              const gray = (r * 0.299 + g * 0.587 + b * 0.114);
-              const desaturationStrength = 0.4; // Stronger desaturation
+            // Convert to HSL for saturation boost
+            const max = Math.max(r, g, b) / 255;
+            const min = Math.min(r, g, b) / 255;
+            const delta = max - min;
+            
+            if (delta > 0) {
+              const saturationBoost = 1.1; // Subtle saturation increase
+              const lightness = (max + min) / 2;
+              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
               
-              outputData[i] = Math.round(r * (1 - desaturationStrength) + gray * desaturationStrength);
-              outputData[i + 1] = Math.round(g * (1 - desaturationStrength) + gray * desaturationStrength);
-              outputData[i + 2] = Math.round(b * (1 - desaturationStrength) + gray * desaturationStrength);
-            } else {
-              // For less transparent edges, boost saturation to counteract spill
-              const max = Math.max(r, g, b) / 255;
-              const min = Math.min(r, g, b) / 255;
-              const delta = max - min;
+              const newSaturation = Math.min(1, saturation * saturationBoost);
+              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
+              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
+              const m = lightness - c / 2;
               
-              if (delta > 0) {
-                const saturationBoost = 1.15; // Stronger saturation boost
-                const lightness = (max + min) / 2;
-                const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-                
-                const newSaturation = Math.min(1, saturation * saturationBoost);
-                const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
-                const hue = max === r ? ((g - b) / delta + 6) % 6 : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
-                const x = c * (1 - Math.abs((hue % 2) - 1));
-                const m = lightness - c / 2;
-                
-                let newR, newG, newB;
-                if (hue < 1) {
-                  newR = c; newG = x; newB = 0;
-                } else if (hue < 2) {
-                  newR = x; newG = c; newB = 0;
-                } else if (hue < 3) {
-                  newR = 0; newG = c; newB = x;
-                } else if (hue < 4) {
-                  newR = 0; newG = x; newB = c;
-                } else if (hue < 5) {
-                  newR = x; newG = 0; newB = c;
-                } else {
-                  newR = c; newG = 0; newB = x;
-                }
-                
-                outputData[i] = Math.round((newR + m) * 255);
-                outputData[i + 1] = Math.round((newG + m) * 255);
-                outputData[i + 2] = Math.round((newB + m) * 255);
+              if (max === r) {
+                outputData[i] = Math.round((c + m) * 255);
+                outputData[i + 1] = Math.round((x + m) * 255);
+                outputData[i + 2] = Math.round((0 + m) * 255);
+              } else if (max === g) {
+                outputData[i] = Math.round((x + m) * 255);
+                outputData[i + 1] = Math.round((c + m) * 255);
+                outputData[i + 2] = Math.round((0 + m) * 255);
+              } else {
+                outputData[i] = Math.round((0 + m) * 255);
+                outputData[i + 1] = Math.round((x + m) * 255);
+                outputData[i + 2] = Math.round((c + m) * 255);
               }
             }
           }
         }
 
-        // Step 4: Professional Feathering (Gaussian blur for natural edges)
-        const finalAlpha = new Uint8Array(originalMaskData.length);
-        const featherRadius = 1.8; // Optimized feathering after stronger erosion
-        const sigma = 0.6; // Tighter blur for more precise edges
+        // Step 4: Final Feathering (Gaussian blur for natural edges)
+        const finalAlpha = new Uint8Array(maskData.length);
+        const featherRadius = 2.0; // Slightly more feathering after erosion
+        const sigma = 0.8;
         
-        for (let y = 0; y < originalHeight; y++) {
-          for (let x = 0; x < originalWidth; x++) {
-            const centerIndex = y * originalWidth + x;
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const centerIndex = y * width + x;
             let totalAlpha = 0;
             let totalWeight = 0;
 
@@ -473,8 +432,8 @@ const RemoveBackground = () => {
                 const nx = x + dx;
                 const ny = y + dy;
                 
-                if (nx >= 0 && nx < originalWidth && ny >= 0 && ny < originalHeight) {
-                  const sampleIndex = ny * originalWidth + nx;
+                if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                  const sampleIndex = ny * width + nx;
                   const distance = Math.sqrt(dx * dx + dy * dy);
                   
                   if (distance <= featherRadius) {
@@ -504,12 +463,12 @@ const RemoveBackground = () => {
       setProgress(95);
       setProgressMessage('Finalisiere professionelle Qualität...');
 
-      // Create LOSSLESS PNG output at original resolution for best quality
+      // Create high-quality output
       const blob = await new Promise<Blob>((resolve, reject) => {
         outputCanvas.toBlob((blob) => {
           if (blob) resolve(blob);
           else reject(new Error('Blob-Erstellung fehlgeschlagen'));
-        }, 'image/png', 1.0); // PNG format preserves transparency perfectly
+        }, 'image/png', 1.0);
       });
 
       const url = URL.createObjectURL(blob);
