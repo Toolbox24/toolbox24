@@ -21,8 +21,4 @@ export default defineConfig(({ mode }) => ({
   worker: {
     format: 'es',
   },
-  ssgOptions: {
-    script: 'async',
-    formatting: 'minify',
-  },
 }));
