@@ -366,9 +366,9 @@ const RemoveBackground = () => {
           initialAlpha[i] = alpha;
         }
 
-        // Step 2: Mask Erosion (1-2 pixels) to remove background color spill
+        // Step 2: Enhanced Mask Erosion (2 pixels) to eliminate color fringing
         const erodedAlpha = new Uint8Array(originalMaskData.length);
-        const erosionRadius = 1.5; // 1-2 pixel erosion
+        const erosionRadius = 2.0; // More aggressive erosion for better edge cleanup
         
         for (let y = 0; y < originalHeight; y++) {
           for (let x = 0; x < originalWidth; x++) {
@@ -395,56 +395,71 @@ const RemoveBackground = () => {
           }
         }
 
-        // Step 3: Color Spill Removal - reduce background color bleeding
+        // Step 3: Advanced Color Spill Removal - eliminate background color bleeding
         for (let i = 0; i < outputData.length; i += 4) {
           const pixelIndex = Math.floor(i / 4);
           const alpha = erodedAlpha[pixelIndex];
           
           if (alpha > 0 && alpha < 255) {
-            // Edge pixel - apply color spill removal
+            // Edge pixel - apply aggressive color spill removal
             const alphaRatio = alpha / 255;
-            
-            // Boost saturation slightly to counteract color bleeding
             const r = outputData[i];
             const g = outputData[i + 1];
             const b = outputData[i + 2];
             
-            // Convert to HSL for saturation boost
-            const max = Math.max(r, g, b) / 255;
-            const min = Math.min(r, g, b) / 255;
-            const delta = max - min;
-            
-            if (delta > 0) {
-              const saturationBoost = 1.1; // Subtle saturation increase
-              const lightness = (max + min) / 2;
-              const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+            // Enhanced desaturation for very edge pixels (alpha < 128)
+            if (alpha < 128) {
+              // Strong desaturation to neutralize background colors
+              const gray = (r * 0.299 + g * 0.587 + b * 0.114);
+              const desaturationStrength = 0.4; // Stronger desaturation
               
-              const newSaturation = Math.min(1, saturation * saturationBoost);
-              const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
-              const x = c * (1 - Math.abs(((max === r ? (g - b) / delta : max === g ? 2 + (b - r) / delta : 4 + (r - g) / delta) % 6) - 1));
-              const m = lightness - c / 2;
+              outputData[i] = Math.round(r * (1 - desaturationStrength) + gray * desaturationStrength);
+              outputData[i + 1] = Math.round(g * (1 - desaturationStrength) + gray * desaturationStrength);
+              outputData[i + 2] = Math.round(b * (1 - desaturationStrength) + gray * desaturationStrength);
+            } else {
+              // For less transparent edges, boost saturation to counteract spill
+              const max = Math.max(r, g, b) / 255;
+              const min = Math.min(r, g, b) / 255;
+              const delta = max - min;
               
-              if (max === r) {
-                outputData[i] = Math.round((c + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else if (max === g) {
-                outputData[i] = Math.round((x + m) * 255);
-                outputData[i + 1] = Math.round((c + m) * 255);
-                outputData[i + 2] = Math.round((0 + m) * 255);
-              } else {
-                outputData[i] = Math.round((0 + m) * 255);
-                outputData[i + 1] = Math.round((x + m) * 255);
-                outputData[i + 2] = Math.round((c + m) * 255);
+              if (delta > 0) {
+                const saturationBoost = 1.15; // Stronger saturation boost
+                const lightness = (max + min) / 2;
+                const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+                
+                const newSaturation = Math.min(1, saturation * saturationBoost);
+                const c = (1 - Math.abs(2 * lightness - 1)) * newSaturation;
+                const hue = max === r ? ((g - b) / delta + 6) % 6 : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
+                const x = c * (1 - Math.abs((hue % 2) - 1));
+                const m = lightness - c / 2;
+                
+                let newR, newG, newB;
+                if (hue < 1) {
+                  newR = c; newG = x; newB = 0;
+                } else if (hue < 2) {
+                  newR = x; newG = c; newB = 0;
+                } else if (hue < 3) {
+                  newR = 0; newG = c; newB = x;
+                } else if (hue < 4) {
+                  newR = 0; newG = x; newB = c;
+                } else if (hue < 5) {
+                  newR = x; newG = 0; newB = c;
+                } else {
+                  newR = c; newG = 0; newB = x;
+                }
+                
+                outputData[i] = Math.round((newR + m) * 255);
+                outputData[i + 1] = Math.round((newG + m) * 255);
+                outputData[i + 2] = Math.round((newB + m) * 255);
               }
             }
           }
         }
 
-        // Step 4: Final Feathering (Gaussian blur for natural edges)
+        // Step 4: Professional Feathering (Gaussian blur for natural edges)
         const finalAlpha = new Uint8Array(originalMaskData.length);
-        const featherRadius = 2.0; // Slightly more feathering after erosion
-        const sigma = 0.8;
+        const featherRadius = 1.8; // Optimized feathering after stronger erosion
+        const sigma = 0.6; // Tighter blur for more precise edges
         
         for (let y = 0; y < originalHeight; y++) {
           for (let x = 0; x < originalWidth; x++) {
