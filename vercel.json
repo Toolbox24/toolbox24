@@ -1,8 +1,6 @@
 {
   "rewrites": [
-    {
-      "source": "/de/:path*",
-      "destination": "/de/:path*"
-    }
+    { "source": "/de", "destination": "/" },
+    { "source": "/de/:path*", "destination": "/" }
   ]
 }
