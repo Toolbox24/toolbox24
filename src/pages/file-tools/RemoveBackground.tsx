@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { FileUpload } from '@/components/ui/file-upload';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Download, ImageIcon, Scissors } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { Download, ImageIcon, Scissors, Circle, Waves } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { pipeline, env } from '@huggingface/transformers';
 import heic2any from 'heic2any';
@@ -22,8 +24,18 @@ const RemoveBackground = () => {
   const [resultPreviewUrl, setResultPreviewUrl] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [progressMessage, setProgressMessage] = useState<string>('');
+  const [edgeStyle, setEdgeStyle] = useState<'sharp' | 'normal' | 'soft'>('normal');
   const { toast } = useToast();
   const isMobile = useIsMobile();
+
+  // Edge parameter mapping for different smoothness levels
+  const getEdgeParams = () => {
+    switch(edgeStyle) {
+      case 'sharp': return { threshold: 0.6, edgeLimit: 0.9 };
+      case 'soft': return { threshold: 0.2, edgeLimit: 0.6 };
+      default: return { threshold: 0.4, edgeLimit: 0.8 }; // normal
+    }
+  };
 
   // HEIC conversion function
   const convertHEICToJPEG = async (heicFile: File): Promise<File> => {
@@ -279,16 +291,16 @@ const RemoveBackground = () => {
       if (mask && mask.mask) {
         const maskData = mask.mask.data;
         
-        // Simple, gentle threshold for smooth edges
-        const threshold = 0.4; // Gentle threshold - keep more object details
+        // Get edge parameters based on user selection
+        const { threshold, edgeLimit } = getEdgeParams();
         
-        // Apply mask with smooth edge handling
+        // Apply mask with customizable edge handling
         for (let i = 0; i < maskData.length; i++) {
           const maskValue = maskData[i];
           
           if (maskValue >= threshold) {
-            // Object pixel - apply gentle smoothing at edges
-            if (maskValue < 0.8) {
+            // Object pixel - apply smoothing at edges based on selection
+            if (maskValue < edgeLimit) {
               // Edge pixel - smooth transition
               data[i * 4 + 3] = Math.round(maskValue * 255);
             } else {
@@ -377,6 +389,42 @@ const RemoveBackground = () => {
               maxSize={20 * 1024 * 1024} // 20MB
             />
 
+            {/* Edge Style Selection */}
+            {file && !isProcessing && !downloadUrl && (
+              <div className="p-4 bg-muted/30 rounded-lg">
+                <h3 className="text-sm font-medium mb-3">Kanten-Qualität wählen:</h3>
+                <RadioGroup 
+                  value={edgeStyle} 
+                  onValueChange={(value: 'sharp' | 'normal' | 'soft') => setEdgeStyle(value)}
+                  className="flex flex-row gap-6"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="sharp" id="sharp" />
+                    <Label htmlFor="sharp" className="flex items-center gap-2 cursor-pointer">
+                      <Scissors className="h-4 w-4" />
+                      Scharf
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="normal" id="normal" />
+                    <Label htmlFor="normal" className="flex items-center gap-2 cursor-pointer">
+                      <Circle className="h-4 w-4" />
+                      Normal
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="soft" id="soft" />
+                    <Label htmlFor="soft" className="flex items-center gap-2 cursor-pointer">
+                      <Waves className="h-4 w-4" />
+                      Weich
+                    </Label>
+                  </div>
+                </RadioGroup>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Scharf: Präzise Konturen • Normal: Ausgewogen • Weich: Natürliche Haare/Details
+                </p>
+              </div>
+            )}
             
             {isConverting && (
               <div className="text-center">
