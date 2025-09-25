@@ -405,10 +405,42 @@ const RemoveBackground = () => {
         }
       }
 
+      // Step 4: Additional edge smoothing for natural transitions
+      const smoothedAlpha = new Uint8Array(maskData.length);
+      const smoothRadius = 1.2;
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const centerIndex = y * width + x;
+          let totalAlpha = 0;
+          let count = 0;
+
+          // Simple averaging for smooth edges
+          for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+              const nx = x + dx;
+              const ny = y + dy;
+              
+              if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                const sampleIndex = ny * width + nx;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= smoothRadius) {
+                  totalAlpha += featheredAlpha[sampleIndex];
+                  count++;
+                }
+              }
+            }
+          }
+
+          smoothedAlpha[centerIndex] = count > 0 ? Math.round(totalAlpha / count) : featheredAlpha[centerIndex];
+        }
+      }
+
       setProgress(88);
       setProgressMessage('Skaliere Maske auf Originalauflösung...');
 
-      // Step 4: Create original resolution output canvas
+      // Step 5: Create original resolution output canvas
       const finalCanvas = document.createElement('canvas');
       finalCanvas.width = originalWidth;
       finalCanvas.height = originalHeight;
@@ -420,7 +452,7 @@ const RemoveBackground = () => {
       finalCtx.imageSmoothingQuality = 'high';
       finalCtx.drawImage(imageElement, 0, 0, originalWidth, originalHeight);
 
-      // Step 5: Upscale processed mask to original resolution
+      // Step 6: Upscale smoothed mask to original resolution
       const finalImageData = finalCtx.getImageData(0, 0, originalWidth, originalHeight);
       const finalData = finalImageData.data;
 
@@ -441,11 +473,11 @@ const RemoveBackground = () => {
           const dx = srcX - x1;
           const dy = srcY - y1;
           
-          // Get alpha values from feathered mask
-          const alpha11 = featheredAlpha[y1 * width + x1];
-          const alpha12 = featheredAlpha[y2 * width + x1];
-          const alpha21 = featheredAlpha[y1 * width + x2];
-          const alpha22 = featheredAlpha[y2 * width + x2];
+          // Get alpha values from smoothed mask
+          const alpha11 = smoothedAlpha[y1 * width + x1];
+          const alpha12 = smoothedAlpha[y2 * width + x1];
+          const alpha21 = smoothedAlpha[y1 * width + x2];
+          const alpha22 = smoothedAlpha[y2 * width + x2];
           
           // Bilinear interpolation
           const alpha1 = alpha11 * (1 - dx) + alpha21 * dx;
@@ -454,21 +486,22 @@ const RemoveBackground = () => {
           
           const pixelIndex = (y * originalWidth + x) * 4;
           
-          // Apply color spill removal for edge pixels at original resolution
-          if (finalAlpha > 0 && finalAlpha < 255) {
+          // Simple color spill removal for edge pixels
+          if (finalAlpha > 0 && finalAlpha < 240) {
             const r = finalData[pixelIndex];
             const g = finalData[pixelIndex + 1];
             const b = finalData[pixelIndex + 2];
             
-            // Subtle desaturation for edges to reduce color bleeding
+            // Subtle desaturation for smoother edges
             const gray = r * 0.299 + g * 0.587 + b * 0.114;
-            const desaturation = 0.85; // 15% desaturation for edges
+            const desaturation = 0.9;
             
             finalData[pixelIndex] = Math.round(r * desaturation + gray * (1 - desaturation));
             finalData[pixelIndex + 1] = Math.round(g * desaturation + gray * (1 - desaturation));
             finalData[pixelIndex + 2] = Math.round(b * desaturation + gray * (1 - desaturation));
           }
           
+          // Preserve semi-transparency for natural edges
           finalData[pixelIndex + 3] = Math.round(finalAlpha);
         }
       }
