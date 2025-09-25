@@ -268,9 +268,9 @@ const RemoveBackground = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-8">
+      <div className="container mx-auto px-4 max-w-4xl">
+          <div className="page-header">
           {/* Header */}
           <div className="page-header">
             <h1 className="page-title flex items-center justify-center gap-2">
@@ -378,26 +378,18 @@ const RemoveBackground = () => {
 
           </div>
         
-        {/* SEO Content */}
-        <div className="mt-12 space-y-8">
-          <div className="prose prose-gray max-w-none">
-            <h2 className="text-2xl font-bold">Automatische Hintergrundentfernung mit KI</h2>
-            <p>
-              Unser KI-Tool entfernt automatisch den Hintergrund von Ihren Bildern. 
-              Einfach Bild hochladen, wenige Sekunden warten und das Ergebnis mit transparentem 
-              Hintergrund herunterladen. Perfekt für Produktfotos, Portraits und Social Media.
-            </p>
-            
-            <h3 className="text-xl font-semibold mt-6">Funktionen</h3>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Automatische KI-Hintergrundentfernung</li>
-              <li>Unterstützt JPG, PNG, WebP und HEIC</li>
-              <li>Hochqualitative Ergebnisse</li>
-              <li>100% kostenlos und sicher</li>
-              <li>Keine Registrierung erforderlich</li>
-              <li>Funktioniert direkt im Browser</li>
-            </ul>
-          </div>
+        <div className="mt-12 p-6 bg-muted/30 rounded-lg">
+          <h2 className="text-xl font-semibold mb-4">So funktioniert's:</h2>
+          <ol className="list-decimal list-inside space-y-2 text-muted-foreground">
+            <li>Wählen Sie ein JPEG, PNG, WebP oder HEIC Bild aus (bis zu 20MB)</li>
+            <li>Klicken Sie auf "Hintergrund entfernen"</li>
+            <li>Warten Sie wenige Sekunden auf die KI-Verarbeitung</li>
+            <li>Laden Sie das Bild mit transparentem Hintergrund herunter</li>
+          </ol>
+          <p className="text-sm text-muted-foreground mt-4">
+            <strong>Datenschutz:</strong> Alle Verarbeitungen erfolgen lokal in Ihrem Browser. 
+            Ihre Bilder werden nicht an externe Server übertragen.
+          </p>
         </div>
       </div>
     </div>
