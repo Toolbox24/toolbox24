@@ -81,8 +81,6 @@ const Home = () => {
         <title>Toolbox24 - Kostenlose Tools für PDF, Bilder & Vorlagen</title>
         <meta name="description" content="Kostenlose Online-Tools für PDF-Bearbeitung, Bildkonvertierung und professionelle Vorlagen. Direkt im Browser, ohne Upload - sicher und effizient." />
         <meta name="keywords" content="PDF Tools, Bildbearbeitung, Vorlagen, Kündigung, Bewerbung, kostenlos, Online-Tools" />
-        <link rel="canonical" href="https://www.toolbox24.ch/de/" />
-        <meta name="geo.region" content="CH" />
       </Helmet>
       <div className="min-h-screen">
       {/* Hero Section */}
@@ -93,22 +91,8 @@ const Home = () => {
               Toolbox24
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Kostenlose Online-Tools für PDFs, Bilder und Vorlagen - sicher, schnell und direkt im Browser
+              Kostenlose Online-Tools für PDFs, Bilder und Vorlagen
             </p>
-            <ul className="text-left max-w-md mx-auto mb-8 space-y-2">
-              <li className="flex items-center text-muted-foreground">
-                <CheckCircle className="h-5 w-5 text-primary mr-3" />
-                Komplett kostenlos und ohne Anmeldung
-              </li>
-              <li className="flex items-center text-muted-foreground">
-                <Shield className="h-5 w-5 text-primary mr-3" />
-                Datenschutz durch lokale Verarbeitung
-              </li>
-              <li className="flex items-center text-muted-foreground">
-                <Zap className="h-5 w-5 text-primary mr-3" />
-                Sofort einsatzbereit - keine Installation
-              </li>
-            </ul>
             
             <Button 
               size="lg" 
@@ -131,35 +115,31 @@ const Home = () => {
             </p>
           </div>
           
-          <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto list-none">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {popularTools.map((tool) => (
-              <li key={tool.title}>
-                <Card className="text-center border-0 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col hover:border-primary/20">
-                  <CardHeader className="pb-3 flex-1">
-                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <tool.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle className="text-xl font-semibold mb-3">{tool.title}</CardTitle>
-                    <CardDescription className="text-muted-foreground leading-relaxed">
-                      {tool.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <a 
-                      href={tool.path}
-                      className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 w-full hover:bg-blue-500 hover:text-white hover:border-blue-500"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(tool.path);
-                      }}
-                    >
-                      Jetzt nutzen
-                    </a>
-                  </CardContent>
-                </Card>
-              </li>
+              <Card key={tool.title} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col hover:border-primary/20">
+                <CardHeader className="pb-3 flex-1">
+                  <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <tool.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl font-semibold mb-3">{tool.title}</CardTitle>
+                  <CardDescription className="text-muted-foreground leading-relaxed">
+                    {tool.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="w-full hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-colors"
+                    onClick={() => navigate(tool.path)}
+                  >
+                    Jetzt nutzen
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
