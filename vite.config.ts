@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode, command }) => ({
   server: {
     host: "::",
     port: 8080,
@@ -27,5 +27,15 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       },
     },
+    ...(command === 'build' && process.argv.includes('--ssr') ? {
+      ssr: true,
+      outDir: 'dist/server',
+      rollupOptions: {
+        input: 'src/entry-server.tsx',
+        output: {
+          format: 'es'
+        }
+      }
+    } : {}),
   },
 }));

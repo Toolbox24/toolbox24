@@ -78,9 +78,11 @@ const Home = () => {
   return (
     <>
       <Helmet>
-        <title>Toolbox24 - Kostenlose Tools für PDF, Bilder & Vorlagen</title>
+        <title>Toolbox24 - Kostenlose Online-Tools für PDF, Bilder & Vorlagen</title>
         <meta name="description" content="Kostenlose Online-Tools für PDF-Bearbeitung, Bildkonvertierung und professionelle Vorlagen. Direkt im Browser, ohne Upload - sicher und effizient." />
         <meta name="keywords" content="PDF Tools, Bildbearbeitung, Vorlagen, Kündigung, Bewerbung, kostenlos, Online-Tools" />
+        <link rel="canonical" href="https://www.toolbox24.ch/de/" />
+        <meta name="geo.region" content="CH" />
       </Helmet>
       <div className="min-h-screen">
       {/* Hero Section */}
@@ -88,10 +90,10 @@ const Home = () => {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Toolbox24
+              Toolbox24 - Kostenlose Online-Tools für PDF, Bilder & Vorlagen
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-              Kostenlose Online-Tools für PDFs, Bilder und Vorlagen
+              Professionelle Tools für PDF-Bearbeitung, Bildkonvertierung und rechtssichere Vorlagen - kostenlos direkt im Browser
             </p>
             
             <Button 
@@ -111,8 +113,26 @@ const Home = () => {
           <div className="text-center mb-12">
             <h2 className="text-2xl md:text-3xl font-bold mb-4">Beliebte Tools</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Unsere meistgenutzten Online-Tools für den täglichen Bedarf
+              Die beliebtesten Tools unserer Nutzer für tägliche Aufgaben
             </p>
+            
+            <ul className="mt-8 max-w-2xl mx-auto text-left">
+              <li className="mb-2">
+                <a href="/de/pdf-tools/pdf-zusammenfuegen" className="text-primary hover:underline">
+                  PDF zusammenfügen - Mehrere PDFs zu einem Dokument vereinen
+                </a>
+              </li>
+              <li className="mb-2">
+                <a href="/de/datei-tools/hintergrund-entfernen" className="text-primary hover:underline">
+                  Hintergrund entfernen - KI-basierte Hintergrundentfernung für Bilder
+                </a>
+              </li>
+              <li className="mb-2">
+                <a href="/de/vorlagen" className="text-primary hover:underline">
+                  Kündigungsvorlagen - Rechtssichere Vorlagen für alle Kündigungen
+                </a>
+              </li>
+            </ul>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
