@@ -27,5 +27,16 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       },
     },
+    ...(mode === 'ssr' && {
+      lib: {
+        entry: './src/entry-server.tsx',
+        name: 'server',
+        formats: ['es'],
+      },
+      rollupOptions: {
+        external: ['react', 'react-dom', 'react-router-dom'],
+      },
+      ssr: true,
+    }),
   },
 }));
